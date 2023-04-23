@@ -1,6 +1,6 @@
 # Blockgame Enhanced
 A Fabric mod that fixes a lot of client-side issues and adds a ton of quality-of-life features for the Blockgame server.\
-*This mod only runs on Minecraft 1.18.2 only. The mod will be updated to newer versions along with the Blockgame server.*  
+*This mod runs on Minecraft 1.18.2 with Fabric only. The mod will be updated to newer versions along with the Blockgame server.*  
 - [__Download the mod__](https://github.com/jb0s/blockgame-enhanced/releases)
 - [__Report an issue__](https://github.com/jb0s/blockgame-enhanced/issues/new/choose)
 
