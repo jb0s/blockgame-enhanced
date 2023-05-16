@@ -1,0 +1,83 @@
+{
+	"silence": {
+		"sounds": [
+			"blockgame:silence"
+		]
+    },
+	
+    "mus.zone.origin_city.noon": {
+		"subtitle": "Heartbound OST - Animus",
+        "sounds": [
+            "blockgame:music/zone/origin/hb_animus_day"
+        ]
+    },
+	"mus.zone.origin_city.evening": {
+		"subtitle": "Heartbound OST - Settle Down",
+        "sounds": [
+            "blockgame:music/zone/origin/hb_animus_evening"
+        ]
+    },
+	"mus.zone.origin_city.morning": {
+		"subtitle": "Heartbound OST - Wake Up",
+        "sounds": [
+			"blockgame:music/zone/origin/hb_animus_morning"
+        ]
+    },
+	"mus.zone.origin_city.night": {
+		"subtitle": "Heartbound OST - Fireflies",
+        "sounds": [
+			"blockgame:music/zone/origin/hb_animus_night"
+        ]
+    },
+	"mus.zone.origin_city.rain": {
+		"subtitle": "Heartbound OST - Desert Winds",
+        "sounds": [
+			"blockgame:music/zone/origin/hb_animus_desert"
+        ]
+    },
+	
+    "snd.zone.yggdrasil.wind": {
+		"sounds": [
+			"blockgame:music/zone/yggdrasil/hb_outsidewind"
+		]
+    },
+	
+    "mus.zone.sunken_cells.dungeon": {
+		"subtitle": "Heartbound OST - Cold",
+		"sounds": [
+			"blockgame:music/zone/sunken_cells/hb_niflheim_dream"
+		]
+    },
+    "mus.zone.sunken_cells.battle": {
+		"subtitle": "Heartbound OST - Ten Below",
+		"sounds": [
+			"blockgame:music/zone/sunken_cells/hb_ten_below"
+		]
+    },
+    "mus.zone.sunken_cells.waiting_room": {
+		"subtitle": "Heartbound OST - Throne of Frost",
+		"sounds": [
+			"blockgame:music/zone/sunken_cells/hb_frost_throne"
+		]
+    },
+	"mus.zone.sunken_cells.victory": {
+		"subtitle": "Heartbound OST - Binding Void",
+		"sounds": [
+			"blockgame:music/zone/sunken_cells/hb_binder_office"
+		]
+    },
+
+	"mus.egg.terry": {
+		"subtitle": "Heartbound OST - Hello Terry",
+		"sounds": [
+			"blockgame:music/egg/hb_terry"
+		]
+	},
+	
+	"mus.gui.combat.death": {
+		"subtitle": "Player dies",
+		"sounds": [
+			"blockgame:sound/hb_combat_death"
+		]
+    }
+}

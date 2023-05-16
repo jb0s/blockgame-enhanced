@@ -1,0 +1,31 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "dev.jb0s.blockgameenhanced.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "client.MixinMinecraftClient",
+    "entity.MixinClientPlayerEntity",
+    "entity.MixinEntity",
+    "entity.MixinItemEntity",
+    "entity.MixinOtherClientPlayerEntity",
+    "gui.hud.MixinBossBarHud",
+    "gui.hud.MixinInGameHud",
+    "gui.screen.MixinDeathScreen",
+    "gui.screen.MixinTitleScreen",
+    "items.MixinItem",
+    "items.MixinItemStack",
+    "network.MixinClientPlayNetworkHandler",
+    "network.MixinPlayerListEntry",
+    "renderer.entity.MixinEntityRenderDispatcher",
+    "renderer.entity.MixinEntityRenderers",
+    "renderer.entity.MixinLivingEntityRenderer",
+    "renderer.item.MixinItemRenderer"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "client": [
+    "gui.screen.MixinGameMenuScreen"
+  ]
+}

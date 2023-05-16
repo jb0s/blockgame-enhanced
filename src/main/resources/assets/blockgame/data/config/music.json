@@ -1,0 +1,44 @@
+{
+	"music": [
+		{
+			"id": "mus_zone_origincity",
+			"type": "TimeOfDay",
+			"soundIds": [
+				"blockgame:mus.zone.origin_city.morning",
+				"blockgame:mus.zone.origin_city.noon",
+				"blockgame:mus.zone.origin_city.evening",
+				"blockgame:mus.zone.origin_city.night",
+				"blockgame:mus.zone.origin_city.rain"
+			]
+		},
+		{
+			"id": "mus_zone_sunkencells",
+			"type": "Default",
+			"soundIds": [
+				"blockgame:mus.zone.sunken_cells.dungeon"
+			]
+		},
+		{
+			"id": "mus_zone_sunkencells_waitingroom",
+			"type": "Default",
+			"soundIds": [
+				"blockgame:mus.zone.sunken_cells.waiting_room"
+			]
+		},
+		{
+			"id": "mus_battle_sunkencells",
+			"type": "Battle",
+			"soundIds": [
+				"blockgame:mus.zone.sunken_cells.battle",
+				"blockgame:mus.zone.sunken_cells.victory"
+			]
+		},
+		{
+			"id": "mus_zone_yggdrasil",
+			"type": "Default",
+			"soundIds": [
+				"blockgame:snd.zone.yggdrasil.wind"
+			]
+		}
+	]
+}
