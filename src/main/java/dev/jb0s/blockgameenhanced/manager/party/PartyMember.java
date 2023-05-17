@@ -17,6 +17,10 @@ public class PartyMember {
 
     @Getter
     @Setter
+    private int maxHealth;
+
+    @Getter
+    @Setter
     private long lastUpdateSecond;
 
     @Getter
@@ -28,5 +32,6 @@ public class PartyMember {
         playerName = player.getProfile().getName();
         isAlive = true;
         health = 20;
+        maxHealth = 20;
     }
 }

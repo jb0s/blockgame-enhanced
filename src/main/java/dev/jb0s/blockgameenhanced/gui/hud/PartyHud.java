@@ -114,7 +114,7 @@ public class PartyHud extends DrawableHelper {
         int textureHeight = 46;
 
         // Draw Health
-        float calculatedPercentage = (float)member.getHealth() / 20f;
+        float calculatedPercentage = (float)member.getHealth() / (float)member.getMaxHealth();
         RenderSystem.setShaderTexture(0, HEALTHBARS_TEXTURE);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1f);
         DrawableHelper.drawTexture(matrices, contentX + headSize + 5, contentY + client.textRenderer.fontHeight, 9, 9, 0, 0, 18, 18, textureWidth, textureHeight);

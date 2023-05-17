@@ -59,7 +59,7 @@ public class PartyManager extends Manager {
         // Subscribe to events
         ReceiveChatMessageEvent.EVENT.register(((client1, message) -> handleChatMessage(message)));
         SendChatMessageEvent.EVENT.register(((client1, message) -> handleSentChatMessage(message)));
-        OtherPlayerTickEvent.EVENT.register(((client1, otherPlayer) -> handlePlayerHealth(otherPlayer.getGameProfile().getName(), (int)otherPlayer.getHealth(), otherPlayer.isAlive())));
+        OtherPlayerTickEvent.EVENT.register(((client1, otherPlayer) -> handlePlayerHealth(otherPlayer.getGameProfile().getName(), (int)otherPlayer.getHealth(), (int)otherPlayer.getMaxHealth(), otherPlayer.isAlive())));
     }
 
     @Override
@@ -301,9 +301,10 @@ public class PartyManager extends Manager {
      * Every ticking player entity sends this data to us, we only care about our party members though.
      * @param playerName The name of the player that is sending us their health data.
      * @param health The amount of health that they have. This is a vanilla value, 0 - 20.
+     * @param maxHealth The maximum amount of health that they have. This is usually 20, but can be increased with max hp boost.
      * @param isAlive Whether the player entity is considered "alive" or not. This is more trustworthy than checking (health == 0).
      */
-    public void handlePlayerHealth(String playerName, int health, boolean isAlive) {
+    public void handlePlayerHealth(String playerName, int health, int maxHealth, boolean isAlive) {
         if(partyMembers == null)
             return;
 
@@ -314,6 +315,7 @@ public class PartyManager extends Manager {
 
         // Update PartyMember stats
         member.setHealth(health);
+        member.setMaxHealth(maxHealth);
         member.setLastUpdateSecond(TimeHelper.getSystemTimeUnix());
 
         // Death / respawn checks
