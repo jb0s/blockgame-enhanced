@@ -1,6 +1,9 @@
 package dev.jb0s.blockgameenhanced.mixin.gui.screen;
 
 import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
+import dev.jb0s.blockgameenhanced.BlockgameEnhancedClient;
+import dev.jb0s.blockgameenhanced.gui.screen.UpdateScreen;
+import dev.jb0s.blockgameenhanced.manager.update.GitHubRelease;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.text.Text;
@@ -17,6 +20,12 @@ public class MixinTitleScreen extends Screen {
 
     @Inject(method = "init", at = @At("RETURN"))
     public void init(CallbackInfo ci) {
+        GitHubRelease update = BlockgameEnhancedClient.getAvailableUpdate();
+        if(update != null && !UpdateScreen.isAnswered()) {
+            client.setScreen(new UpdateScreen(update));
+            return;
+        }
+
         if(BlockgameEnhanced.getConfig().getAccessibilityConfig().enableCustomTitleScreen) {
             client.setScreen(new dev.jb0s.blockgameenhanced.gui.screen.title.TitleScreen());
         }

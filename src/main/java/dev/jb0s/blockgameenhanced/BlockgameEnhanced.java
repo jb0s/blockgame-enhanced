@@ -2,10 +2,8 @@ package dev.jb0s.blockgameenhanced;
 
 import dev.jb0s.blockgameenhanced.manager.config.modules.ModConfig;
 import lombok.Getter;
-import lombok.Setter;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
-import me.shedaniel.autoconfig.serializer.PartitioningSerializer;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import org.slf4j.Logger;

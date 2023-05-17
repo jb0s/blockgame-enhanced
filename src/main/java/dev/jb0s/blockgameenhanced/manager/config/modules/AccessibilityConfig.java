@@ -15,9 +15,13 @@ public class AccessibilityConfig implements ConfigData {
     @ConfigEntry.Gui.Tooltip
     public boolean enableCustomTitleScreen;
 
+    @ConfigEntry.Gui.Tooltip
+    public boolean enableUpdateChecker;
+
     public AccessibilityConfig() {
         enableAutoRespawn = true;
         enableItemLabels = true;
         enableCustomTitleScreen = true;
+        enableUpdateChecker = true;
     }
 }

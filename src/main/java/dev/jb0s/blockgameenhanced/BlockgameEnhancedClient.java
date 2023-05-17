@@ -9,6 +9,8 @@ import dev.jb0s.blockgameenhanced.manager.discordrpc.DiscordRichPresenceManager;
 import dev.jb0s.blockgameenhanced.manager.hotkey.HotkeyManager;
 import dev.jb0s.blockgameenhanced.manager.music.MusicManager;
 import dev.jb0s.blockgameenhanced.manager.party.PartyManager;
+import dev.jb0s.blockgameenhanced.manager.update.GitHubRelease;
+import dev.jb0s.blockgameenhanced.manager.update.UpdateManager;
 import dev.jb0s.blockgameenhanced.module.*;
 import lombok.Getter;
 import net.fabricmc.api.ClientModInitializer;
@@ -48,6 +50,12 @@ public class BlockgameEnhancedClient implements ClientModInitializer {
     @Getter
     private static DiscordRichPresenceManager discordRichPresenceManager;
 
+    @Getter
+    private static UpdateManager updateManager;
+
+    @Getter
+    private static GitHubRelease availableUpdate;
+
     @Override
     public void onInitializeClient() {
         // Bind generic events
@@ -67,6 +75,21 @@ public class BlockgameEnhancedClient implements ClientModInitializer {
         hotkeyManager = new HotkeyManager();
         configManager = new ConfigManager();
         discordRichPresenceManager = new DiscordRichPresenceManager();
+        updateManager = new UpdateManager();
+
+        // Check for updates
+        if(BlockgameEnhanced.getConfig().getAccessibilityConfig().enableUpdateChecker) {
+            availableUpdate = updateManager.checkForUpdates();
+            if(getAvailableUpdate() != null) {
+                BlockgameEnhanced.LOGGER.info("New update available: " + getAvailableUpdate().tag_name);
+            }
+            else {
+                BlockgameEnhanced.LOGGER.info("Mod is up-to-date");
+            }
+        }
+        else {
+            BlockgameEnhanced.LOGGER.info("Update checking is disabled by user");
+        }
 
         // Tick all managers after client ticks
         ClientTickEvents.END_CLIENT_TICK.register((client) -> {
