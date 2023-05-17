@@ -15,7 +15,7 @@ public class HotkeyManager extends Manager {
 
     @Override
     public void init() {
-        bind(InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_G, "key.blockgame.warp_menu", WarpMenuBind::handlePressed);
+        bind(InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_R, "key.blockgame.warp_menu", WarpMenuBind::handlePressed);
         bind(InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_H, "key.blockgame.auction_house", AuctionHouseBind::handlePressed);
         bind(InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_V, "key.blockgame.stats", StatsBind::handlePressed);
         bind(InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_R, "key.blockgame.profile", ProfileBind::handlePressed);
@@ -23,6 +23,7 @@ public class HotkeyManager extends Manager {
         bind(InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_O, "key.blockgame.party", PartyBind::handlePressed);
         bind(InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_B, "key.blockgame.backpack", BackpackBind::handlePressed);
         bind(InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_X, "key.blockgame.disposal", DisposalBind::handlePressed);
+        bind(InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_G, "key.blockgame.deposit", DepositBind::handlePressed);
         bind(InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_F4, "key.blockgame.debug", DebugBind::handlePressed);
     }
 
