@@ -1,7 +1,6 @@
 package dev.jb0s.blockgameenhanced.gui.screen;
 
 import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
-import dev.jb0s.blockgameenhanced.BlockgameEnhancedClient;
 import dev.jb0s.blockgameenhanced.gui.screen.title.TitleScreen;
 import dev.jb0s.blockgameenhanced.manager.config.modules.ModConfig;
 import dev.jb0s.blockgameenhanced.manager.update.GitHubRelease;
