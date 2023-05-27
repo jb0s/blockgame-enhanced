@@ -13,5 +13,9 @@ public class ModConfig extends PartitioningSerializer.GlobalData {
 
     @Getter
     @ConfigEntry.Gui.CollapsibleObject(startExpanded = true)
+    PrivacyConfig privacyConfig = new PrivacyConfig();
+
+    @Getter
+    @ConfigEntry.Gui.CollapsibleObject(startExpanded = true)
     AccessibilityConfig accessibilityConfig = new AccessibilityConfig();
 }

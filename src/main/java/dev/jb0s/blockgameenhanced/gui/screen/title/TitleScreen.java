@@ -126,15 +126,21 @@ public class TitleScreen extends Screen {
     }
 
     /**
-     * Renders the player eview on the title screen.
+     * Renders the player preview on the title screen.
      * @param mouseX The screen space X-coordinate of the mouse, which the player will look at.
      * @param mouseY The screen space Y-coordinate of the mouse, which the player will look at.
      */
     private void renderPlayer(int mouseX, int mouseY) {
-        int size = height / 5;
-        int x = width - (size * 2);
-        int y = height / 2 + (int)(size * 1.5f);
-        InventoryScreen.drawEntity(x, y, size, -mouseX + x, -mouseY + y - size * 2 + size / 2f, fakePlayer);
+        try {
+            int size = height / 5;
+            int x = width - (size * 2);
+            int y = height / 2 + (int)(size * 1.5f);
+            InventoryScreen.drawEntity(x, y, size, -mouseX + x, -mouseY + y - size * 2 + size / 2f, fakePlayer);
+        }
+        catch(Exception e) {
+            // cry, weep, shit pants and cum
+            // this usually happens when player uses mods that alter player appearance
+        }
     }
 
     /**
