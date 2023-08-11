@@ -16,6 +16,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.SkullItem;
 import net.minecraft.network.packet.s2c.play.InventoryS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenScreenS2CPacket;
+import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
@@ -129,6 +130,13 @@ public class PartyManager extends Manager {
      * @return Whether this packet had info that the party manager needed.
      */
     public boolean handleScreenOpen(OpenScreenS2CPacket packet) {
+
+        // If the screen we've just opened is anything but a generic grid that could display party info, we don't wanna mess with the screens. It breaks shit.
+        if(packet.getScreenHandlerType() != ScreenHandlerType.GENERIC_9X3 &&
+           packet.getScreenHandlerType() != ScreenHandlerType.GENERIC_9X6) {
+            return false;
+        }
+
         // This is a weird one. If a menu is opened and an inventory packet for
         // a different menu comes through, it causes a shit ton of desync. The
         // only way to mitigate this without errors is to prevent any menus from
