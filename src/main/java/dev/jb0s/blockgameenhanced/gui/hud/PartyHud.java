@@ -5,6 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
 import dev.jb0s.blockgameenhanced.BlockgameEnhancedClient;
 import dev.jb0s.blockgameenhanced.helper.TimeHelper;
+import dev.jb0s.blockgameenhanced.manager.config.ConfigManager;
 import dev.jb0s.blockgameenhanced.manager.party.PartyManager;
 import dev.jb0s.blockgameenhanced.manager.party.PartyMember;
 import net.fabricmc.api.EnvType;
@@ -44,6 +45,11 @@ public class PartyHud extends DrawableHelper {
         }
         if(partyManager == null) {
             partyManager = BlockgameEnhancedClient.getPartyManager();
+            return;
+        }
+
+        // Don't draw if the party hud is disabled
+        if(!BlockgameEnhanced.getConfig().getPartyHudConfig().showHud) {
             return;
         }
 

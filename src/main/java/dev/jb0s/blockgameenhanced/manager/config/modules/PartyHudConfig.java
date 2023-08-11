@@ -8,6 +8,9 @@ import me.shedaniel.autoconfig.annotation.ConfigEntry;
 @Config(name = "party_hud")
 public class PartyHudConfig implements ConfigData {
     @ConfigEntry.Gui.Tooltip
+    public boolean showHud;
+
+    @ConfigEntry.Gui.Tooltip
     public boolean showSelf;
 
     @ConfigEntry.Gui.Excluded // this setting is not implemented yet
@@ -21,6 +24,7 @@ public class PartyHudConfig implements ConfigData {
     public boolean outlineMembers;
 
     public PartyHudConfig() {
+        showHud = true;
         showSelf = true;
         position = PartyHudPosition.TOP_LEFT;
         deathNotify = true;
