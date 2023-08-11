@@ -26,6 +26,7 @@ public class MixinTitleScreen extends Screen {
             return;
         }
 
+        // If the user has custom title screens enabled, we abandon this screen and show our custom one instead.
         if(BlockgameEnhanced.getConfig().getAccessibilityConfig().enableCustomTitleScreen) {
             client.setScreen(new dev.jb0s.blockgameenhanced.gui.screen.title.TitleScreen());
         }

@@ -49,6 +49,9 @@ public class TitleScreen extends Screen {
 
     @Override
     public void init() {
+
+        // If we load this screen and the user doesn't have custom title screens enabled, (this usually happens when the user has just changed this setting)
+        // then we want to abandon this title screen and load the vanilla one. This system is kinda hacky but meh.
         if(!BlockgameEnhanced.getConfig().getAccessibilityConfig().enableCustomTitleScreen) {
             client.setScreen(new net.minecraft.client.gui.screen.TitleScreen());
             return;

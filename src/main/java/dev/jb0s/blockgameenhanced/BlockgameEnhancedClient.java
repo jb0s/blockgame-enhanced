@@ -77,7 +77,8 @@ public class BlockgameEnhancedClient implements ClientModInitializer {
         discordRichPresenceManager = new DiscordRichPresenceManager();
         updateManager = new UpdateManager();
 
-        // Check for updates
+        // Check for updates.
+        // If you're looking for the actual "There's an update" GUI prompt, it's in MixinTitleScreen.java.
         if(BlockgameEnhanced.getConfig().getAccessibilityConfig().enableUpdateChecker) {
             availableUpdate = updateManager.checkForUpdates();
             if(getAvailableUpdate() != null) {
