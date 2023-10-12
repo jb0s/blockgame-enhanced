@@ -67,6 +67,25 @@
 		]
     },
 
+	"mus.zone.krognars.dungeon": {
+		"subtitle": "Heartbound OST - Warfire",
+		"sounds": [
+			"blockgame:music/zone/krognars/hb_warfire"
+		]
+	},
+	"mus.zone.krognars.battle_cinder": {
+		"subtitle": "Heartbound OST - Hundred and One",
+		"sounds": [
+			"blockgame:music/zone/krognars/hb_101"
+		]
+	},
+	"mus.zone.krognars.waiting_room": {
+		"subtitle": "Heartbound OST - Throne of Fire",
+		"sounds": [
+			"blockgame:music/zone/krognars/hb_fire_throne"
+		]
+	},
+
 	"mus.egg.terry": {
 		"subtitle": "Heartbound OST - Hello Terry",
 		"sounds": [

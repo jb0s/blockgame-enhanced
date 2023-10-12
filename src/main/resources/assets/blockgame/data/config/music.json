@@ -34,10 +34,39 @@
 			]
 		},
 		{
+			"id": "mus_postboss_sunkencells",
+			"type": "Default",
+			"soundIds": [
+				"blockgame:mus.zone.sunken_cells.victory"
+			]
+		},
+		{
 			"id": "mus_zone_yggdrasil",
 			"type": "Default",
 			"soundIds": [
 				"blockgame:snd.zone.yggdrasil.wind"
+			]
+		},
+		{
+			"id": "mus_zone_krognars",
+			"type": "Default",
+			"soundIds": [
+				"blockgame:mus.zone.krognars.dungeon"
+			]
+		},
+		{
+			"id": "mus_battle_krognars_cinder",
+			"type": "Battle",
+			"soundIds": [
+				"blockgame:mus.zone.krognars.battle_cinder",
+				"blockgame:mus.zone.sunken_cells.victory"
+			]
+		},
+		{
+			"id": "mus_zone_krognars_waitingroom",
+			"type": "Default",
+			"soundIds": [
+				"blockgame:mus.zone.krognars.waiting_room"
 			]
 		}
 	]

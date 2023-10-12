@@ -48,7 +48,7 @@ public class BossBattleManager extends Manager {
         for (ClientBossBar bossBar : BossBarHelper.getBossBars().values()) {
             // Check boss bar name. If it matches with the boss we're waiting for, we're ready to begin the battle.
 
-            if(bossBar.getName().getString().equals(currentBattle.getBoss())) {
+            if(bossBar.getName().getString().startsWith(currentBattle.getBoss())) {
                 currentBattleBossBar = bossBar;
                 beginBossBattle();
                 return;
@@ -94,7 +94,7 @@ public class BossBattleManager extends Manager {
      */
     public void setCurrentBattle(AdventureZoneBoss boss) {
         currentBattle = boss;
-        currentBattleState = BattleState.PENDING_START;
+        currentBattleState = boss != null ? BattleState.PENDING_START : BattleState.NO_BATTLE;
     }
 
     @Override

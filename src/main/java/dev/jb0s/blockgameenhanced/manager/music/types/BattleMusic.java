@@ -26,11 +26,11 @@ public class BattleMusic extends Music {
         BattleState battleState = bossBattleManager.getCurrentBattleState();
 
         // Avoid a crash here
-        if(bossBattle == null)
-            return null;
+        //if(bossBattle == null)
+        //    return null;
 
         // Return victory music if current battle was won
-        if(battleState == BattleState.BATTLE_ENDED)
+        if(bossBattle == null || battleState == BattleState.BATTLE_ENDED)
             return identifiers.get(1);
 
         return identifiers.get(0);

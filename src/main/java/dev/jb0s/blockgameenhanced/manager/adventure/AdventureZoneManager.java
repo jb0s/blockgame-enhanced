@@ -62,7 +62,7 @@ public class AdventureZoneManager extends Manager {
 
         ClientPlayerEntity player = client.player;
         ChunkPos playerChunkPos = player.getChunkPos();
-        AdventureZone foundAdventureZone = findAdventureZoneForChunk(player.getWorld(), playerChunkPos);
+        AdventureZone foundAdventureZone = findAdventureZoneForChunk(player.getWorld(), playerChunkPos, player.getY());
 
         if(currentZone != foundAdventureZone) {
             if(currentZone != null) {
@@ -112,17 +112,27 @@ public class AdventureZoneManager extends Manager {
      * The last return value of this operation is cached, spam calling is not too inefficient.
      * @param world The dimension that the chunk is in.
      * @param pos The ChunkPos of the chunk.
+     * @param y Y-Position of the player. Used for overlapping zones.
      * @return The AdventureZone that was found for this chunk, null if none were found.
      */
-    public AdventureZone findAdventureZoneForChunk(World world, ChunkPos pos) {
+    public AdventureZone findAdventureZoneForChunk(World world, ChunkPos pos, double y) {
         if(pos.x == lastCheckedChunkX && pos.z == lastCheckedChunkZ)
-            return lastCheckedChunkResult;
+        {
+            if(lastCheckedChunkResult != null && y >= lastCheckedChunkResult.getMinY() && y < lastCheckedChunkResult.getMaxY()) {
+                return lastCheckedChunkResult;
+            }
+        }
 
         lastCheckedChunkX = pos.x;
         lastCheckedChunkZ = pos.z;
 
         List<AdventureZone> zonesForThisWorld = getAdventureZonesByWorld(world);
         for (AdventureZone zone : zonesForThisWorld) {
+            boolean isInHeightRange = y >= zone.getMinY() && y < zone.getMaxY();
+            if(!isInHeightRange) {
+                continue;
+            }
+
             for (int[] chunk : zone.getChunks()) {
                 if(chunk == null)
                     continue;
@@ -164,6 +174,11 @@ public class AdventureZoneManager extends Manager {
 
         // Invoke events
         ExitedZoneEvent.EVENT.invoker().exitedZone(client, playerEntity, zone);
+
+        // Apply battle
+        if(zone.getBattle() != null) {
+            BlockgameEnhancedClient.getBossBattleManager().setCurrentBattle(null);
+        }
     }
 
     /**

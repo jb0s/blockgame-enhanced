@@ -23,4 +23,10 @@ public class AdventureZone {
 
     @Getter
     private int[][] chunks;
+
+    @Getter
+    public int minY;
+
+    @Getter
+    public int maxY;
 }
