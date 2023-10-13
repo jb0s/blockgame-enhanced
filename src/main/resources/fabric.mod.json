@@ -30,6 +30,5 @@
     "minecraft": "${minecraft_version}"
   },
   "breaks": {
-    "mcmmo_durability_viewer": "*"
   }
 }

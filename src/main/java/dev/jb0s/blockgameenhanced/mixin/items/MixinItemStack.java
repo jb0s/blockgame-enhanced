@@ -1,5 +1,6 @@
 package dev.jb0s.blockgameenhanced.mixin.items;
 
+import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
 import dev.jb0s.blockgameenhanced.helper.MMOItemHelper;
 import net.minecraft.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
@@ -11,6 +12,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class MixinItemStack {
     @Inject(method = "isDamageable", at = @At("HEAD"), cancellable = true)
     public void isDamageable(CallbackInfoReturnable<Boolean> cir) {
+        if(BlockgameEnhanced.isNotkerMmoPresent()) {
+            // Compatibility with Notker's McMMO Item Durability viewer.
+            return;
+        }
+
         ItemStack thisItemStack = (ItemStack) (Object) this;
 
         if(MMOItemHelper.hasMMODurability(thisItemStack)) {
@@ -21,6 +27,11 @@ public abstract class MixinItemStack {
 
     @Inject(method = "getMaxDamage", at = @At("HEAD"), cancellable = true)
     public void getMaxDamage(CallbackInfoReturnable<Integer> cir) {
+        if(BlockgameEnhanced.isNotkerMmoPresent()) {
+            // Compatibility with Notker's McMMO Item Durability viewer.
+            return;
+        }
+
         ItemStack thisItemStack = (ItemStack) (Object) this;
 
         if(MMOItemHelper.hasMMODurability(thisItemStack)) {
@@ -31,6 +42,11 @@ public abstract class MixinItemStack {
 
     @Inject(at = @At("HEAD"), method = "getDamage", cancellable = true)
     public void getDamage(CallbackInfoReturnable<Integer> cir) {
+        if(BlockgameEnhanced.isNotkerMmoPresent()) {
+            // Compatibility with Notker's McMMO Item Durability viewer.
+            return;
+        }
+
         ItemStack thisItemStack = (ItemStack) (Object) this;
 
         if(MMOItemHelper.hasMMODurability(thisItemStack)) {
@@ -41,6 +57,11 @@ public abstract class MixinItemStack {
 
     @Inject(at = @At("HEAD"), method = "isDamaged", cancellable = true)
     public void isDamaged(CallbackInfoReturnable<Boolean> cir) {
+        if(BlockgameEnhanced.isNotkerMmoPresent()) {
+            // Compatibility with Notker's McMMO Item Durability viewer.
+            return;
+        }
+
         ItemStack thisItemStack = (ItemStack) (Object) this;
 
         if(MMOItemHelper.hasMMODurability(thisItemStack)) {

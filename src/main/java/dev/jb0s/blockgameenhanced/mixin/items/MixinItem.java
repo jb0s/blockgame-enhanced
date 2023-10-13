@@ -1,5 +1,6 @@
 package dev.jb0s.blockgameenhanced.mixin.items;
 
+import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -16,6 +17,11 @@ public class MixinItem {
 
     @Inject(method = "getItemBarStep", at = @At("HEAD"), cancellable = true)
     public void getItemBarStep(ItemStack stack, CallbackInfoReturnable<Integer> cir) {
+        if(BlockgameEnhanced.isNotkerMmoPresent()) {
+            // Compatibility with Notker's McMMO Item Durability viewer.
+            return;
+        }
+
         NbtCompound nbt = stack.getNbt();
 
         if(nbt != null && nbt.getInt(NBT_MAX_DURABILITY) > 0) {
@@ -26,6 +32,11 @@ public class MixinItem {
 
     @Inject(method = "getItemBarColor", at = @At("HEAD"), cancellable = true)
     public void getItemBarColor(ItemStack stack, CallbackInfoReturnable<Integer> cir) {
+        if(BlockgameEnhanced.isNotkerMmoPresent()) {
+            // Compatibility with Notker's McMMO Item Durability viewer.
+            return;
+        }
+
         NbtCompound nbt = stack.getOrCreateNbt();
 
         if(nbt != null && nbt.getInt(NBT_MAX_DURABILITY) > 0) {

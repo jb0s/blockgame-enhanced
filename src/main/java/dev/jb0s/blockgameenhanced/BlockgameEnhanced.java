@@ -17,6 +17,9 @@ public class BlockgameEnhanced implements ModInitializer {
     private static boolean modmenuPresent = false;
 
     @Getter
+    private static boolean notkerMmoPresent = false;
+
+    @Getter
     private static ModConfig config;
 
     @Override
@@ -28,6 +31,11 @@ public class BlockgameEnhanced implements ModInitializer {
         // Detect if the ModMenu mod is present.
         if(FabricLoader.getInstance().isModLoaded("modmenu")) {
             modmenuPresent = true;
+        }
+
+        // Detect if Notker's McMMO Durability Viewer is present.
+        if(FabricLoader.getInstance().isModLoaded("mcmmo_durability_viewer")) {
+            notkerMmoPresent = true;
         }
     }
 }

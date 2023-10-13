@@ -1,5 +1,6 @@
 package dev.jb0s.blockgameenhanced.mixin.renderer.item;
 
+import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.Tessellator;
@@ -20,6 +21,11 @@ public class MixinItemRenderer {
 
     @Inject(method = "renderGuiItemOverlay(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/item/ItemStack;IILjava/lang/String;)V", at = @At("HEAD"), cancellable = true)
     public void renderGuiItemOverlay(TextRenderer renderer, ItemStack stack, int x, int y, String countLabel, CallbackInfo ci) {
+        if(BlockgameEnhanced.isNotkerMmoPresent()) {
+            // Compatibility with Notker's McMMO Item Durability viewer.
+            return;
+        }
+
         NbtCompound nbt = stack.getOrCreateNbt();
 
         MatrixStack matrixStack = new MatrixStack();
