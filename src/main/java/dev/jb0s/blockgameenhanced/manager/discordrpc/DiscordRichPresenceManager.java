@@ -53,7 +53,7 @@ public class DiscordRichPresenceManager extends Manager {
     public void tick(MinecraftClient client) {
         timer++;
 
-        DiscordRPCPrivacy rpcPrivacyLevel = BlockgameEnhanced.getConfig().getPrivacyConfig().discordRPCPrivacy;
+        DiscordRPCPrivacy rpcPrivacyLevel = BlockgameEnhanced.getConfig().getPrivacyConfig().getDiscordRPCPrivacy();
         if(timer >= SETTING_REFRESH_STEP) {
             // If the RPC Privacy level has been adjusted since last refresh, send a refresh to Discord respecting the new settings.
             if(lastPrivacyLevel != rpcPrivacyLevel) {
@@ -81,7 +81,7 @@ public class DiscordRichPresenceManager extends Manager {
             isInGame = inGame;
 
             String string = inGame ? DETAILS_PLAYING : DETAILS_MENU;
-            boolean privacyAllowsForDetails = BlockgameEnhanced.getConfig().getPrivacyConfig().discordRPCPrivacy.getValue() > 1;
+            boolean privacyAllowsForDetails = BlockgameEnhanced.getConfig().getPrivacyConfig().getDiscordRPCPrivacy().getValue() > 1;
 
             builder.setDetails(privacyAllowsForDetails ? string : "");
             client.sendRichPresence(builder.build());
@@ -100,7 +100,7 @@ public class DiscordRichPresenceManager extends Manager {
         try {
             partySize = size;
 
-            boolean privacyAllowsForPartyInfo = BlockgameEnhanced.getConfig().getPrivacyConfig().discordRPCPrivacy.getValue() > 2;
+            boolean privacyAllowsForPartyInfo = BlockgameEnhanced.getConfig().getPrivacyConfig().getDiscordRPCPrivacy().getValue() > 2;
             if(size == 0 || !privacyAllowsForPartyInfo) {
                 builder.setState("");
                 builder.setParty(null, 0, 0, 0);
@@ -122,7 +122,7 @@ public class DiscordRichPresenceManager extends Manager {
      * Re-sends every piece of information to the rich presence.
      */
     public void refreshPresence() {
-        boolean privacySettingsAllowConnect = BlockgameEnhanced.getConfig().getPrivacyConfig().discordRPCPrivacy.getValue() > 0;
+        boolean privacySettingsAllowConnect = BlockgameEnhanced.getConfig().getPrivacyConfig().getDiscordRPCPrivacy().getValue() > 0;
         if(privacySettingsAllowConnect && !connected) {
             safeConnect();
         }
@@ -139,7 +139,7 @@ public class DiscordRichPresenceManager extends Manager {
      */
     private void safeConnect() {
         try {
-            boolean privacySettingsAllowConnect = BlockgameEnhanced.getConfig().getPrivacyConfig().discordRPCPrivacy.getValue() > 0;
+            boolean privacySettingsAllowConnect = BlockgameEnhanced.getConfig().getPrivacyConfig().getDiscordRPCPrivacy().getValue() > 0;
             if(privacySettingsAllowConnect) {
                 client.connect(DiscordBuild.ANY);
                 connected = true;
