@@ -8,11 +8,13 @@
     "Jake (aka notIrma)"
   ],
   "contact": {
-    "repo": "https://github.com/jb0s/blockgame-enhanced"
+    "repo": "https://github.com/jb0s/blockgame-enhanced",
+    "sources": "https://github.com/jb0s/blockgame-enhanced",
+    "issues": "https://github.com/jb0s/blockgame-enhanced/issues"
   },
   "license": "unlicense",
   "icon": "assets/blockgame/textures/icon.png",
-  "environment": "*",
+  "environment": "client",
   "entrypoints": {
     "client": [
       "dev.jb0s.blockgameenhanced.BlockgameEnhancedClient"
