@@ -20,6 +20,9 @@ public class BlockgameEnhanced implements ModInitializer {
     private static boolean notkerMmoPresent = false;
 
     @Getter
+    private static boolean optifinePresent = false;
+
+    @Getter
     private static ModConfig config;
 
     @Override
@@ -36,6 +39,11 @@ public class BlockgameEnhanced implements ModInitializer {
         // Detect if Notker's McMMO Durability Viewer is present.
         if(FabricLoader.getInstance().isModLoaded("mcmmo_durability_viewer")) {
             notkerMmoPresent = true;
+        }
+
+        // Detect if OptiFine is present with OptiFabric.
+        if(FabricLoader.getInstance().isModLoaded("optifabric")) {
+            optifinePresent = true;
         }
     }
 }
