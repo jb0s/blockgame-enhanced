@@ -1,12 +1,14 @@
 package dev.jb0s.blockgameenhanced.mixin.network;
 
 import dev.jb0s.blockgameenhanced.BlockgameEnhancedClient;
+import dev.jb0s.blockgameenhanced.event.chat.CommandSuggestionsEvent;
 import dev.jb0s.blockgameenhanced.event.chat.ReceiveChatMessageEvent;
 import dev.jb0s.blockgameenhanced.manager.party.PartyManager;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.packet.c2s.play.CloseHandledScreenC2SPacket;
+import net.minecraft.network.packet.s2c.play.CommandSuggestionsS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.InventoryS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenScreenS2CPacket;
@@ -53,5 +55,10 @@ public class MixinClientPlayNetworkHandler {
     @Inject(method = "onGameMessage", at = @At("RETURN"))
     public void onOpenScreen(GameMessageS2CPacket packet, CallbackInfo ci) {
         ReceiveChatMessageEvent.EVENT.invoker().receiveChatMessage(client, packet.getMessage().getString());
+    }
+
+    @Inject(method = "onCommandSuggestions", at = @At("HEAD"))
+    public void onCommandSuggestions(CommandSuggestionsS2CPacket packet, CallbackInfo ci) {
+        CommandSuggestionsEvent.EVENT.invoker().commandSuggestions(client, packet.getCompletionId(), packet.getSuggestions());
     }
 }

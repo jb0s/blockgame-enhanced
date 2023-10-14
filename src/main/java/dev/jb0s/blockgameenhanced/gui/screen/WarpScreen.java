@@ -1,9 +1,13 @@
 package dev.jb0s.blockgameenhanced.gui.screen;
 
+import dev.jb0s.blockgameenhanced.event.adventurezone.EnteredWildernessEvent;
+import dev.jb0s.blockgameenhanced.event.chat.CommandSuggestionsEvent;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.network.packet.c2s.play.RequestCommandCompletionsC2SPacket;
+import net.minecraft.network.packet.s2c.play.CommandSuggestionsS2CPacket;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 
@@ -35,12 +39,39 @@ public class WarpScreen extends Screen {
 
     @Override
     protected void init() {
-        int y = height / 10;
-        int totalOptions = WARP_OPTIONS.size();
-        int buttonSpacing = 24;
-        int listStartingY = (height / 2) - (buttonSpacing * (totalOptions / 2));
+        RequestCommandCompletionsC2SPacket pak = new RequestCommandCompletionsC2SPacket(this.hashCode(), "warp ");
+        client.getNetworkHandler().sendPacket(pak);
 
-        // Add warp options
+        int y = height / 10;
+        int buttonSpacing = 24;
+
+        CommandSuggestionsEvent.EVENT.register((client, completionsId, suggestions) -> {
+            int totalOptions = suggestions.getList().size();
+            int listStartingY = (height / 2) - (buttonSpacing * (totalOptions / 2));
+
+            // Add warp options
+            if(completionsId == this.hashCode()) {
+                int i = 0;
+                for (var thing : suggestions.getList()) {
+                    var btnText = thing.getText().replace("_", " ");
+                    var btnHeight = listStartingY + (buttonSpacing * i);
+
+                    addDrawableChild(new ButtonWidget(width / 2 - 100, btnHeight, 200, 20, Text.of(btnText), (button) -> {
+                        close();
+                        client.mouse.lockCursor();
+
+                        ClientPlayerEntity p = client.player;
+                        if(p != null) {
+                            p.sendChatMessage("/warp " + thing.getText());
+                        }
+                    }));
+
+                    i++;
+                }
+            }
+        });
+
+        /*// Add warp options
         int i = 0;
         for (Map.Entry<TranslatableText, String> set : WARP_OPTIONS.entrySet()) {
             Text btnText = set.getKey();
@@ -57,7 +88,7 @@ public class WarpScreen extends Screen {
             }));
 
             i++;
-        }
+        }*/
 
         // Cancel Button
         addDrawableChild(new ButtonWidget(width / 2 - 100, height - y - 20, 200, 20, BUTTON_CANCEL, (button) -> {
