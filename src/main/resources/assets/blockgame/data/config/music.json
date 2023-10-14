@@ -68,6 +68,13 @@
 			"soundIds": [
 				"blockgame:mus.zone.krognars.waiting_room"
 			]
+		},
+		{
+			"id": "mus_zone_desert_race",
+			"type": "Default",
+			"soundIds": [
+				"blockgame:mus.zone.origin_city.rain"
+			]
 		}
 	]
 }
