@@ -14,12 +14,18 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MixinItemEntity {
     @Shadow private int itemAge;
 
+    /**
+     * We use 877 in color codes to determine whether an item label is given by the Blockgame mod or not.
+     * Thor would NEVER use this signature, so it's pretty foolproof. Thor if you're reading this, don't be a goblin. That's my task.
+     */
+    private static final String MOD_ASSIGNED_LABEL_SIGNATURE = "§8§7§7";
+
     @Inject(method = "tick", at = @At("HEAD"))
     private void init(CallbackInfo ci) {
         ItemEntity thisItemEntity = (ItemEntity) (Object) this;
         boolean enableItemLabels = BlockgameEnhanced.getConfig().getAccessibilityConfig().enableItemLabels;
 
-        if(itemAge == 0 && thisItemEntity.getCustomName() == null && enableItemLabels) {
+        if(enableItemLabels && (thisItemEntity.getCustomName() == null || thisItemEntity.getCustomName().getString().startsWith(MOD_ASSIGNED_LABEL_SIGNATURE))) {
             giveItemEntityLabel(thisItemEntity);
         }
     }
@@ -29,7 +35,7 @@ public class MixinItemEntity {
         boolean enableItemLabels = BlockgameEnhanced.getConfig().getAccessibilityConfig().enableItemLabels;
 
         if(enableItemLabels) {
-            Text entityName = Text.of("§7" + stack.getCount() + "x ").shallowCopy().append(stack.getName());
+            Text entityName = Text.of(MOD_ASSIGNED_LABEL_SIGNATURE + stack.getCount() + "x ").shallowCopy().append(stack.getName());
             itemEntity.setCustomNameVisible(true);
             itemEntity.setCustomName(entityName);
         }
