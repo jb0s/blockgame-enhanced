@@ -127,7 +127,7 @@ public class MusicManager extends Manager {
         if(shouldBeMuted && isPlaying()) {
             muted = true;
         }
-        else if (shouldBeUnmuted && muted) {
+        else if (shouldBeUnmuted && muted && isPlaying()) {
             soundInstance = new MusicSoundInstance(new SoundEvent(currentMusic.getSoundId()), SoundCategory.MUSIC, 1f, 1f, client.player);
             soundManager.play(soundInstance);
             muted = false;
