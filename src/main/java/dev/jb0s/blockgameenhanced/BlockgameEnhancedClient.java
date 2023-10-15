@@ -1,5 +1,6 @@
 package dev.jb0s.blockgameenhanced;
 
+import dev.jb0s.blockgameenhanced.event.world.WorldUpdatedEvent;
 import dev.jb0s.blockgameenhanced.manager.Manager;
 import dev.jb0s.blockgameenhanced.manager.adventure.AdventureZoneManager;
 import dev.jb0s.blockgameenhanced.manager.bossbattle.BossBattleManager;
@@ -61,6 +62,7 @@ public class BlockgameEnhancedClient implements ClientModInitializer {
         // Bind generic events
         // TODO: Use managers for these
         UseBlockCallback.EVENT.register(MMOItems::preventIllegalMMOItemsInteraction);
+        WorldUpdatedEvent.EVENT.register(Yggdrasil::handleWorldChanged);
         ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
             client.player.sendMessage(new TranslatableText("hud.blockgame.message.welcome.1"), false);
             client.player.sendMessage(new TranslatableText("hud.blockgame.message.welcome.2"), false);

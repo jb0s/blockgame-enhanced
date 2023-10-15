@@ -41,6 +41,11 @@
 			"blockgame:music/zone/yggdrasil/hb_outsidewind"
 		]
     },
+	"snd.zone.yggdrasil.animus_portal": {
+		"sounds": [
+			"blockgame:music/zone/yggdrasil/hb_animus_portal"
+		]
+	},
 	
     "mus.zone.sunken_cells.dungeon": {
 		"subtitle": "Heartbound OST - Cold",
