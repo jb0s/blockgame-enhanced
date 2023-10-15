@@ -118,6 +118,11 @@ public class MusicManager extends Manager {
             return;
         }
 
+        if(isPlaying() && client.world == null) {
+            stopMusic(false);
+            return;
+        }
+
         // Hack around a stupid feature that stops all playing sounds permanently if the volume is set to 0 at one point
         float masterVolume = client.options.getSoundVolume(SoundCategory.MASTER);
         float musicVolume = client.options.getSoundVolume(SoundCategory.MUSIC);
@@ -127,10 +132,13 @@ public class MusicManager extends Manager {
         if(shouldBeMuted && isPlaying()) {
             muted = true;
         }
-        else if (shouldBeUnmuted && muted && isPlaying()) {
-            soundInstance = new MusicSoundInstance(new SoundEvent(currentMusic.getSoundId()), SoundCategory.MUSIC, 1f, 1f, client.player);
-            soundManager.play(soundInstance);
+        else if (shouldBeUnmuted && muted) {
             muted = false;
+
+            if(isPlaying()) {
+                soundInstance = new MusicSoundInstance(new SoundEvent(currentMusic.getSoundId()), SoundCategory.MUSIC, 1f, 1f, client.player);
+                soundManager.play(soundInstance);
+            }
         }
 
         if(isFading()) {
