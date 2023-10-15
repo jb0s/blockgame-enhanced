@@ -6,7 +6,7 @@
 			"musicType": "TimeOfDay",
 			"adventure": true,
 			"music": "mus_zone_origincity",
-			"minY": 35,
+			"minY": 38,
 			"maxY": 1000,
 			"chunks": [
 				[-21, 5],
