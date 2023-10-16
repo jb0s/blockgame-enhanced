@@ -7,6 +7,7 @@ import dev.jb0s.blockgameenhanced.manager.config.modules.ModConfig;
 import lombok.SneakyThrows;
 import me.shedaniel.autoconfig.AutoConfig;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -19,10 +20,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class ConfigManager extends Manager {
-    private static final String APPDATA_PATH_STRING = System.getenv("APPDATA");
     private static final String GAME_FOLDER_NAME = ".blockgame";
 
-    private static final Path GAME_FOLDER_PATH = Paths.get(APPDATA_PATH_STRING, GAME_FOLDER_NAME);
+    private static final Path GAME_FOLDER_PATH = Paths.get(getAppdataPath(), GAME_FOLDER_NAME);
     private static final Path INVENTORY_SNAPSHOT_PATH = Paths.get(GAME_FOLDER_PATH.toString(), "INVENTORY.dat");
 
     @Override
@@ -72,5 +72,13 @@ public class ConfigManager extends Manager {
         NbtList out = new NbtList();
         inv.writeNbt(out);
         out.write(testOutput);
+    }
+
+    public static String getAppdataPath() {
+        if(MinecraftClient.IS_SYSTEM_MAC) {
+            return System.getProperty("user.home") + "/Library/Application Support";
+        }
+
+        return System.getenv("APPDATA");
     }
 }
