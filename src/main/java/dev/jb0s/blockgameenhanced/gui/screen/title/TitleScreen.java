@@ -6,6 +6,7 @@ import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
 import dev.jb0s.blockgameenhanced.BlockgameEnhancedClient;
 import dev.jb0s.blockgameenhanced.eggs.thor.ThorScreen;
 import dev.jb0s.blockgameenhanced.manager.config.ConfigManager;
+import lombok.SneakyThrows;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.ConnectScreen;
 import net.minecraft.client.gui.screen.CreditsScreen;
@@ -14,6 +15,7 @@ import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.gui.screen.option.OptionsScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.PressableTextWidget;
+import net.minecraft.client.network.MultiplayerServerListPinger;
 import net.minecraft.client.network.ServerAddress;
 import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.toast.SystemToast;
@@ -29,13 +31,12 @@ public class TitleScreen extends Screen {
     private static final Identifier BLOCKGAME_LOGO_TEXTURE = new Identifier("blockgame", "textures/gui/title/blockgame.png");
     private static final Identifier BACKGROUND_TEXTURE = new Identifier("blockgame", "textures/gui/title/titlescreen.png");
     private final TranslatableText BUTTON_PLAY = new TranslatableText("menu.blockgame.title.play");
-    private final TranslatableText BUTTON_DEBUG = new TranslatableText("menu.blockgame.title.debug");
     private final TranslatableText BUTTON_WEBSITE = new TranslatableText("menu.blockgame.title.website");
     private final TranslatableText BUTTON_WIKI = new TranslatableText("menu.blockgame.title.wiki");
     private final TranslatableText WATERMARK = new TranslatableText("menu.blockgame.title.watermark");
-    private final TranslatableText QUIT_TITLE = new TranslatableText("menu.blockgame.quit.title");
-    private final TranslatableText QUIT_DESCRIPTION = new TranslatableText("menu.blockgame.quit.description");
 
+    private ServerInfo serverInfo;
+    private MultiplayerServerListPinger pinger;
     private FakePlayer fakePlayer;
     private int eggClicks;
 
@@ -44,6 +45,7 @@ public class TitleScreen extends Screen {
     }
 
     @Override
+    @SneakyThrows
     public void init() {
 
         // If we load this screen and the user doesn't have custom title screens enabled, (this usually happens when the user has just changed this setting)
@@ -54,6 +56,13 @@ public class TitleScreen extends Screen {
         }
 
         ConfigManager configManager = BlockgameEnhancedClient.getConfigManager();
+
+        // Initialize server pinger & server info
+        pinger = new MultiplayerServerListPinger();
+        serverInfo = new ServerInfo("Blockgame", "mc.blockgame.info", false);
+
+        // Start pinging server
+        pinger.add(serverInfo, Runnables.doNothing());
 
         // Initialize player
         fakePlayer = new FakePlayer();
@@ -72,6 +81,12 @@ public class TitleScreen extends Screen {
         renderLogo(matrices, width, 1, 30);
 
         super.render(matrices, mouseX, mouseY, delta);
+
+        String text = String.format("There are %d players online. (%d ms)", serverInfo.playerListSummary.size(), serverInfo.ping);
+        DrawableHelper.drawTextWithShadow(matrices, client.textRenderer, Text.of(text), 20, 20, Integer.MAX_VALUE);
+        for (int i = 0; i < serverInfo.playerListSummary.size(); i++) {
+            DrawableHelper.drawTextWithShadow(matrices, client.textRenderer, serverInfo.playerListSummary.get(i), 20, 30 + (12 * i), Integer.MAX_VALUE);
+        }
     }
 
     @Override
