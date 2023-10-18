@@ -8,7 +8,6 @@ import dev.jb0s.blockgameenhanced.eggs.thor.ThorScreen;
 import dev.jb0s.blockgameenhanced.manager.config.ConfigManager;
 import lombok.SneakyThrows;
 import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.*;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.gui.screen.option.OptionsScreen;
@@ -18,17 +17,12 @@ import net.minecraft.client.network.*;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.network.ClientConnection;
-import net.minecraft.network.NetworkState;
-import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
-import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 
 import java.lang.reflect.Constructor;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class TitleScreen extends Screen {
 
@@ -48,8 +42,6 @@ public class TitleScreen extends Screen {
     private FakePlayer fakePlayer;
 
     private int eggClicks;
-    private boolean connecting;
-    private Text connectionStatus = new TranslatableText("connect.connecting");
 
     public TitleScreen() {
         super(Text.of("Title Screen"));
@@ -95,7 +87,6 @@ public class TitleScreen extends Screen {
 
         // Render this after super, because super renders the buttons
         renderServerStatus(matrices);
-        if(connecting) renderConnectionOverlay(matrices);
     }
 
     @Override
@@ -198,13 +189,6 @@ public class TitleScreen extends Screen {
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.setShaderTexture(0, DrawableHelper.GUI_ICONS_TEXTURE);
         DrawableHelper.drawTexture(matrices, x, y, ol * 10, 176 + pi * 8, 10, 8, 256, 256);
-    }
-
-    private void renderConnectionOverlay(MatrixStack matrices) {
-        RenderSystem.enableBlend();
-        DrawableHelper.fill(matrices, 0, 0, width, height, 135 << 24);
-        drawCenteredText(matrices, textRenderer, Text.of("Connecting to Blockgame"), this.width / 2, this.height / 2 - 7, 0xFFFFFF);
-        drawCenteredText(matrices, textRenderer, connectionStatus, this.width / 2, this.height / 2 + 7, 0x808080);
     }
 
     /**
