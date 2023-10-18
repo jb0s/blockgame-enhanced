@@ -26,15 +26,11 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
-import net.minecraft.util.logging.UncaughtExceptionLogger;
 
 import java.lang.reflect.Constructor;
-import java.net.InetSocketAddress;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class TitleScreen extends Screen {
-    private static final AtomicInteger CONNECTOR_THREADS_COUNT = new AtomicInteger(0);
 
     private static final Identifier BLOCKGAME_LOGO_TEXTURE = new Identifier("blockgame", "textures/gui/title/blockgame.png");
     private static final Identifier BACKGROUND_TEXTURE = new Identifier("blockgame", "textures/gui/title/titlescreen.png");
@@ -225,8 +221,7 @@ public class TitleScreen extends Screen {
         addDrawableChild(new ButtonWidget(width / 4 + 1, l + 24, 74, 20, BUTTON_WIKI, (button) -> Util.getOperatingSystem().open("https://blockgame.fandom.com/wiki/BlockGame_Wiki")));
 
         // Add Play Button
-        //addDrawableChild(new ButtonWidget(width / 4 - 75, l, 150, 20, BUTTON_PLAY, (button) -> ConnectScreen.connect(this, this.client, ServerAddress.parse("mc.blockgame.info"), new ServerInfo("BlockGame", "mc.blockgame.info", false))));
-        addDrawableChild(new ButtonWidget(width / 4 - 75, l, 150, 20, Text.of(BUTTON_PLAY.getString() + " v2"), (button) -> connectV2()));
+        addDrawableChild(new ButtonWidget(width / 4 - 75, l, 150, 20, BUTTON_PLAY, (button) -> ConnectScreen.connect(this, this.client, ServerAddress.parse("mc.blockgame.info"), new ServerInfo("BlockGame", "mc.blockgame.info", false))));
 
         int bottomRowYOffset = 0;
         if(BlockgameEnhanced.isModmenuPresent()) {
@@ -286,53 +281,5 @@ public class TitleScreen extends Screen {
                 client.setScreen(new ThorScreen(this));
             }
         }, this.textRenderer));
-    }
-
-    private void connectV2() {
-        BlockgameEnhanced.LOGGER.info("Using ConnectV2 to connect to server");
-        BlockgameEnhanced.LOGGER.info("Connecting to {}, {}", serverInfo.address, 25565);
-
-        // Setup client state
-        client.disconnect();
-        client.loadBlockList();
-        client.setCurrentServerEntry(serverInfo);
-        client.setScreen(this); // why does it change
-        connecting = true;
-
-        // Start connecting on new thread
-        Thread thread = new Thread("Blockgame Server Connector #" + CONNECTOR_THREADS_COUNT.incrementAndGet()){
-
-            @Override
-            public void run() {
-                InetSocketAddress inetSocketAddress = null;
-                try {
-                    Optional<InetSocketAddress> optional = AllowedAddressResolver.DEFAULT.resolve(new ServerAddress(serverInfo.address, 25565)).map(Address::getInetSocketAddress);
-                    inetSocketAddress = optional.get();
-
-                    ClientConnection connection = ClientConnection.connect(inetSocketAddress, client.options.shouldUseNativeTransport());
-                    connection.setPacketListener(new ClientLoginNetworkHandler(connection, client, TitleScreen.this, TitleScreen.this::connectV2SetStatus));
-                    connection.send(new HandshakeC2SPacket(inetSocketAddress.getHostName(), inetSocketAddress.getPort(), NetworkState.LOGIN));
-                    connection.send(new LoginHelloC2SPacket(client.getSession().getProfile()));
-                }
-                catch (Exception exception) {
-                    Exception exception2;
-                    Throwable throwable = exception.getCause();
-                    Exception exception3 = throwable instanceof Exception ? (exception2 = (Exception)throwable) : exception;
-
-                    BlockgameEnhanced.LOGGER.error("Couldn't connect to server", exception);
-                    String string = inetSocketAddress == null ? exception3.getMessage() : exception3.getMessage().replaceAll(inetSocketAddress.getHostName() + ":" + inetSocketAddress.getPort(), "").replaceAll(inetSocketAddress.toString(), "");
-
-                    client.execute(() -> client.setScreen(new DisconnectedScreen(TitleScreen.this, ScreenTexts.CONNECT_FAILED, new TranslatableText("disconnect.genericReason", string))));
-                }
-            }
-        };
-
-        thread.setUncaughtExceptionHandler(new UncaughtExceptionLogger(BlockgameEnhanced.LOGGER));
-        thread.start();
-    }
-
-    private void connectV2SetStatus(Text status) {
-        BlockgameEnhanced.LOGGER.info("ConnectV2 update status: " + status.getString());
-        connectionStatus = status;
     }
 }
