@@ -8,37 +8,52 @@ import dev.jb0s.blockgameenhanced.eggs.thor.ThorScreen;
 import dev.jb0s.blockgameenhanced.manager.config.ConfigManager;
 import lombok.SneakyThrows;
 import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.gui.screen.ConnectScreen;
-import net.minecraft.client.gui.screen.CreditsScreen;
-import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.Element;
+import net.minecraft.client.gui.screen.*;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.gui.screen.option.OptionsScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.PressableTextWidget;
-import net.minecraft.client.network.MultiplayerServerListPinger;
-import net.minecraft.client.network.ServerAddress;
-import net.minecraft.client.network.ServerInfo;
+import net.minecraft.client.network.*;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.network.ClientConnection;
+import net.minecraft.network.NetworkState;
+import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
+import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
+import net.minecraft.util.logging.UncaughtExceptionLogger;
 
 import java.lang.reflect.Constructor;
+import java.net.InetSocketAddress;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class TitleScreen extends Screen {
+    private static final AtomicInteger CONNECTOR_THREADS_COUNT = new AtomicInteger(0);
+
     private static final Identifier BLOCKGAME_LOGO_TEXTURE = new Identifier("blockgame", "textures/gui/title/blockgame.png");
     private static final Identifier BACKGROUND_TEXTURE = new Identifier("blockgame", "textures/gui/title/titlescreen.png");
     private final TranslatableText BUTTON_PLAY = new TranslatableText("menu.blockgame.title.play");
     private final TranslatableText BUTTON_WEBSITE = new TranslatableText("menu.blockgame.title.website");
     private final TranslatableText BUTTON_WIKI = new TranslatableText("menu.blockgame.title.wiki");
     private final TranslatableText WATERMARK = new TranslatableText("menu.blockgame.title.watermark");
+    private final TranslatableText SERVER_STATUS_PINGING = new TranslatableText("menu.blockgame.status.pinging");
+    private final TranslatableText SERVER_STATUS_OFFLINE = new TranslatableText("menu.blockgame.status.offline");
+    private final TranslatableText SERVER_STATUS_ONLINE_EMPTY = new TranslatableText("menu.blockgame.status.online.empty");
+    private final TranslatableText SERVER_STATUS_ONLINE_NOTEMPTY = new TranslatableText("menu.blockgame.status.online");
 
     private ServerInfo serverInfo;
     private MultiplayerServerListPinger pinger;
     private FakePlayer fakePlayer;
+
     private int eggClicks;
+    private boolean connecting;
+    private Text connectionStatus = new TranslatableText("connect.connecting");
 
     public TitleScreen() {
         super(Text.of("Title Screen"));
@@ -82,11 +97,9 @@ public class TitleScreen extends Screen {
 
         super.render(matrices, mouseX, mouseY, delta);
 
-        String text = String.format("There are %d players online. (%d ms)", serverInfo.playerListSummary.size(), serverInfo.ping);
-        DrawableHelper.drawTextWithShadow(matrices, client.textRenderer, Text.of(text), 20, 20, Integer.MAX_VALUE);
-        for (int i = 0; i < serverInfo.playerListSummary.size(); i++) {
-            DrawableHelper.drawTextWithShadow(matrices, client.textRenderer, serverInfo.playerListSummary.get(i), 20, 30 + (12 * i), Integer.MAX_VALUE);
-        }
+        // Render this after super, because super renders the buttons
+        renderServerStatus(matrices);
+        if(connecting) renderConnectionOverlay(matrices);
     }
 
     @Override
@@ -158,6 +171,47 @@ public class TitleScreen extends Screen {
     }
 
     /**
+     * Renders the Blockgame server's status on the title screen.
+     * @param matrices The MatrixStack to render on.
+     */
+    private void renderServerStatus(MatrixStack matrices) {
+        if(serverInfo.playerListSummary != null) {
+
+            // Draw summarizing text ("There are X players online")
+            TranslatableText key = serverInfo.playerListSummary.size() > 0 ? new TranslatableText(SERVER_STATUS_ONLINE_NOTEMPTY.getKey(), serverInfo.playerListSummary.size()) : SERVER_STATUS_ONLINE_EMPTY;
+            DrawableHelper.drawTextWithShadow(matrices, client.textRenderer, key, (width / 2) + 4, 7, Integer.MAX_VALUE);
+
+            // Draw player list
+            for (int i = 0; i < serverInfo.playerListSummary.size(); i++) {
+                DrawableHelper.drawTextWithShadow(matrices, client.textRenderer, serverInfo.playerListSummary.get(i), (width / 2) + 4, 21 + (12 * i), Integer.MAX_VALUE);
+            }
+        }
+        else {
+            // Draw summarizing text ("There are no players online")
+            DrawableHelper.drawTextWithShadow(matrices, client.textRenderer, SERVER_STATUS_PINGING, (width / 2) + 4, 7, Integer.MAX_VALUE);
+        }
+
+        // I have no idea how Mojang does anything, their UI code sucks balls
+        // This draws the server ping icon on the Play button by the way
+        int l = (height / 2) - 7;
+        int x = width / 4 - 75 + 132;
+        int y = l + 5;
+        int ol = serverInfo.online ? 1 : 0;
+        int pi = serverInfo.ping < 0L ? 5 : (serverInfo.ping < 50L ? 0 : (serverInfo.ping < 100L ? 1 : (serverInfo.ping < 175L ? 2 : (serverInfo.ping < 300L ? 3 : 4))));
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.setShaderTexture(0, DrawableHelper.GUI_ICONS_TEXTURE);
+        DrawableHelper.drawTexture(matrices, x, y, ol * 10, 176 + pi * 8, 10, 8, 256, 256);
+    }
+
+    private void renderConnectionOverlay(MatrixStack matrices) {
+        RenderSystem.enableBlend();
+        DrawableHelper.fill(matrices, 0, 0, width, height, 135 << 24);
+        drawCenteredText(matrices, textRenderer, Text.of("Connecting to Blockgame"), this.width / 2, this.height / 2 - 7, 0xFFFFFF);
+        drawCenteredText(matrices, textRenderer, connectionStatus, this.width / 2, this.height / 2 + 7, 0x808080);
+    }
+
+    /**
      * Initializes button widgets.
      */
     private void initButtons() {
@@ -171,7 +225,8 @@ public class TitleScreen extends Screen {
         addDrawableChild(new ButtonWidget(width / 4 + 1, l + 24, 74, 20, BUTTON_WIKI, (button) -> Util.getOperatingSystem().open("https://blockgame.fandom.com/wiki/BlockGame_Wiki")));
 
         // Add Play Button
-        addDrawableChild(new ButtonWidget(width / 4 - 75, l, 150, 20, BUTTON_PLAY, (button) -> ConnectScreen.connect(this, this.client, ServerAddress.parse("mc.blockgame.info"), new ServerInfo("BlockGame", "mc.blockgame.info", false))));
+        //addDrawableChild(new ButtonWidget(width / 4 - 75, l, 150, 20, BUTTON_PLAY, (button) -> ConnectScreen.connect(this, this.client, ServerAddress.parse("mc.blockgame.info"), new ServerInfo("BlockGame", "mc.blockgame.info", false))));
+        addDrawableChild(new ButtonWidget(width / 4 - 75, l, 150, 20, Text.of(BUTTON_PLAY.getString() + " v2"), (button) -> connectV2()));
 
         int bottomRowYOffset = 0;
         if(BlockgameEnhanced.isModmenuPresent()) {
@@ -231,5 +286,53 @@ public class TitleScreen extends Screen {
                 client.setScreen(new ThorScreen(this));
             }
         }, this.textRenderer));
+    }
+
+    private void connectV2() {
+        BlockgameEnhanced.LOGGER.info("Using ConnectV2 to connect to server");
+        BlockgameEnhanced.LOGGER.info("Connecting to {}, {}", serverInfo.address, 25565);
+
+        // Setup client state
+        client.disconnect();
+        client.loadBlockList();
+        client.setCurrentServerEntry(serverInfo);
+        client.setScreen(this); // why does it change
+        connecting = true;
+
+        // Start connecting on new thread
+        Thread thread = new Thread("Blockgame Server Connector #" + CONNECTOR_THREADS_COUNT.incrementAndGet()){
+
+            @Override
+            public void run() {
+                InetSocketAddress inetSocketAddress = null;
+                try {
+                    Optional<InetSocketAddress> optional = AllowedAddressResolver.DEFAULT.resolve(new ServerAddress(serverInfo.address, 25565)).map(Address::getInetSocketAddress);
+                    inetSocketAddress = optional.get();
+
+                    ClientConnection connection = ClientConnection.connect(inetSocketAddress, client.options.shouldUseNativeTransport());
+                    connection.setPacketListener(new ClientLoginNetworkHandler(connection, client, TitleScreen.this, TitleScreen.this::connectV2SetStatus));
+                    connection.send(new HandshakeC2SPacket(inetSocketAddress.getHostName(), inetSocketAddress.getPort(), NetworkState.LOGIN));
+                    connection.send(new LoginHelloC2SPacket(client.getSession().getProfile()));
+                }
+                catch (Exception exception) {
+                    Exception exception2;
+                    Throwable throwable = exception.getCause();
+                    Exception exception3 = throwable instanceof Exception ? (exception2 = (Exception)throwable) : exception;
+
+                    BlockgameEnhanced.LOGGER.error("Couldn't connect to server", exception);
+                    String string = inetSocketAddress == null ? exception3.getMessage() : exception3.getMessage().replaceAll(inetSocketAddress.getHostName() + ":" + inetSocketAddress.getPort(), "").replaceAll(inetSocketAddress.toString(), "");
+
+                    client.execute(() -> client.setScreen(new DisconnectedScreen(TitleScreen.this, ScreenTexts.CONNECT_FAILED, new TranslatableText("disconnect.genericReason", string))));
+                }
+            }
+        };
+
+        thread.setUncaughtExceptionHandler(new UncaughtExceptionLogger(BlockgameEnhanced.LOGGER));
+        thread.start();
+    }
+
+    private void connectV2SetStatus(Text status) {
+        BlockgameEnhanced.LOGGER.info("ConnectV2 update status: " + status.getString());
+        connectionStatus = status;
     }
 }
