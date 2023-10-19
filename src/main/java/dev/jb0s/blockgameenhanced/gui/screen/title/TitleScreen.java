@@ -65,7 +65,13 @@ public class TitleScreen extends Screen {
         serverInfo = new ServerInfo("Blockgame", "mc.blockgame.info", false);
 
         // Start pinging server
-        pinger.add(serverInfo, Runnables.doNothing());
+        try {
+            pinger.add(serverInfo, Runnables.doNothing());
+        }
+        catch (Exception e) {
+            BlockgameEnhanced.LOGGER.error("Failed to fetch server status: " + e.getMessage());
+            serverInfo.online = false;
+        }
 
         // Initialize player
         fakePlayer = new FakePlayer();
@@ -162,20 +168,26 @@ public class TitleScreen extends Screen {
      * @param matrices The MatrixStack to render on.
      */
     private void renderServerStatus(MatrixStack matrices) {
-        if(serverInfo.playerListSummary != null) {
+        if(serverInfo.online) {
+            if(serverInfo.playerListSummary != null) {
 
-            // Draw summarizing text ("There are X players online")
-            TranslatableText key = serverInfo.playerListSummary.size() > 0 ? new TranslatableText(SERVER_STATUS_ONLINE_NOTEMPTY.getKey(), serverInfo.playerListSummary.size()) : SERVER_STATUS_ONLINE_EMPTY;
-            DrawableHelper.drawTextWithShadow(matrices, client.textRenderer, key, (width / 2) + 4, 7, Integer.MAX_VALUE);
+                // Draw summarizing text ("There are X players online")
+                TranslatableText key = serverInfo.playerListSummary.size() > 0 ? new TranslatableText(SERVER_STATUS_ONLINE_NOTEMPTY.getKey(), serverInfo.playerListSummary.size()) : SERVER_STATUS_ONLINE_EMPTY;
+                DrawableHelper.drawTextWithShadow(matrices, client.textRenderer, key, (width / 2) + 4, 7, Integer.MAX_VALUE);
 
-            // Draw player list
-            for (int i = 0; i < serverInfo.playerListSummary.size(); i++) {
-                DrawableHelper.drawTextWithShadow(matrices, client.textRenderer, serverInfo.playerListSummary.get(i), (width / 2) + 4, 21 + (12 * i), Integer.MAX_VALUE);
+                // Draw player list
+                for (int i = 0; i < serverInfo.playerListSummary.size(); i++) {
+                    DrawableHelper.drawTextWithShadow(matrices, client.textRenderer, serverInfo.playerListSummary.get(i), (width / 2) + 4, 21 + (12 * i), Integer.MAX_VALUE);
+                }
+            }
+            else {
+                // Draw summarizing text ("There are no players online")
+                DrawableHelper.drawTextWithShadow(matrices, client.textRenderer, SERVER_STATUS_PINGING, (width / 2) + 4, 7, Integer.MAX_VALUE);
             }
         }
         else {
-            // Draw summarizing text ("There are no players online")
-            DrawableHelper.drawTextWithShadow(matrices, client.textRenderer, SERVER_STATUS_PINGING, (width / 2) + 4, 7, Integer.MAX_VALUE);
+            // Draw error text ("Could not connect to server")
+            DrawableHelper.drawTextWithShadow(matrices, client.textRenderer, SERVER_STATUS_OFFLINE, (width / 2) + 4, 7, Integer.MAX_VALUE);
         }
 
         // I have no idea how Mojang does anything, their UI code sucks balls
