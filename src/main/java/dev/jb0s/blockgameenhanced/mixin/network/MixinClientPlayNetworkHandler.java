@@ -3,6 +3,8 @@ package dev.jb0s.blockgameenhanced.mixin.network;
 import dev.jb0s.blockgameenhanced.BlockgameEnhancedClient;
 import dev.jb0s.blockgameenhanced.event.chat.CommandSuggestionsEvent;
 import dev.jb0s.blockgameenhanced.event.chat.ReceiveChatMessageEvent;
+import dev.jb0s.blockgameenhanced.event.screen.ScreenOpenedEvent;
+import dev.jb0s.blockgameenhanced.event.screen.ScreenReceivedInventoryEvent;
 import dev.jb0s.blockgameenhanced.manager.party.PartyManager;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
@@ -28,6 +30,9 @@ public class MixinClientPlayNetworkHandler {
         ClientPlayNetworkHandler thisHandler = (ClientPlayNetworkHandler) (Object) this;
         NetworkThreadUtils.forceMainThread(packet, thisHandler, client);
 
+        ScreenReceivedInventoryEvent.EVENT.invoker().screenReceivedInventory(packet);
+
+        // todo: move this to an event
         PartyManager pm = BlockgameEnhancedClient.getPartyManager();
         boolean pmAcceptedThisPacket = pm.handleInventoryUpdate(packet);
         if(pmAcceptedThisPacket) {
@@ -40,6 +45,9 @@ public class MixinClientPlayNetworkHandler {
         ClientPlayNetworkHandler thisHandler = (ClientPlayNetworkHandler) (Object) this;
         NetworkThreadUtils.forceMainThread(packet, thisHandler, client);
 
+        ScreenOpenedEvent.EVENT.invoker().screenOpened(packet);
+
+        // todo: move this to the new event
         PartyManager pm = BlockgameEnhancedClient.getPartyManager();
         boolean pmAcceptedThisPacket = pm.handleScreenOpen(packet);
         if(pmAcceptedThisPacket) {

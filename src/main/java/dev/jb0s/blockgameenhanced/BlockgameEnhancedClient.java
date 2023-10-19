@@ -1,5 +1,7 @@
 package dev.jb0s.blockgameenhanced;
 
+import dev.jb0s.blockgameenhanced.event.screen.ScreenOpenedEvent;
+import dev.jb0s.blockgameenhanced.event.screen.ScreenReceivedInventoryEvent;
 import dev.jb0s.blockgameenhanced.event.world.WorldUpdatedEvent;
 import dev.jb0s.blockgameenhanced.manager.Manager;
 import dev.jb0s.blockgameenhanced.manager.adventure.AdventureZoneManager;
@@ -63,6 +65,8 @@ public class BlockgameEnhancedClient implements ClientModInitializer {
         // TODO: Use managers for these
         UseBlockCallback.EVENT.register(MMOItems::preventIllegalMMOItemsInteraction);
         WorldUpdatedEvent.EVENT.register(Yggdrasil::handleWorldChanged);
+        ScreenOpenedEvent.EVENT.register(Deposit::handleScreenOpen);
+        ScreenReceivedInventoryEvent.EVENT.register(Deposit::handleScreenInventoryData);
         ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
             client.player.sendMessage(new TranslatableText("hud.blockgame.message.welcome.1"), false);
             client.player.sendMessage(new TranslatableText("hud.blockgame.message.welcome.2"), false);
