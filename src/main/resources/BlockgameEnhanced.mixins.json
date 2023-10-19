@@ -27,6 +27,7 @@
   },
   "client": [
     "gui.screen.MixinGameMenuScreen",
-    "gui.screen.MixinGenericContainerScreen"
+    "gui.screen.MixinGenericContainerScreen",
+    "gui.screen.MixinMultiplayerScreen"
   ]
 }
