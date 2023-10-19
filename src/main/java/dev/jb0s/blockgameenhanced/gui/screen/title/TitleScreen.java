@@ -67,6 +67,7 @@ public class TitleScreen extends Screen {
         // Start pinging server
         try {
             pinger.add(serverInfo, Runnables.doNothing());
+            serverInfo.online = true;
         }
         catch (Exception e) {
             BlockgameEnhanced.LOGGER.error("Failed to fetch server status: " + e.getMessage());
