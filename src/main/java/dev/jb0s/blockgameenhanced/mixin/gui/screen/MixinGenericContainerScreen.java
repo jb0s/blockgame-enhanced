@@ -41,14 +41,14 @@ public class MixinGenericContainerScreen extends HandledScreen<GenericContainerS
 
     @Override
     protected void init() {
-        super.init(); // right
+        super.init(); // right. forgot about that
 
         int originX = width / 2;
         int originY = height / 2;
-        int btnWidth = 45;
+        int btnWidth = 47;
         int btnHeight = 12;
 
-        int x = originX + 36;
+        int x = originX + 34;
         int y = originY - (backgroundHeight / 2) + 3;
         addDrawableChild(new ButtonWidget(x, y, btnWidth, btnHeight, LOOT_ALL_BUTTON, (button) -> {
             MinecraftClient mc = MinecraftClient.getInstance();
