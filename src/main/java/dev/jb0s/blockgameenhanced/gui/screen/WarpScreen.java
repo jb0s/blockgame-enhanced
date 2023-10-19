@@ -23,6 +23,8 @@ public class WarpScreen extends Screen {
     private final TranslatableText BUTTON_KROGNAR = new TranslatableText("menu.blockgame.warp.button.krognar");
     private final TranslatableText BUTTON_SUNKEN = new TranslatableText("menu.blockgame.warp.button.sunken");
     private final TranslatableText BUTTON_MYRKHEIM = new TranslatableText("menu.blockgame.warp.button.myrkheim");
+    private final TranslatableText BUTTON_ROTTENMAW = new TranslatableText("menu.blockgame.warp.button.rotten_maw");
+    private final TranslatableText BUTTON_ARENA = new TranslatableText("menu.blockgame.warp.button.arena");
 
     private final LinkedHashMap<TranslatableText, String> WARP_OPTIONS = new LinkedHashMap<>() {{
         put(BUTTON_TOWN, "/t spawn");
@@ -31,6 +33,8 @@ public class WarpScreen extends Screen {
         put(BUTTON_MYRKHEIM, "/warp Myrkheim");
         put(BUTTON_KROGNAR, "/warp Krognars_Bastion");
         put(BUTTON_SUNKEN, "/warp Sunken_Cells");
+        put(BUTTON_ROTTENMAW, "/warp Rotten_Maw");
+        put(BUTTON_ARENA, "/warp Arena");
     }};
 
     public WarpScreen() {
