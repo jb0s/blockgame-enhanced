@@ -75,8 +75,5 @@
 	"menu.blockgame.status.offline": "Could not connect to server",
 	"menu.blockgame.status.online.empty": "There are currently no online players.",
 	"menu.blockgame.status.online": "There are %s players online:",
-	"menu.blockgame.offlinenotice.header": "Notice",
-	"menu.blockgame.offlinenotice.message.1": "It looks like we're unable to connect to the Blockgame servers. Please check your internet connection.",
-	"menu.blockgame.offlinenotice.message.2": "If the problem persists, please check the #blockgame-announcements channel on Discord for possible info.",
-	"menu.blockgame.offlinenotice.dismiss": "OK"
+	"menu.blockgame.container.plunder": "Loot All"
 }
