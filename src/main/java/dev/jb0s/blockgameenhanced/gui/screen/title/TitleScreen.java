@@ -21,6 +21,7 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
+import org.lwjgl.glfw.GLFW;
 
 import java.lang.reflect.Constructor;
 
@@ -118,6 +119,21 @@ public class TitleScreen extends Screen {
     }
 
     @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (super.keyPressed(keyCode, scanCode, modifiers)) {
+            return true;
+        }
+
+        // Refresh bind
+        if (keyCode == GLFW.GLFW_KEY_F5) {
+            client.setScreen(new TitleScreen());
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
     public boolean shouldPause() {
         return false;
     }
@@ -196,7 +212,7 @@ public class TitleScreen extends Screen {
         int l = (height / 2) - 7;
         int x = width / 4 - 75 + 132;
         int y = l + 5;
-        int ol = serverInfo.online ? 1 : 0;
+        int ol = serverInfo.online ? 0 : 1;
         int pi = serverInfo.ping < 0L ? 5 : (serverInfo.ping < 50L ? 0 : (serverInfo.ping < 100L ? 1 : (serverInfo.ping < 175L ? 2 : (serverInfo.ping < 300L ? 3 : 4))));
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
