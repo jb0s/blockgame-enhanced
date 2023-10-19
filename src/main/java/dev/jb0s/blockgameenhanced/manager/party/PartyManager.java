@@ -115,7 +115,7 @@ public class PartyManager extends Manager {
                     lines.add("- Invalid player" + String.format(" (%d until removal)", PARTY_UPDATE_INTERVAL - ticksSinceLastUpdate));
                     continue;
                 }
-                lines.add("- " + p.getProfile().getName() + String.format(" (%d HP)", pm.getHealth()));
+                lines.add("- " + p.getProfile().getName() + String.format(" (%d/%d HP)", pm.getHealth(), pm.getMaxHealth()));
             }
         }
         else {
@@ -320,6 +320,12 @@ public class PartyManager extends Manager {
         PartyMember member = getPartyMember(playerName);
         if(member == null)
             return;
+
+        if(maxHealth > 50) {
+            // Vanilla health in terms of Blockgame should never ever reach anything above 50 typically. That would be 25 hearts.
+            // In case the server gives us an absurd value, we can just cap it down to 20 until it comes to its senses.
+            maxHealth = 20;
+        }
 
         // Update PartyMember stats
         member.setHealth(health);
