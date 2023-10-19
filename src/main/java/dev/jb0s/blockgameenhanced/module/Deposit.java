@@ -1,6 +1,5 @@
 package dev.jb0s.blockgameenhanced.module;
 
-import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.inventory.Inventory;
