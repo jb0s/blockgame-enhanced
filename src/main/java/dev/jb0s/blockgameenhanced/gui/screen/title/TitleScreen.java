@@ -7,6 +7,7 @@ import dev.jb0s.blockgameenhanced.BlockgameEnhancedClient;
 import dev.jb0s.blockgameenhanced.eggs.thor.ThorScreen;
 import dev.jb0s.blockgameenhanced.manager.config.ConfigManager;
 import lombok.SneakyThrows;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.*;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
@@ -32,17 +33,16 @@ public class TitleScreen extends Screen {
     private final TranslatableText BUTTON_PLAY = new TranslatableText("menu.blockgame.title.play");
     private final TranslatableText BUTTON_WEBSITE = new TranslatableText("menu.blockgame.title.website");
     private final TranslatableText BUTTON_WIKI = new TranslatableText("menu.blockgame.title.wiki");
-    private final TranslatableText WATERMARK = new TranslatableText("menu.blockgame.title.watermark");
-    private final TranslatableText SERVER_STATUS_PINGING = new TranslatableText("menu.blockgame.status.pinging");
-    private final TranslatableText SERVER_STATUS_OFFLINE = new TranslatableText("menu.blockgame.status.offline");
+    private final TranslatableText WATERMARK = new TranslatableText("menu.blockgame.title.watermark", FabricLoader.getInstance().getModContainer("blockgameenhanced").get().getMetadata().getVersion().getFriendlyString());
     private final TranslatableText SERVER_STATUS_ONLINE_EMPTY = new TranslatableText("menu.blockgame.status.online.empty");
     private final TranslatableText SERVER_STATUS_ONLINE_NOTEMPTY = new TranslatableText("menu.blockgame.status.online");
 
-    private ServerInfo serverInfo;
     private MultiplayerServerListPinger pinger;
     private FakePlayer fakePlayer;
 
+    private ServerInfo serverInfo;
     private int eggClicks;
+    private boolean connectionError;
 
     public TitleScreen() {
         super(Text.of("Title Screen"));
@@ -67,12 +67,15 @@ public class TitleScreen extends Screen {
 
         // Start pinging server
         try {
-            pinger.add(serverInfo, Runnables.doNothing());
-            serverInfo.online = true;
+            pinger.add(serverInfo, () -> serverInfo.online = true);
+            connectionError = false;
         }
         catch (Exception e) {
             BlockgameEnhanced.LOGGER.error("Failed to fetch server status: " + e.getMessage());
+            connectionError = true;
             serverInfo.online = false;
+            serverInfo.ping = -1L;
+            serverInfo.playerListSummary = null;
         }
 
         // Initialize player
@@ -185,26 +188,18 @@ public class TitleScreen extends Screen {
      * @param matrices The MatrixStack to render on.
      */
     private void renderServerStatus(MatrixStack matrices) {
-        if(serverInfo.online) {
-            if(serverInfo.playerListSummary != null) {
+        if(serverInfo.playerCountLabel != null && !serverInfo.playerCountLabel.asString().isEmpty()) {
+            // Draw summarizing text ("There are X players online" or "There are currently no players online.")
+            TranslatableText key = serverInfo.playerListSummary.size() > 0 ? new TranslatableText(SERVER_STATUS_ONLINE_NOTEMPTY.getKey(), serverInfo.playerListSummary.size()) : SERVER_STATUS_ONLINE_EMPTY;
+            DrawableHelper.drawTextWithShadow(matrices, client.textRenderer, key, (width / 2) + 4, 7, Integer.MAX_VALUE);
 
-                // Draw summarizing text ("There are X players online")
-                TranslatableText key = serverInfo.playerListSummary.size() > 0 ? new TranslatableText(SERVER_STATUS_ONLINE_NOTEMPTY.getKey(), serverInfo.playerListSummary.size()) : SERVER_STATUS_ONLINE_EMPTY;
-                DrawableHelper.drawTextWithShadow(matrices, client.textRenderer, key, (width / 2) + 4, 7, Integer.MAX_VALUE);
-
-                // Draw player list
-                for (int i = 0; i < serverInfo.playerListSummary.size(); i++) {
-                    DrawableHelper.drawTextWithShadow(matrices, client.textRenderer, serverInfo.playerListSummary.get(i), (width / 2) + 4, 21 + (12 * i), Integer.MAX_VALUE);
-                }
-            }
-            else {
-                // Draw summarizing text ("There are no players online")
-                DrawableHelper.drawTextWithShadow(matrices, client.textRenderer, SERVER_STATUS_PINGING, (width / 2) + 4, 7, Integer.MAX_VALUE);
+            // Draw player list
+            for (int i = 0; i < serverInfo.playerListSummary.size(); i++) {
+                DrawableHelper.drawTextWithShadow(matrices, client.textRenderer, serverInfo.playerListSummary.get(i), (width / 2) + 4, 21 + (12 * i), Integer.MAX_VALUE);
             }
         }
         else {
-            // Draw error text ("Could not connect to server")
-            DrawableHelper.drawTextWithShadow(matrices, client.textRenderer, SERVER_STATUS_OFFLINE, (width / 2) + 4, 7, Integer.MAX_VALUE);
+            DrawableHelper.drawTextWithShadow(matrices, client.textRenderer, serverInfo.label, (width / 2) + 4, 7, Integer.MAX_VALUE);
         }
 
         // I have no idea how Mojang does anything, their UI code sucks balls
@@ -212,12 +207,11 @@ public class TitleScreen extends Screen {
         int l = (height / 2) - 7;
         int x = width / 4 - 75 + 132;
         int y = l + 5;
-        int ol = serverInfo.online ? 0 : 1;
-        int pi = serverInfo.ping < 0L ? 5 : (serverInfo.ping < 50L ? 0 : (serverInfo.ping < 100L ? 1 : (serverInfo.ping < 175L ? 2 : (serverInfo.ping < 300L ? 3 : 4))));
+        int pi = serverInfo.online ? serverInfo.ping < 0L ? 5 : (serverInfo.ping < 50L ? 0 : (serverInfo.ping < 100L ? 1 : (serverInfo.ping < 175L ? 2 : (serverInfo.ping < 300L ? 3 : 4)))) : 5;
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.setShaderTexture(0, DrawableHelper.GUI_ICONS_TEXTURE);
-        DrawableHelper.drawTexture(matrices, x, y, ol * 10, 176 + pi * 8, 10, 8, 256, 256);
+        DrawableHelper.drawTexture(matrices, x, y, 0, 176 + pi * 8, 10, 8, 256, 256);
     }
 
     /**

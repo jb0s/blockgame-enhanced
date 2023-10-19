@@ -5,6 +5,7 @@ import dev.jb0s.blockgameenhanced.BlockgameEnhancedClient;
 import dev.jb0s.blockgameenhanced.manager.Manager;
 import lombok.Getter;
 import lombok.Setter;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.util.math.MatrixStack;
@@ -24,7 +25,7 @@ public class DebugHud extends DrawableHelper {
 
         List<Manager> allManagers = BlockgameEnhancedClient.getAllManagers();
         List<String> lines = new ArrayList<>();
-        lines.add("Blockgame Enhanced Mod");
+        lines.add("Blockgame Enhanced v" + FabricLoader.getInstance().getModContainer("blockgameenhanced").get().getMetadata().getVersion().getFriendlyString());
         lines.add(allManagers.size() + " active manager(s)");
         lines.add("");
 
