@@ -190,7 +190,7 @@ public class TitleScreen extends Screen {
     private void renderServerStatus(MatrixStack matrices) {
         if(serverInfo.playerCountLabel != null && !serverInfo.playerCountLabel.asString().isEmpty()) {
             // Draw summarizing text ("There are X players online" or "There are currently no players online.")
-            TranslatableText key = serverInfo.playerListSummary.size() > 0 ? new TranslatableText(SERVER_STATUS_ONLINE_NOTEMPTY.getKey(), serverInfo.playerListSummary.size()) : SERVER_STATUS_ONLINE_EMPTY;
+            TranslatableText key = serverInfo.playerListSummary != null && serverInfo.playerListSummary.size() > 0 ? new TranslatableText(SERVER_STATUS_ONLINE_NOTEMPTY.getKey(), serverInfo.playerListSummary.size()) : SERVER_STATUS_ONLINE_EMPTY;
             DrawableHelper.drawTextWithShadow(matrices, client.textRenderer, key, (width / 2) + 4, 7, Integer.MAX_VALUE);
 
             // Draw player list
