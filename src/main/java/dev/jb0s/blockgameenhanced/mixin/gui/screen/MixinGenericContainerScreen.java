@@ -43,6 +43,12 @@ public class MixinGenericContainerScreen extends HandledScreen<GenericContainerS
     protected void init() {
         super.init(); // right. forgot about that
 
+        // If this is not a regular chest we're interacting with, don't add the loot all button
+        String titleStr = title.getString();
+        if(!titleStr.isEmpty() && !titleStr.endsWith("Chest")) {
+            return;
+        }
+
         int originX = width / 2;
         int originY = height / 2;
         int btnWidth = 47;
