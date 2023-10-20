@@ -1,26 +1,22 @@
 package dev.jb0s.blockgameenhanced;
 
-import dev.jb0s.blockgameenhanced.event.screen.ScreenOpenedEvent;
-import dev.jb0s.blockgameenhanced.event.screen.ScreenReceivedInventoryEvent;
-import dev.jb0s.blockgameenhanced.event.world.WorldUpdatedEvent;
 import dev.jb0s.blockgameenhanced.manager.Manager;
 import dev.jb0s.blockgameenhanced.manager.adventure.AdventureZoneManager;
 import dev.jb0s.blockgameenhanced.manager.bossbattle.BossBattleManager;
 import dev.jb0s.blockgameenhanced.manager.config.ConfigManager;
 import dev.jb0s.blockgameenhanced.manager.dayphase.DayPhaseManager;
+import dev.jb0s.blockgameenhanced.manager.deposit.DepositManager;
 import dev.jb0s.blockgameenhanced.manager.discordrpc.DiscordRichPresenceManager;
 import dev.jb0s.blockgameenhanced.manager.hotkey.HotkeyManager;
+import dev.jb0s.blockgameenhanced.manager.mmoitems.MMOItemsManager;
 import dev.jb0s.blockgameenhanced.manager.music.MusicManager;
 import dev.jb0s.blockgameenhanced.manager.party.PartyManager;
 import dev.jb0s.blockgameenhanced.manager.update.GitHubRelease;
 import dev.jb0s.blockgameenhanced.manager.update.UpdateManager;
-import dev.jb0s.blockgameenhanced.module.*;
 import lombok.Getter;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
-import net.fabricmc.fabric.api.event.player.UseBlockCallback;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.TranslatableText;
 
 import java.util.ArrayList;
@@ -57,16 +53,17 @@ public class BlockgameEnhancedClient implements ClientModInitializer {
     private static UpdateManager updateManager;
 
     @Getter
+    private static DepositManager depositManager;
+
+    @Getter
+    private static MMOItemsManager mmoItemsManager;
+
+    @Getter
     private static GitHubRelease availableUpdate;
 
     @Override
     public void onInitializeClient() {
-        // Bind generic events
-        // TODO: Use managers for these
-        UseBlockCallback.EVENT.register(MMOItems::preventIllegalMMOItemsInteraction);
-        WorldUpdatedEvent.EVENT.register(Yggdrasil::handleWorldChanged);
-        ScreenOpenedEvent.EVENT.register(Deposit::handleScreenOpen);
-        ScreenReceivedInventoryEvent.EVENT.register(Deposit::handleScreenInventoryData);
+        // Greet the player when they join the server
         ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
             client.player.sendMessage(new TranslatableText("hud.blockgame.message.welcome.1"), false);
             client.player.sendMessage(new TranslatableText("hud.blockgame.message.welcome.2"), false);
@@ -82,6 +79,8 @@ public class BlockgameEnhancedClient implements ClientModInitializer {
         configManager = new ConfigManager();
         discordRichPresenceManager = new DiscordRichPresenceManager();
         updateManager = new UpdateManager();
+        depositManager = new DepositManager();
+        mmoItemsManager = new MMOItemsManager();
 
         // Check for updates.
         // If you're looking for the actual "There's an update" GUI prompt, it's in MixinTitleScreen.java.
