@@ -3,7 +3,11 @@
   "minVersion": "0.8",
   "package": "dev.jb0s.blockgameenhanced.mixin",
   "compatibilityLevel": "JAVA_17",
-  "mixins": [
+  "mixins": [],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "client": [
     "client.MixinMinecraftClient",
     "entity.MixinClientPlayerEntity",
     "entity.MixinEntity",
@@ -20,12 +24,7 @@
     "renderer.entity.MixinEntityRenderDispatcher",
     "renderer.entity.MixinEntityRenderers",
     "renderer.entity.MixinLivingEntityRenderer",
-    "renderer.item.MixinItemRenderer"
-  ],
-  "injectors": {
-    "defaultRequire": 1
-  },
-  "client": [
+    "renderer.item.MixinItemRenderer",
     "gui.screen.MixinGameMenuScreen",
     "gui.screen.MixinGenericContainerScreen",
     "gui.screen.MixinMultiplayerScreen"
