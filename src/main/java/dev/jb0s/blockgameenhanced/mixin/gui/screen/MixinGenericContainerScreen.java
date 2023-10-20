@@ -36,7 +36,8 @@ public class MixinGenericContainerScreen extends HandledScreen<GenericContainerS
 
         // If this is not a regular chest we're interacting with, don't add the loot all button
         String titleStr = title.getString();
-        if(!titleStr.isEmpty() && !titleStr.endsWith("Chest")) {
+        boolean isValidContainer = titleStr.endsWith("Chest") || titleStr.endsWith("Shulker Box") || titleStr.endsWith("Barrel");
+        if(!titleStr.isEmpty() && !isValidContainer) {
             return;
         }
 
