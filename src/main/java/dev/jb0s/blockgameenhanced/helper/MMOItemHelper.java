@@ -6,6 +6,7 @@ import net.minecraft.nbt.NbtCompound;
 public class MMOItemHelper {
     private static final String NBT_DURABILITY = "MMOITEMS_DURABILITY";
     private static final String NBT_MAX_DURABILITY = "MMOITEMS_MAX_DURABILITY";
+    public static final String NBT_ITEM_TYPE = "MMOITEMS_ITEM_TYPE";
 
     public static boolean hasMMODurability(ItemStack itemStack) {
         NbtCompound nbt = itemStack.getOrCreateNbt();

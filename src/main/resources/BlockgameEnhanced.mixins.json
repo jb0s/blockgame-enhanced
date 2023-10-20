@@ -5,6 +5,8 @@
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "client.MixinMinecraftClient",
+    "client.MixinInGameHud",
+    "client.ItemRendererMixin",
     "entity.MixinClientPlayerEntity",
     "entity.MixinEntity",
     "entity.MixinItemEntity",
