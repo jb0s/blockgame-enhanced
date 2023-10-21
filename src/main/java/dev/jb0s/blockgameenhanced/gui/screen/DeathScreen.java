@@ -51,6 +51,7 @@ public class DeathScreen extends Screen {
         // packet. I have no idea why it works like this, I have no choice but to play along
         if(!playerEntity.isAlive()) {
             isWaitingForPlayer = true;
+            client.player.requestRespawn(); // Request another respawn, this saves us from softlocks on really high ping
             return;
         }
 
