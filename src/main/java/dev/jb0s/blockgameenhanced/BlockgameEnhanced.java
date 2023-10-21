@@ -1,5 +1,7 @@
 package dev.jb0s.blockgameenhanced;
 
+import dev.jb0s.blockgameenhanced.helper.PathHelper;
+import dev.jb0s.blockgameenhanced.helper.ResourceHelper;
 import dev.jb0s.blockgameenhanced.manager.config.modules.ModConfig;
 import lombok.Getter;
 import me.shedaniel.autoconfig.AutoConfig;
@@ -8,6 +10,10 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class BlockgameEnhanced implements ModInitializer {
 
@@ -44,6 +50,29 @@ public class BlockgameEnhanced implements ModInitializer {
         // Detect if OptiFine is present with OptiFabric.
         if(FabricLoader.getInstance().isModLoaded("optifabric")) {
             optifinePresent = true;
+        }
+
+        // Extract shit if OptiFine
+        if(BlockgameEnhanced.isOptifinePresent()) {
+            try {
+                String destPath = PathHelper.getMinecraftFolderPath().toString() + "/saves/Empty";
+
+                // If we have already installed OptiFine Compat, we don't need to do so again
+                if(Files.exists(Path.of(destPath))) {
+                    BlockgameEnhanced.LOGGER.info("BlockgameOFCompat is already installed");
+                    return;
+                }
+
+                String path = ResourceHelper.exportResource("/BlockgameOFCompat.zip");
+                BlockgameEnhanced.LOGGER.info("Extracted BlockgameOFCompat to " + path);
+                BlockgameEnhanced.LOGGER.info("Extracting BlockgameOFCompat to " + destPath);
+
+                ResourceHelper.unzip(path, destPath);
+                new File(path).delete();
+            }
+            catch (Exception e) {
+                BlockgameEnhanced.LOGGER.error("Failed to extract BlockgameOFCompat: " + e.getMessage());
+            }
         }
     }
 }

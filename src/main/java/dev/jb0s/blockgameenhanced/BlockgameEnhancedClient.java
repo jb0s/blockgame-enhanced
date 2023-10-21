@@ -1,5 +1,6 @@
 package dev.jb0s.blockgameenhanced;
 
+import dev.jb0s.blockgameenhanced.gui.screen.title.TitleScreen;
 import dev.jb0s.blockgameenhanced.manager.Manager;
 import dev.jb0s.blockgameenhanced.manager.adventure.AdventureZoneManager;
 import dev.jb0s.blockgameenhanced.manager.bossbattle.BossBattleManager;
@@ -14,9 +15,11 @@ import dev.jb0s.blockgameenhanced.manager.party.PartyManager;
 import dev.jb0s.blockgameenhanced.manager.update.GitHubRelease;
 import dev.jb0s.blockgameenhanced.manager.update.UpdateManager;
 import lombok.Getter;
+import lombok.Setter;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.TranslatableText;
 
 import java.util.ArrayList;
@@ -61,12 +64,39 @@ public class BlockgameEnhancedClient implements ClientModInitializer {
     @Getter
     private static GitHubRelease availableUpdate;
 
+    @Getter
+    @Setter
+    private static boolean isRunningCompatibilityServer;
+
+    @Getter
+    @Setter
+    private static boolean isCompatibilityServerReady;
+
     @Override
     public void onInitializeClient() {
         // Greet the player when they join the server
         ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
-            client.player.sendMessage(new TranslatableText("hud.blockgame.message.welcome.1"), false);
-            client.player.sendMessage(new TranslatableText("hud.blockgame.message.welcome.2"), false);
+
+            // Custom routines for finishing the initialization of an OptiFine Compat server
+            if(isRunningCompatibilityServer()) {
+                MinecraftClient.getInstance().setScreen(new TitleScreen());
+
+                // Wait a sec before allowing game to finish loading.
+                // This is to work around a dumb hitch I can't get around otherwise.
+                new Thread(() -> {
+                    try { Thread.sleep(1000); }
+                    catch (Exception e) { /* too bad */ }
+
+                    setCompatibilityServerReady(true);
+                    BlockgameEnhanced.LOGGER.info("~~ OPTIFINE COMPAT SERVER IS READY ~~");
+                }).start();
+            }
+
+            // We're normally joining a game, send a welcome message in chat.
+            else {
+                client.player.sendMessage(new TranslatableText("hud.blockgame.message.welcome.1"), false);
+                client.player.sendMessage(new TranslatableText("hud.blockgame.message.welcome.2"), false);
+            }
         });
 
         // Bind Managers

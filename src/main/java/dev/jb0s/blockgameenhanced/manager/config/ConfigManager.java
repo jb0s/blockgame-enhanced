@@ -2,6 +2,7 @@ package dev.jb0s.blockgameenhanced.manager.config;
 
 import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
 import dev.jb0s.blockgameenhanced.BlockgameEnhancedClient;
+import dev.jb0s.blockgameenhanced.helper.PathHelper;
 import dev.jb0s.blockgameenhanced.manager.Manager;
 import dev.jb0s.blockgameenhanced.manager.config.modules.ModConfig;
 import lombok.SneakyThrows;
@@ -20,19 +21,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class ConfigManager extends Manager {
-    private static final String GAME_FOLDER_NAME = ".blockgame";
-
-    private static final Path GAME_FOLDER_PATH = Paths.get(getAppdataPath(), GAME_FOLDER_NAME);
-    private static final Path INVENTORY_SNAPSHOT_PATH = Paths.get(GAME_FOLDER_PATH.toString(), "INVENTORY.dat");
+    private static final Path INVENTORY_SNAPSHOT_PATH = Paths.get(PathHelper.getBlockgamePath().toString(), "INVENTORY.dat");
 
     @Override
     @SneakyThrows
     public void init() {
-        // Create the game folder directory in case it does not exist
-        if(Files.notExists(GAME_FOLDER_PATH)) {
-            Files.createDirectory(GAME_FOLDER_PATH);
-        }
-
         // Register events
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
             ConfigManager cfgMgr = BlockgameEnhancedClient.getConfigManager();
@@ -72,13 +65,5 @@ public class ConfigManager extends Manager {
         NbtList out = new NbtList();
         inv.writeNbt(out);
         out.write(testOutput);
-    }
-
-    public static String getAppdataPath() {
-        if(MinecraftClient.IS_SYSTEM_MAC) {
-            return System.getProperty("user.home") + "/Library/Application Support";
-        }
-
-        return System.getenv("APPDATA");
     }
 }
