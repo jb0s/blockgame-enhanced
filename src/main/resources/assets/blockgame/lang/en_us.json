@@ -69,7 +69,7 @@
 	"text.autoconfig.blockgameenhanced.option.privacyConfig.discordRpcShowPartyStatus": "Discord RPC: Display Party status",
 	"text.autoconfig.blockgameenhanced.option.privacyConfig.discordRpcShowPartyStatus.@Tooltip": "Whether or not to display stats about an ongoing party on your Discord Rich Presence.",
 	"text.autoconfig.blockgameenhanced.option.accessibilityConfig.enableLootAllButton": "Enable Loot All button",
-	"text.autoconfig.blockgameenhanced.option.accessibilityConfig.enableLootAllButton.@Tooltip": "Enables/disables the "Loot All" button that appears in Chest / Barrel interfaces.",
+	"text.autoconfig.blockgameenhanced.option.accessibilityConfig.enableLootAllButton.@Tooltip": "Enables/disables the 'Loot All' button that appears in Chest / Barrel interfaces.",
 	"text.autoconfig.blockgameenhanced.option.accessibilityConfig.enableAutofillDeposit": "Enable Deposit Autofill",
 	"text.autoconfig.blockgameenhanced.option.accessibilityConfig.enableAutofillDeposit.@Tooltip": "Whether or not to automatically put all your currency in the deposit window upon opening.\n(Does not automatically deposit, only fills)",
 	"menu.blockgame.update.header": "Update available",
