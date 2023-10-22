@@ -190,17 +190,18 @@ public class TitleScreen extends Screen {
      * @param matrices The MatrixStack to render on.
      */
     private void renderServerStatus(MatrixStack matrices) {
-        boolean hasPlayerList = serverInfo.playerListSummary != null;
         boolean playerCountEmpty = serverInfo.playerCountLabel == null || serverInfo.playerCountLabel.asString().isEmpty();
 
-        if(hasPlayerList && !playerCountEmpty) {
+        if(!playerCountEmpty) {
             // Draw summarizing text ("There are X players online" or "There are currently no players online.")
-            TranslatableText key = serverInfo.playerListSummary.size() > 0 ? new TranslatableText(SERVER_STATUS_ONLINE_NOTEMPTY.getKey(), serverInfo.playerListSummary.size()) : SERVER_STATUS_ONLINE_EMPTY;
+            TranslatableText key = serverInfo.playerListSummary != null ? new TranslatableText(SERVER_STATUS_ONLINE_NOTEMPTY.getKey(), serverInfo.playerListSummary.size()) : SERVER_STATUS_ONLINE_EMPTY;
             DrawableHelper.drawTextWithShadow(matrices, client.textRenderer, key, (width / 2) + 4, 7, Integer.MAX_VALUE);
 
             // Draw player list
-            for (int i = 0; i < serverInfo.playerListSummary.size(); i++) {
-                DrawableHelper.drawTextWithShadow(matrices, client.textRenderer, serverInfo.playerListSummary.get(i), (width / 2) + 4, 21 + (12 * i), Integer.MAX_VALUE);
+            if(serverInfo.playerListSummary != null) {
+                for (int i = 0; i < serverInfo.playerListSummary.size(); i++) {
+                    DrawableHelper.drawTextWithShadow(matrices, client.textRenderer, serverInfo.playerListSummary.get(i), (width / 2) + 4, 21 + (12 * i), Integer.MAX_VALUE);
+                }
             }
         }
         else {
