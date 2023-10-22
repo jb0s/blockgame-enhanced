@@ -1,6 +1,7 @@
 package dev.jb0s.blockgameenhanced.mixin.gui.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.GenericContainerScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
@@ -38,6 +39,11 @@ public class MixinGenericContainerScreen extends HandledScreen<GenericContainerS
         String titleStr = title.getString();
         boolean isValidContainer = titleStr.endsWith("Chest") || titleStr.endsWith("Shulker Box") || titleStr.endsWith("Barrel");
         if(!titleStr.isEmpty() && !isValidContainer) {
+            return;
+        }
+
+        // If the user has disabled the Loot All button, cancel here
+        if(!BlockgameEnhanced.getConfig().getAccessibilityConfig().enableLootAllButton) {
             return;
         }
 

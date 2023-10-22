@@ -18,10 +18,18 @@ public class AccessibilityConfig implements ConfigData {
     @ConfigEntry.Gui.Tooltip
     public boolean enableUpdateChecker;
 
+    @ConfigEntry.Gui.Tooltip
+    public boolean enableLootAllButton;
+
+    @ConfigEntry.Gui.Tooltip
+    public boolean enableAutofillDeposit;
+
     public AccessibilityConfig() {
         enableAutoRespawn = true;
         enableItemLabels = true;
         enableCustomTitleScreen = true;
         enableUpdateChecker = true;
+        enableLootAllButton = true;
+        enableAutofillDeposit = true;
     }
 }

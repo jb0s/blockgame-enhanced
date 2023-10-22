@@ -1,5 +1,6 @@
 package dev.jb0s.blockgameenhanced.manager.deposit;
 
+import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
 import dev.jb0s.blockgameenhanced.event.screen.ScreenOpenedEvent;
 import dev.jb0s.blockgameenhanced.event.screen.ScreenReceivedInventoryEvent;
 import dev.jb0s.blockgameenhanced.manager.Manager;
@@ -43,6 +44,11 @@ public class DepositManager extends Manager {
      */
     public void handleScreenInventoryData(InventoryS2CPacket packet) {
         if(packet.getSyncId() != waitingForSyncId) {
+            return;
+        }
+
+        // If the user has disallowed us to autofill, cancel here
+        if(!BlockgameEnhanced.getConfig().getAccessibilityConfig().enableAutofillDeposit) {
             return;
         }
 
