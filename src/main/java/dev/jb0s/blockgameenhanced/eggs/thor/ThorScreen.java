@@ -39,7 +39,7 @@ public class ThorScreen extends Screen {
         client.options.setSoundVolume(SoundCategory.MUSIC, .0f);
 
         // Play cave noise
-        caveNoiseInstance = new PositionedSoundInstance(SoundEvents.AMBIENT_CAVE, SoundCategory.MASTER, 1, 1, new BlockPos(0, 0, 0));
+        caveNoiseInstance = PositionedSoundInstance.master(SoundEvents.AMBIENT_CAVE, 1.f);
         client.getSoundManager().play(caveNoiseInstance);
     }
 

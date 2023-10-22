@@ -175,8 +175,8 @@ public class TitleScreen extends Screen {
     private void renderPlayer(int mouseX, int mouseY) {
         try {
             int size = height / 5;
-            int x = width - (size * 2);
-            int y = height / 2 + (int)(size * 1.5f);
+            int x = (int)(width * 0.75);
+            int y = (int)(height * 0.75) + (int)(size * 0.25);
             InventoryScreen.drawEntity(x, y, size, -mouseX + x, -mouseY + y - size * 2 + size / 2f, fakePlayer);
         }
         catch(Exception e) {
