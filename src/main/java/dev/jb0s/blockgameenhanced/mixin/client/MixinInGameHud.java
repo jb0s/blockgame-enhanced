@@ -4,7 +4,6 @@ import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
 import dev.jb0s.blockgameenhanced.helper.ExpHudDataHelper;
 import dev.jb0s.blockgameenhanced.manager.config.modules.AdvancedExpHudConfig;
 import dev.jb0s.blockgameenhanced.manager.config.modules.ExpHudConfig;
-import dev.jb0s.blockgameenhanced.manager.config.modules.ModConfig;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.network.MessageType;
 import net.minecraft.text.Text;
@@ -24,11 +23,11 @@ public class MixinInGameHud {
         ExpHudConfig hudConfig = BlockgameEnhanced.getConfig().getExpHudConfig();
         AdvancedExpHudConfig advancedExpHudConfig = hudConfig.getAdvancedExpHudConfig();
 
-        String expTag = advancedExpHudConfig.EXP_CHAT_TAG;
-        String coinTag = advancedExpHudConfig.COIN_CHAT_TAG;
-        String coinQuestTag = advancedExpHudConfig.COIN_QUEST_CHAT_TAG;
+        String expTag = advancedExpHudConfig.expChatTag;
+        String coinTag = advancedExpHudConfig.coinChatTag;
+        String coinQuestTag = advancedExpHudConfig.coinQuestChatTag;
 
-        MessageType type = advancedExpHudConfig.MESSAGE_TYPE;
+        MessageType type = advancedExpHudConfig.chatMessageType;
 
         boolean enabled = hudConfig.expHudEnabled;
         boolean hideExp = hudConfig.chatExpEnabled;

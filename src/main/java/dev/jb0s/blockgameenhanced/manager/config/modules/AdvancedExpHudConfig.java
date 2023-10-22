@@ -10,21 +10,21 @@ public class AdvancedExpHudConfig implements ConfigData {
     @ConfigEntry.Gui.Tooltip
     @ConfigEntry.Gui.RequiresRestart
     @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.BUTTON)
-    public MessageType MESSAGE_TYPE;
+    public MessageType chatMessageType;
     @ConfigEntry.Gui.Tooltip
     @ConfigEntry.Gui.RequiresRestart
-    public String EXP_CHAT_TAG;
+    public String expChatTag;
     @ConfigEntry.Gui.Tooltip
     @ConfigEntry.Gui.RequiresRestart
-    public String COIN_CHAT_TAG;
+    public String coinChatTag;
     @ConfigEntry.Gui.Tooltip
     @ConfigEntry.Gui.RequiresRestart
-    public String COIN_QUEST_CHAT_TAG;
+    public String coinQuestChatTag;
 
     public AdvancedExpHudConfig() {
-        MESSAGE_TYPE = MessageType.SYSTEM; // Message types: CHAT, SYSTEM, GAME_INFO
-        EXP_CHAT_TAG = "[EXP]"; // Chat Message Contains Text
-        COIN_CHAT_TAG = " Coin."; // Chat Message Ends With Text
-        COIN_QUEST_CHAT_TAG = " Coin!"; // Chat Message Ends With Text
+        chatMessageType = MessageType.SYSTEM; // Message types: CHAT, SYSTEM, GAME_INFO
+        expChatTag = "[EXP]"; // Chat Message Contains Text
+        coinChatTag = " Coin."; // Chat Message Ends With Text
+        coinQuestChatTag = " Coin!"; // Chat Message Ends With Text
     }
 }
