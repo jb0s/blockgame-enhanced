@@ -59,18 +59,12 @@ public class ThorScreen extends Screen {
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         RenderSystem.enableBlend();
 
-        // Draw dark backdrop
-        if(!BlockgameEnhanced.isOptifinePresent()) {
-            DrawableHelper.fill(matrices, 0, 0, width, height, 0x000000);
-        }
-        else {
-            // Don't ask.
-            int w = width * 5;
-            int h = height * 5;
-            RenderSystem.setShaderColor(0.f, 0.f, 0.f, 1.f);
-            RenderSystem.setShaderTexture(0, THOR);
-            DrawableHelper.drawTexture(matrices, width / 2 - (w / 2), height / 2 - (h / 2), 0, 0, w, h, w, h);
-        }
+        // Draw dark backdrop. Don't ask. This is the only way that worked on OptiFine & others.
+        int w = width * 5;
+        int h = height * 5;
+        RenderSystem.setShaderColor(0.f, 0.f, 0.f, 1.f);
+        RenderSystem.setShaderTexture(0, THOR);
+        DrawableHelper.drawTexture(matrices, width / 2 - (w / 2), height / 2 - (h / 2), 0, 0, w, h, w, h);
 
         // Draw Thor
         int thorWidth = 579 / 5;

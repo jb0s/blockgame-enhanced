@@ -38,6 +38,7 @@ public class TitleScreen extends Screen {
     private final TranslatableText WATERMARK = new TranslatableText("menu.blockgame.title.watermark", FabricLoader.getInstance().getModContainer("blockgameenhanced").get().getMetadata().getVersion().getFriendlyString());
     private final TranslatableText SERVER_STATUS_ONLINE_EMPTY = new TranslatableText("menu.blockgame.status.online.empty");
     private final TranslatableText SERVER_STATUS_ONLINE_NOTEMPTY = new TranslatableText("menu.blockgame.status.online");
+    private final TranslatableText SERVER_STATUS_OFFLINE = new TranslatableText("menu.blockgame.status.offline");
 
     private MultiplayerServerListPinger pinger;
     private FakePlayer fakePlayer;
@@ -190,22 +191,27 @@ public class TitleScreen extends Screen {
      * @param matrices The MatrixStack to render on.
      */
     private void renderServerStatus(MatrixStack matrices) {
-        boolean playerCountEmpty = serverInfo.playerCountLabel == null || serverInfo.playerCountLabel.asString().isEmpty();
+        try {
+            boolean playerCountEmpty = serverInfo.playerCountLabel == null || serverInfo.playerCountLabel.asString().isEmpty();
 
-        if(!playerCountEmpty) {
-            // Draw summarizing text ("There are X players online" or "There are currently no players online.")
-            TranslatableText key = serverInfo.playerListSummary != null ? new TranslatableText(SERVER_STATUS_ONLINE_NOTEMPTY.getKey(), serverInfo.playerListSummary.size()) : SERVER_STATUS_ONLINE_EMPTY;
-            DrawableHelper.drawTextWithShadow(matrices, client.textRenderer, key, (width / 2) + 4, 7, Integer.MAX_VALUE);
+            if(!playerCountEmpty) {
+                // Draw summarizing text ("There are X players online" or "There are currently no players online.")
+                TranslatableText key = serverInfo.playerListSummary != null ? new TranslatableText(SERVER_STATUS_ONLINE_NOTEMPTY.getKey(), serverInfo.playerListSummary.size()) : SERVER_STATUS_ONLINE_EMPTY;
+                DrawableHelper.drawTextWithShadow(matrices, client.textRenderer, key, (width / 2) + 4, 7, Integer.MAX_VALUE);
 
-            // Draw player list
-            if(serverInfo.playerListSummary != null) {
-                for (int i = 0; i < serverInfo.playerListSummary.size(); i++) {
-                    DrawableHelper.drawTextWithShadow(matrices, client.textRenderer, serverInfo.playerListSummary.get(i), (width / 2) + 4, 21 + (12 * i), Integer.MAX_VALUE);
+                // Draw player list
+                if(serverInfo.playerListSummary != null) {
+                    for (int i = 0; i < serverInfo.playerListSummary.size(); i++) {
+                        DrawableHelper.drawTextWithShadow(matrices, client.textRenderer, serverInfo.playerListSummary.get(i), (width / 2) + 4, 21 + (12 * i), Integer.MAX_VALUE);
+                    }
                 }
             }
+            else {
+                DrawableHelper.drawTextWithShadow(matrices, client.textRenderer, serverInfo.label, (width / 2) + 4, 7, Integer.MAX_VALUE);
+            }
         }
-        else {
-            DrawableHelper.drawTextWithShadow(matrices, client.textRenderer, serverInfo.label, (width / 2) + 4, 7, Integer.MAX_VALUE);
+        catch (Exception e) {
+            DrawableHelper.drawTextWithShadow(matrices, client.textRenderer, SERVER_STATUS_OFFLINE, (width / 2) + 4, 7, Integer.MAX_VALUE);
         }
 
         // I have no idea how Mojang does anything, their UI code sucks balls

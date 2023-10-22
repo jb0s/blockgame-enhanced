@@ -14,7 +14,7 @@
 	"menu.blockgame.title.debug": "Debug Mode",
 	"menu.blockgame.title.website": "Website",
 	"menu.blockgame.title.wiki": "Wiki",
-	"menu.blockgame.title.watermark": "Blockgame Enhanced v%s by notnotIrma",
+	"menu.blockgame.title.watermark": "Blockgame Enhanced v%s by notIrma",
 	"menu.blockgame.quit.title": "Are you sure you want to quit?",
 	"menu.blockgame.quit.description": "Any unsaved changes will NOT be lost. Haha. It's Minecraft.",
 	"menu.blockgame.warp.header": "Warp Menu",
@@ -75,7 +75,7 @@
 	"menu.blockgame.update.button.snooze": "Update later",
 	"menu.blockgame.update.button.ignore": "No thanks, don't ask again.",
 	"menu.blockgame.status.pinging": "Fetching server status...",
-	"menu.blockgame.status.offline": "Could not connect to server",
+	"menu.blockgame.status.offline": "An error occurred whilst connecting to the server.",
 	"menu.blockgame.status.online.empty": "There are currently no online players.",
 	"menu.blockgame.status.online": "There are %s players online:",
 	"menu.blockgame.container.plunder": "Loot All"
