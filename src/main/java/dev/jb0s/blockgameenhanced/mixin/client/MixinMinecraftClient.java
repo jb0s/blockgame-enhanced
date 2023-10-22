@@ -6,6 +6,7 @@ import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
 import dev.jb0s.blockgameenhanced.BlockgameEnhancedClient;
 import dev.jb0s.blockgameenhanced.event.world.WorldUpdatedEvent;
+import dev.jb0s.blockgameenhanced.gui.screen.title.TitleScreen;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.RunArgs;
 import net.minecraft.client.gui.WorldGenerationProgressTracker;
@@ -87,6 +88,13 @@ public abstract class MixinMinecraftClient {
     @Inject(method = "setWorld", at = @At("RETURN"))
     public void setWorld(ClientWorld world, CallbackInfo ci) {
         WorldUpdatedEvent.EVENT.invoker().worldUpdated(world);
+    }
+
+    @Inject(method = "setScreen", at = @At("RETURN"))
+    public void setScreen(Screen screen, CallbackInfo ci) {
+        if(screen == null && BlockgameEnhancedClient.isRunningCompatibilityServer()) {
+            setScreen(new TitleScreen());
+        }
     }
 
     //////////////////////////////////

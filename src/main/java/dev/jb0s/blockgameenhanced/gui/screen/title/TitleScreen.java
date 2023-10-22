@@ -120,7 +120,7 @@ public class TitleScreen extends Screen {
 
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.setShaderTexture(0, BACKGROUND_TEXTURE);
-        DrawableHelper.drawTexture(matrices, 0, 0, 0, 0, 0, sw, sh, sw, sh);
+        DrawableHelper.drawTexture(matrices, 0, 0, -500, 0, 0, sw, sh, sw, sh);
     }
 
     @Override
