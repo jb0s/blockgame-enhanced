@@ -1,6 +1,8 @@
 package dev.jb0s.blockgameenhanced.eggs.thor;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
+import dev.jb0s.blockgameenhanced.BlockgameEnhancedClient;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
@@ -15,7 +17,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 
 public class ThorScreen extends Screen {
-    private static final Identifier BG = new Identifier("textures/gui/options_background.png");
     private static final Identifier THOR = new Identifier("blockgame", "textures/gui/title/thor.png");
 
     private final Screen parent;
@@ -56,19 +57,31 @@ public class ThorScreen extends Screen {
 
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        RenderSystem.enableBlend();
+
         // Draw dark backdrop
-        RenderSystem.setShaderColor(.0f, .0f, .0f, .0f);
-        RenderSystem.setShaderTexture(0, BG);
-        this.drawTexture(matrices, 0, 0, 0, 0, width, height);
+        if(!BlockgameEnhanced.isOptifinePresent()) {
+            DrawableHelper.fill(matrices, 0, 0, width, height, 0x000000);
+        }
+        else {
+            // Don't ask.
+            int w = width * 5;
+            int h = height * 5;
+            RenderSystem.setShaderColor(0.f, 0.f, 0.f, 1.f);
+            RenderSystem.setShaderTexture(0, THOR);
+            DrawableHelper.drawTexture(matrices, width / 2 - (w / 2), height / 2 - (h / 2), 0, 0, w, h, w, h);
+        }
 
         // Draw Thor
         int thorWidth = 579 / 5;
         int thorHeight = 635 / 5;
+
         float alpha = MathHelper.clamp(timer, 0, 20 * 3.5f) / (20 * 3.5f);
         RenderSystem.setShaderColor(alpha, alpha, alpha, alpha);
         RenderSystem.setShaderTexture(0, THOR);
         DrawableHelper.drawTexture(matrices, (width / 2) - (thorWidth / 2), (height / 2) - (thorHeight / 2), 0, 0, thorWidth, thorHeight, thorWidth, thorHeight);
 
+        RenderSystem.disableBlend();
         super.render(matrices, mouseX, mouseY, delta);
     }
 
