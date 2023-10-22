@@ -28,8 +28,10 @@ public class ConfigManager extends Manager {
     public void init() {
         // Register events
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
-            ConfigManager cfgMgr = BlockgameEnhancedClient.getConfigManager();
-            cfgMgr.saveInventorySnapshot(client.player);
+            if(!handler.getConnection().isLocal()) {
+                ConfigManager cfgMgr = BlockgameEnhancedClient.getConfigManager();
+                cfgMgr.saveInventorySnapshot(client.player);
+            }
         });
     }
 
