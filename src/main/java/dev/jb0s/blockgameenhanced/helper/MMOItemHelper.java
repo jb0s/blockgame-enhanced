@@ -1,15 +1,25 @@
 package dev.jb0s.blockgameenhanced.helper;
 
+import com.google.gson.Gson;
+import dev.jb0s.blockgameenhanced.manager.mmoitems.MMOItemsAbility;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 
 public class MMOItemHelper {
     private static final String NBT_DURABILITY = "MMOITEMS_DURABILITY";
     private static final String NBT_MAX_DURABILITY = "MMOITEMS_MAX_DURABILITY";
+    private static final String NBT_ABILITY = "MMOITEMS_ABILITY";
+
+    private static final Gson GSON = new Gson();
 
     public static boolean hasMMODurability(ItemStack itemStack) {
         NbtCompound nbt = itemStack.getOrCreateNbt();
         return nbt != null && nbt.getInt(NBT_MAX_DURABILITY) > 0;
+    }
+
+    public static boolean hasMMOAbility(ItemStack itemStack) {
+        String nbt = itemStack.getOrCreateNbt().getString(NBT_ABILITY);
+        return nbt != null && !nbt.isEmpty();
     }
 
     public static int getMMOMaxDurability(ItemStack itemStack) {
@@ -44,5 +54,17 @@ public class MMOItemHelper {
         int mmoMaxDurability = getMMOMaxDurability(itemStack);
         int mmoDurability = getMMODurability(itemStack);
         return mmoMaxDurability - mmoDurability;
+    }
+
+    public static String getMMOAbility(ItemStack itemStack) {
+        String nbt = itemStack.getOrCreateNbt().getString("MMOITEMS_ABILITY");
+        if(nbt != null && !nbt.isEmpty()) {
+            MMOItemsAbility[] itemAbilities = GSON.fromJson(nbt, MMOItemsAbility[].class);
+            if(itemAbilities != null && itemAbilities.length > 0) {
+                return itemAbilities[0].Id;
+            }
+        }
+
+        return null;
     }
 }

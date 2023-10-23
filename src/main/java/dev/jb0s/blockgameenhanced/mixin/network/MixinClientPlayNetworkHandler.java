@@ -14,6 +14,7 @@ import net.minecraft.network.packet.s2c.play.CommandSuggestionsS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.InventoryS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenScreenS2CPacket;
+import net.minecraft.util.ActionResult;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -60,9 +61,13 @@ public class MixinClientPlayNetworkHandler {
         }
     }
 
-    @Inject(method = "onGameMessage", at = @At("RETURN"))
-    public void onOpenScreen(GameMessageS2CPacket packet, CallbackInfo ci) {
-        ReceiveChatMessageEvent.EVENT.invoker().receiveChatMessage(client, packet.getMessage().getString());
+    @Inject(method = "onGameMessage", at = @At("HEAD"), cancellable = true)
+    public void onGameMessage(GameMessageS2CPacket packet, CallbackInfo ci) {
+        ActionResult result = ReceiveChatMessageEvent.EVENT.invoker().receiveChatMessage(client, packet.getMessage().getString());
+
+        if(result != ActionResult.PASS) {
+            ci.cancel();
+        }
     }
 
     @Inject(method = "onCommandSuggestions", at = @At("HEAD"))
