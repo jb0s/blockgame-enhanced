@@ -106,10 +106,10 @@ public class BlockgameEnhancedClient implements ClientModInitializer {
             }
         });
 
-        //Register Tick Callback
-        ClientTickEvents.END_CLIENT_TICK.register(EquipmentBonusTick::tick);
-        //Register HudRender Callback
-        HudRenderCallback.EVENT.register(ExpHudRender::onHudRender);
+        // Register Tick Callback
+        // Register HudRender Callback
+        //ClientTickEvents.END_CLIENT_TICK.register(EquipmentBonusTick::tick);
+        //HudRenderCallback.EVENT.register(ExpHudRender::onHudRender);
 
         // Bind Managers
         musicManager = new MusicManager();
