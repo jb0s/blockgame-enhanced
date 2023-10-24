@@ -9,6 +9,7 @@ public class MMOItemHelper {
     private static final String NBT_DURABILITY = "MMOITEMS_DURABILITY";
     private static final String NBT_MAX_DURABILITY = "MMOITEMS_MAX_DURABILITY";
     private static final String NBT_ABILITY = "MMOITEMS_ABILITY";
+    public static final String NBT_ITEM_TYPE = "MMOITEMS_ITEM_TYPE";
 
     private static final Gson GSON = new Gson();
 

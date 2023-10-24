@@ -11,6 +11,8 @@
   },
   "client": [
     "client.MixinMinecraftClient",
+    "client.MixinInGameHud",
+    "client.ItemRendererMixin",
     "entity.MixinClientPlayerEntity",
     "entity.MixinEntity",
     "entity.MixinItemEntity",

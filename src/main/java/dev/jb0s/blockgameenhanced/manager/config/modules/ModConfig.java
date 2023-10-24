@@ -13,6 +13,14 @@ public class ModConfig extends PartitioningSerializer.GlobalData {
 
     @Getter
     @ConfigEntry.Gui.CollapsibleObject(startExpanded = true)
+    ModifierHighlighterConfig modifierHighlighterConfig = new ModifierHighlighterConfig();
+
+    @Getter
+    @ConfigEntry.Gui.CollapsibleObject(startExpanded = true)
+    ExpHudConfig expHudConfig = new ExpHudConfig();
+
+    @Getter
+    @ConfigEntry.Gui.CollapsibleObject(startExpanded = true)
     PrivacyConfig privacyConfig = new PrivacyConfig();
 
     @Getter
