@@ -1,9 +1,13 @@
 package dev.jb0s.blockgameenhanced.manager.mmoitems;
 
 import com.google.common.collect.Maps;
+import dev.jb0s.blockgameenhanced.BlockgameEnhancedClient;
 import dev.jb0s.blockgameenhanced.event.chat.ReceiveChatMessageEvent;
 import dev.jb0s.blockgameenhanced.helper.MMOItemHelper;
+import dev.jb0s.blockgameenhanced.helper.NetworkHelper;
 import dev.jb0s.blockgameenhanced.manager.Manager;
+import dev.jb0s.blockgameenhanced.manager.latency.LatencyManager;
+import dev.jb0s.blockgameenhanced.manager.latency.event.ItemUsageEvent;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.minecraft.block.entity.BlockEntity;
@@ -121,6 +125,7 @@ public class MMOItemsManager extends Manager {
      */
     public TypedActionResult<ItemStack> repeatItemUseForCooldownMessage(PlayerEntity playerEntity, World world, Hand hand) {
         MinecraftClient client = MinecraftClient.getInstance();
+        LatencyManager latencyManager = BlockgameEnhancedClient.getLatencyManager();
         ClientPlayerInteractionManager interactionManager = client.interactionManager;
         ItemStack stack = playerEntity.getStackInHand(hand);
 
@@ -135,6 +140,8 @@ public class MMOItemsManager extends Manager {
 
         // This item has an ability, resend the right click packet to trigger a cooldown message from the server, which we then use for the hotbar
         scheduledPackets.add(new ScheduledItemUsePacket(new PlayerInteractItemC2SPacket(hand), tick, tick + 2));
+        latencyManager.captureItemUsage(stack);
+
         return TypedActionResult.pass(stack);
     }
 
@@ -145,7 +152,13 @@ public class MMOItemsManager extends Manager {
      * @return Always returns PASS, whether the routine was successful or not.
      */
     public ActionResult visualizeCooldown(MinecraftClient client, String message) {
-        ItemStack stack = client.player.getMainHandStack();
+        LatencyManager latencyManager = BlockgameEnhancedClient.getLatencyManager();
+        ItemUsageEvent itemUsage = latencyManager.getItemUsage();
+        if(itemUsage == null) {
+            return ActionResult.PASS;
+        }
+
+        ItemStack stack = itemUsage.getItemStack();
 
         // If message isn't about a cooldown or item in hand doesn't have an MMOItems ability, skip
         if(!message.startsWith("[CD]") || !MMOItemHelper.hasMMOAbility(stack)) {

@@ -6,6 +6,7 @@ import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
 import dev.jb0s.blockgameenhanced.BlockgameEnhancedClient;
 import dev.jb0s.blockgameenhanced.eggs.thor.ThorScreen;
 import dev.jb0s.blockgameenhanced.manager.config.ConfigManager;
+import dev.jb0s.blockgameenhanced.manager.latency.LatencyManager;
 import dev.jb0s.blockgameenhanced.mixin.client.MixinMinecraftClient;
 import lombok.SneakyThrows;
 import net.fabricmc.loader.api.FabricLoader;
@@ -205,6 +206,10 @@ public class TitleScreen extends Screen {
                         DrawableHelper.drawTextWithShadow(matrices, client.textRenderer, serverInfo.playerListSummary.get(i), (width / 2) + 4, 21 + (12 * i), Integer.MAX_VALUE);
                     }
                 }
+
+                // Update prelogin latency info
+                LatencyManager latencyManager = BlockgameEnhancedClient.getLatencyManager();
+                latencyManager.setPreLoginLatency((int) serverInfo.ping);
             }
             else {
                 DrawableHelper.drawTextWithShadow(matrices, client.textRenderer, serverInfo.label, (width / 2) + 4, 7, Integer.MAX_VALUE);

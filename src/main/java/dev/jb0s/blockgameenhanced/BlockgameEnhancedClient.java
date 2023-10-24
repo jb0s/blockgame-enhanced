@@ -9,6 +9,7 @@ import dev.jb0s.blockgameenhanced.manager.dayphase.DayPhaseManager;
 import dev.jb0s.blockgameenhanced.manager.deposit.DepositManager;
 import dev.jb0s.blockgameenhanced.manager.discordrpc.DiscordRichPresenceManager;
 import dev.jb0s.blockgameenhanced.manager.hotkey.HotkeyManager;
+import dev.jb0s.blockgameenhanced.manager.latency.LatencyManager;
 import dev.jb0s.blockgameenhanced.manager.mmoitems.MMOItemsManager;
 import dev.jb0s.blockgameenhanced.manager.music.MusicManager;
 import dev.jb0s.blockgameenhanced.manager.party.PartyManager;
@@ -62,6 +63,9 @@ public class BlockgameEnhancedClient implements ClientModInitializer {
     private static MMOItemsManager mmoItemsManager;
 
     @Getter
+    private static LatencyManager latencyManager;
+
+    @Getter
     private static GitHubRelease availableUpdate;
 
     @Getter
@@ -111,6 +115,7 @@ public class BlockgameEnhancedClient implements ClientModInitializer {
         updateManager = new UpdateManager();
         depositManager = new DepositManager();
         mmoItemsManager = new MMOItemsManager();
+        latencyManager = new LatencyManager();
 
         // Check for updates.
         // If you're looking for the actual "There's an update" GUI prompt, it's in MixinTitleScreen.java.
