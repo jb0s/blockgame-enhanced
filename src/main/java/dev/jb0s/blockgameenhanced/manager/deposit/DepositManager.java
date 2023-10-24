@@ -1,5 +1,9 @@
-package dev.jb0s.blockgameenhanced.module;
+package dev.jb0s.blockgameenhanced.manager.deposit;
 
+import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
+import dev.jb0s.blockgameenhanced.event.screen.ScreenOpenedEvent;
+import dev.jb0s.blockgameenhanced.event.screen.ScreenReceivedInventoryEvent;
+import dev.jb0s.blockgameenhanced.manager.Manager;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.inventory.Inventory;
@@ -9,14 +13,20 @@ import net.minecraft.network.packet.s2c.play.InventoryS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenScreenS2CPacket;
 import net.minecraft.screen.slot.SlotActionType;
 
-public class Deposit {
-    private static int waitingForSyncId;
+public class DepositManager extends Manager {
+    private int waitingForSyncId;
+
+    @Override
+    public void init() {
+        ScreenOpenedEvent.EVENT.register(this::handleScreenOpen);
+        ScreenReceivedInventoryEvent.EVENT.register(this::handleScreenInventoryData);
+    }
 
     /**
      * Callback that checks if the menu that the server has opened is the Currency Deposit menu, and if so stores its sync id.
      * @param packet Packet data for the menu that has opened.
      */
-    public static void handleScreenOpen(OpenScreenS2CPacket packet) {
+    public void handleScreenOpen(OpenScreenS2CPacket packet) {
 
         // If the menu is called "Deposit", store the sync id, so we can start putting currency in this menu
         // todo: This is easily forged by just creating a chest called "Deposit". We should do integrity checks
@@ -32,8 +42,13 @@ public class Deposit {
      * Callback that checks if the inventory contents for a menu matches the sync id we've stored, and puts currency in the inventory if so.
      * @param packet Packet data for the inventory inside the menu.
      */
-    public static void handleScreenInventoryData(InventoryS2CPacket packet) {
+    public void handleScreenInventoryData(InventoryS2CPacket packet) {
         if(packet.getSyncId() != waitingForSyncId) {
+            return;
+        }
+
+        // If the user has disallowed us to autofill, cancel here
+        if(!BlockgameEnhanced.getConfig().getAccessibilityConfig().enableAutofillDeposit) {
             return;
         }
 

@@ -2,9 +2,7 @@ package dev.jb0s.blockgameenhanced.mixin.gui.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
-import lombok.SneakyThrows;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.GenericContainerScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider;
@@ -14,7 +12,6 @@ import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.GenericContainerScreenHandler;
-import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -22,11 +19,6 @@ import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import java.lang.reflect.Field;
 
 @Mixin(GenericContainerScreen.class)
 public class MixinGenericContainerScreen extends HandledScreen<GenericContainerScreenHandler> implements ScreenHandlerProvider<GenericContainerScreenHandler> {
@@ -45,7 +37,13 @@ public class MixinGenericContainerScreen extends HandledScreen<GenericContainerS
 
         // If this is not a regular chest we're interacting with, don't add the loot all button
         String titleStr = title.getString();
-        if(!titleStr.isEmpty() && !titleStr.endsWith("Chest")) {
+        boolean isValidContainer = titleStr.endsWith("Chest") || titleStr.endsWith("Shulker Box") || titleStr.endsWith("Barrel");
+        if(!titleStr.isEmpty() && !isValidContainer) {
+            return;
+        }
+
+        // If the user has disabled the Loot All button, cancel here
+        if(!BlockgameEnhanced.getConfig().getAccessibilityConfig().enableLootAllButton) {
             return;
         }
 
@@ -74,7 +72,7 @@ public class MixinGenericContainerScreen extends HandledScreen<GenericContainerS
      * @param mouseY n/a
      */
     @Override
-    protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
+    public void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.setShaderTexture(0, TEXTURE);

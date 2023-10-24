@@ -21,6 +21,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;
@@ -347,13 +348,13 @@ public class PartyManager extends Manager {
             member.setAlive(true);
         }
     }
-    /**
 
+    /**
      * Handle the player receiving a chat message.
      * This event is used to determine whether we should query the server for party info.
      * @param message The chat message that was sent.
      */
-    public void handleChatMessage(String message) {
+    public ActionResult handleChatMessage(String message) {
         for (String triggerStatement : TRIGGER_PHRASES) {
             boolean shouldCheckStart = triggerStatement.endsWith("#");
             String triggerString = triggerStatement.replace("#", "");
@@ -365,6 +366,8 @@ public class PartyManager extends Manager {
                 ticksSinceLastUpdate = PARTY_UPDATE_INTERVAL;
             }
         }
+
+        return ActionResult.PASS;
     }
 
     public void handleSentChatMessage(String message) {

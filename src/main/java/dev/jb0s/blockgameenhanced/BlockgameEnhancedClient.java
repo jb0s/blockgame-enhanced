@@ -1,26 +1,28 @@
 package dev.jb0s.blockgameenhanced;
 
-import dev.jb0s.blockgameenhanced.event.screen.ScreenOpenedEvent;
-import dev.jb0s.blockgameenhanced.event.screen.ScreenReceivedInventoryEvent;
-import dev.jb0s.blockgameenhanced.event.world.WorldUpdatedEvent;
+import dev.jb0s.blockgameenhanced.gui.screen.title.TitleScreen;
 import dev.jb0s.blockgameenhanced.manager.Manager;
 import dev.jb0s.blockgameenhanced.manager.adventure.AdventureZoneManager;
 import dev.jb0s.blockgameenhanced.manager.bossbattle.BossBattleManager;
 import dev.jb0s.blockgameenhanced.manager.config.ConfigManager;
 import dev.jb0s.blockgameenhanced.manager.dayphase.DayPhaseManager;
+import dev.jb0s.blockgameenhanced.manager.deposit.DepositManager;
 import dev.jb0s.blockgameenhanced.manager.discordrpc.DiscordRichPresenceManager;
 import dev.jb0s.blockgameenhanced.manager.hotkey.HotkeyManager;
+import dev.jb0s.blockgameenhanced.manager.latency.LatencyManager;
+import dev.jb0s.blockgameenhanced.manager.mmoitems.MMOItemsManager;
 import dev.jb0s.blockgameenhanced.manager.music.MusicManager;
 import dev.jb0s.blockgameenhanced.manager.party.PartyManager;
 import dev.jb0s.blockgameenhanced.manager.update.GitHubRelease;
 import dev.jb0s.blockgameenhanced.manager.update.UpdateManager;
-import dev.jb0s.blockgameenhanced.module.*;
+import dev.jb0s.blockgameenhanced.module.EquipmentBonusTick;
+import dev.jb0s.blockgameenhanced.module.ExpHudRender;
 import lombok.Getter;
+import lombok.Setter;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
-import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.TranslatableText;
 
@@ -58,19 +60,50 @@ public class BlockgameEnhancedClient implements ClientModInitializer {
     private static UpdateManager updateManager;
 
     @Getter
+    private static DepositManager depositManager;
+
+    @Getter
+    private static MMOItemsManager mmoItemsManager;
+
+    @Getter
+    private static LatencyManager latencyManager;
+
+    @Getter
     private static GitHubRelease availableUpdate;
+
+    @Getter
+    @Setter
+    private static boolean isRunningCompatibilityServer;
+
+    @Getter
+    @Setter
+    private static boolean isCompatibilityServerReady;
 
     @Override
     public void onInitializeClient() {
-        // Bind generic events
-        // TODO: Use managers for these
-        UseBlockCallback.EVENT.register(MMOItems::preventIllegalMMOItemsInteraction);
-        WorldUpdatedEvent.EVENT.register(Yggdrasil::handleWorldChanged);
-        ScreenOpenedEvent.EVENT.register(Deposit::handleScreenOpen);
-        ScreenReceivedInventoryEvent.EVENT.register(Deposit::handleScreenInventoryData);
+        // Greet the player when they join the server
         ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
-            client.player.sendMessage(new TranslatableText("hud.blockgame.message.welcome.1"), false);
-            client.player.sendMessage(new TranslatableText("hud.blockgame.message.welcome.2"), false);
+
+            // Custom routines for finishing the initialization of an OptiFine Compat server
+            if(isRunningCompatibilityServer()) {
+                MinecraftClient.getInstance().setScreen(new TitleScreen());
+
+                // Wait a sec before allowing game to finish loading.
+                // This is to work around a dumb hitch I can't get around otherwise.
+                new Thread(() -> {
+                    try { Thread.sleep(1000); }
+                    catch (Exception e) { /* too bad */ }
+
+                    setCompatibilityServerReady(true);
+                    BlockgameEnhanced.LOGGER.info("~~ OPTIFINE COMPAT SERVER IS READY ~~");
+                }).start();
+            }
+
+            // We're normally joining a game, send a welcome message in chat.
+            else {
+                client.player.sendMessage(new TranslatableText("hud.blockgame.message.welcome.1"), false);
+                client.player.sendMessage(new TranslatableText("hud.blockgame.message.welcome.2"), false);
+            }
         });
 
         //Register Tick Callback
@@ -88,6 +121,9 @@ public class BlockgameEnhancedClient implements ClientModInitializer {
         configManager = new ConfigManager();
         discordRichPresenceManager = new DiscordRichPresenceManager();
         updateManager = new UpdateManager();
+        depositManager = new DepositManager();
+        mmoItemsManager = new MMOItemsManager();
+        latencyManager = new LatencyManager();
 
         // Check for updates.
         // If you're looking for the actual "There's an update" GUI prompt, it's in MixinTitleScreen.java.

@@ -10,15 +10,37 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.util.math.MatrixStack;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class DebugHud extends DrawableHelper {
     @Getter
     @Setter
     private static boolean visible;
 
+    private static String goof;
+
     public static void render(MatrixStack matrices, TextRenderer textRenderer) {
+
+        // Initialize random goofy quote
+        if(goof == null || goof.isEmpty()) {
+            try {
+                String str = Files.readString(Paths.get(DebugHud.class.getClassLoader().getResource("assets/blockgame/texts/goofs.txt").toURI()));
+                String[] arr = str.split(System.lineSeparator());
+
+                int i = new Random().nextInt(arr.length);
+                if(i == 21) i++; // yarrCult
+
+                goof = arr[i];
+            }
+            catch (Exception e) {
+                goof = "MISSINGNO.";
+            }
+        }
+
         // Only render the debug hud if visible
         if(!isVisible())
             return;
@@ -39,7 +61,7 @@ public class DebugHud extends DrawableHelper {
             lines.add("");
         }
 
-        lines.add("(Zultralord smells.)");
+        lines.add(String.format("(%s)", goof));
 
         for (int i = 0; i < lines.size(); i++) {
             if (Strings.isNullOrEmpty(lines.get(i))) continue;

@@ -6,6 +6,8 @@ import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
 import dev.jb0s.blockgameenhanced.BlockgameEnhancedClient;
 import dev.jb0s.blockgameenhanced.eggs.thor.ThorScreen;
 import dev.jb0s.blockgameenhanced.manager.config.ConfigManager;
+import dev.jb0s.blockgameenhanced.manager.latency.LatencyManager;
+import dev.jb0s.blockgameenhanced.mixin.client.MixinMinecraftClient;
 import lombok.SneakyThrows;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.DrawableHelper;
@@ -18,6 +20,7 @@ import net.minecraft.client.network.*;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.server.SaveLoader;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
@@ -36,6 +39,7 @@ public class TitleScreen extends Screen {
     private final TranslatableText WATERMARK = new TranslatableText("menu.blockgame.title.watermark", FabricLoader.getInstance().getModContainer("blockgameenhanced").get().getMetadata().getVersion().getFriendlyString());
     private final TranslatableText SERVER_STATUS_ONLINE_EMPTY = new TranslatableText("menu.blockgame.status.online.empty");
     private final TranslatableText SERVER_STATUS_ONLINE_NOTEMPTY = new TranslatableText("menu.blockgame.status.online");
+    private final TranslatableText SERVER_STATUS_OFFLINE = new TranslatableText("menu.blockgame.status.offline");
 
     private MultiplayerServerListPinger pinger;
     private FakePlayer fakePlayer;
@@ -118,7 +122,7 @@ public class TitleScreen extends Screen {
 
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.setShaderTexture(0, BACKGROUND_TEXTURE);
-        DrawableHelper.drawTexture(matrices, 0, 0, 0, 0, 0, sw, sh, sw, sh);
+        DrawableHelper.drawTexture(matrices, 0, 0, -500, 0, 0, sw, sh, sw, sh);
     }
 
     @Override
@@ -173,8 +177,8 @@ public class TitleScreen extends Screen {
     private void renderPlayer(int mouseX, int mouseY) {
         try {
             int size = height / 5;
-            int x = width - (size * 2);
-            int y = height / 2 + (int)(size * 1.5f);
+            int x = (int)(width * 0.75);
+            int y = (int)(height * 0.75) + (int)(size * 0.25);
             InventoryScreen.drawEntity(x, y, size, -mouseX + x, -mouseY + y - size * 2 + size / 2f, fakePlayer);
         }
         catch(Exception e) {
@@ -188,21 +192,31 @@ public class TitleScreen extends Screen {
      * @param matrices The MatrixStack to render on.
      */
     private void renderServerStatus(MatrixStack matrices) {
-        boolean hasPlayerList = serverInfo.playerListSummary != null;
-        boolean playerCountEmpty = serverInfo.playerCountLabel == null || serverInfo.playerCountLabel.asString().isEmpty();
+        try {
+            boolean playerCountEmpty = serverInfo.playerCountLabel == null || serverInfo.playerCountLabel.asString().isEmpty();
 
-        if(hasPlayerList && !playerCountEmpty) {
-            // Draw summarizing text ("There are X players online" or "There are currently no players online.")
-            TranslatableText key = serverInfo.playerListSummary.size() > 0 ? new TranslatableText(SERVER_STATUS_ONLINE_NOTEMPTY.getKey(), serverInfo.playerListSummary.size()) : SERVER_STATUS_ONLINE_EMPTY;
-            DrawableHelper.drawTextWithShadow(matrices, client.textRenderer, key, (width / 2) + 4, 7, Integer.MAX_VALUE);
+            if(!playerCountEmpty) {
+                // Draw summarizing text ("There are X players online" or "There are currently no players online.")
+                TranslatableText key = serverInfo.playerListSummary != null ? new TranslatableText(SERVER_STATUS_ONLINE_NOTEMPTY.getKey(), serverInfo.playerListSummary.size()) : SERVER_STATUS_ONLINE_EMPTY;
+                DrawableHelper.drawTextWithShadow(matrices, client.textRenderer, key, (width / 2) + 4, 7, Integer.MAX_VALUE);
 
-            // Draw player list
-            for (int i = 0; i < serverInfo.playerListSummary.size(); i++) {
-                DrawableHelper.drawTextWithShadow(matrices, client.textRenderer, serverInfo.playerListSummary.get(i), (width / 2) + 4, 21 + (12 * i), Integer.MAX_VALUE);
+                // Draw player list
+                if(serverInfo.playerListSummary != null) {
+                    for (int i = 0; i < serverInfo.playerListSummary.size(); i++) {
+                        DrawableHelper.drawTextWithShadow(matrices, client.textRenderer, serverInfo.playerListSummary.get(i), (width / 2) + 4, 21 + (12 * i), Integer.MAX_VALUE);
+                    }
+                }
+
+                // Update prelogin latency info
+                LatencyManager latencyManager = BlockgameEnhancedClient.getLatencyManager();
+                latencyManager.setPreLoginLatency((int) serverInfo.ping);
+            }
+            else {
+                DrawableHelper.drawTextWithShadow(matrices, client.textRenderer, serverInfo.label, (width / 2) + 4, 7, Integer.MAX_VALUE);
             }
         }
-        else {
-            DrawableHelper.drawTextWithShadow(matrices, client.textRenderer, serverInfo.label, (width / 2) + 4, 7, Integer.MAX_VALUE);
+        catch (Exception e) {
+            DrawableHelper.drawTextWithShadow(matrices, client.textRenderer, SERVER_STATUS_OFFLINE, (width / 2) + 4, 7, Integer.MAX_VALUE);
         }
 
         // I have no idea how Mojang does anything, their UI code sucks balls

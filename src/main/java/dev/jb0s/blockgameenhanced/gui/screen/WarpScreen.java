@@ -24,6 +24,7 @@ public class WarpScreen extends Screen {
     private final TranslatableText BUTTON_SUNKEN = new TranslatableText("menu.blockgame.warp.button.sunken");
     private final TranslatableText BUTTON_MYRKHEIM = new TranslatableText("menu.blockgame.warp.button.myrkheim");
     private final TranslatableText BUTTON_ROTTENMAW = new TranslatableText("menu.blockgame.warp.button.rotten_maw");
+    private final TranslatableText BUTTON_NEITH = new TranslatableText("menu.blockgame.warp.button.neith");
     private final TranslatableText BUTTON_ARENA = new TranslatableText("menu.blockgame.warp.button.arena");
 
     private final LinkedHashMap<TranslatableText, String> WARP_OPTIONS = new LinkedHashMap<>() {{
@@ -34,6 +35,7 @@ public class WarpScreen extends Screen {
         put(BUTTON_KROGNAR, "/warp Krognars_Bastion");
         put(BUTTON_SUNKEN, "/warp Sunken_Cells");
         put(BUTTON_ROTTENMAW, "/warp Rotten_Maw");
+        put(BUTTON_NEITH, "/warp Neith");
         put(BUTTON_ARENA, "/warp Arena");
     }};
 
@@ -46,18 +48,29 @@ public class WarpScreen extends Screen {
         RequestCommandCompletionsC2SPacket pak = new RequestCommandCompletionsC2SPacket(this.hashCode(), "warp ");
         client.getNetworkHandler().sendPacket(pak);
 
-        int y = height / 10;
-        int buttonSpacing = 24;
+        int buttonWidth = 200;
+        int buttonHeight = 20;
+        int columnSizeY = 5;
+
+        int buttonSpacingX = buttonWidth + 6;
+        int buttonSpacingY = buttonHeight + 4;
+
         int totalOptions = WARP_OPTIONS.size();
-        int listStartingY = (height / 2) - (buttonSpacing * (totalOptions / 2));
+        int totalColumn = totalOptions / columnSizeY;
+        int globalXOffset = (buttonSpacingX * totalColumn) / 2;
+        int listStartingY = (height / 2) - ((buttonSpacingY * 5) / 2);
 
         // Add warp options
         int i = 0;
         for (Map.Entry<TranslatableText, String> set : WARP_OPTIONS.entrySet()) {
             Text btnText = set.getKey();
-            int btnHeight = listStartingY + (buttonSpacing * i);
 
-            addDrawableChild(new ButtonWidget(width / 2 - 100, btnHeight, 200, 20, btnText, (button) -> {
+            int xOrigin = width / 2 - 100;
+            int columnIndex = i / columnSizeY;
+            int xPos = xOrigin + (buttonSpacingX * columnIndex);
+            int yPos = listStartingY + (buttonSpacingY * (i % columnSizeY));
+
+            addDrawableChild(new ButtonWidget(xPos - globalXOffset, yPos, buttonWidth, buttonHeight, btnText, (button) -> {
                 close();
                 client.mouse.lockCursor();
 
@@ -71,6 +84,7 @@ public class WarpScreen extends Screen {
         }
 
         // Cancel Button
+        int y = height / 10;
         addDrawableChild(new ButtonWidget(width / 2 - 100, height - y - 20, 200, 20, BUTTON_CANCEL, (button) -> {
             close();
             client.mouse.lockCursor();
