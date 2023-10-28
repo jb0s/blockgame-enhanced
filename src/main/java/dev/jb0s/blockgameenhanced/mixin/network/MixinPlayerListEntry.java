@@ -13,6 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class MixinPlayerListEntry {
     private static final Identifier DEVELOPER_CAPE = new Identifier("blockgame", "textures/cape/devcape.png");
     private static final Identifier PIRATESOFTWARE_CAPE = new Identifier("blockgame", "textures/cape/thorcape.png");
+    private static final Identifier NOTKER_CAPE = new Identifier("blockgame", "textures/cape/notkercape.png");
 
     @Shadow public abstract GameProfile getProfile();
 
@@ -22,6 +23,7 @@ public abstract class MixinPlayerListEntry {
         switch (username) {
             case "jakm" -> cir.setReturnValue(DEVELOPER_CAPE);
             case "PirateSoftware" -> cir.setReturnValue(PIRATESOFTWARE_CAPE);
+            case "Notker" -> cir.setReturnValue(NOTKER_CAPE);
         }
     }
 }

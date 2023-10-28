@@ -24,6 +24,9 @@ public class AccessibilityConfig implements ConfigData {
     @ConfigEntry.Gui.Tooltip
     public boolean enableAutofillDeposit;
 
+    @ConfigEntry.Gui.Tooltip
+    public boolean immersiveHud; // debug
+
     public AccessibilityConfig() {
         enableAutoRespawn = true;
         enableItemLabels = true;
@@ -31,5 +34,6 @@ public class AccessibilityConfig implements ConfigData {
         enableUpdateChecker = true;
         enableLootAllButton = true;
         enableAutofillDeposit = true;
+        immersiveHud = true; // debug
     }
 }

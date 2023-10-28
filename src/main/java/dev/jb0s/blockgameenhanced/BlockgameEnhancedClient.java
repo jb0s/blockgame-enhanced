@@ -10,19 +10,17 @@ import dev.jb0s.blockgameenhanced.manager.deposit.DepositManager;
 import dev.jb0s.blockgameenhanced.manager.discordrpc.DiscordRichPresenceManager;
 import dev.jb0s.blockgameenhanced.manager.hotkey.HotkeyManager;
 import dev.jb0s.blockgameenhanced.manager.latency.LatencyManager;
+import dev.jb0s.blockgameenhanced.manager.mmocore.MMOCoreManager;
 import dev.jb0s.blockgameenhanced.manager.mmoitems.MMOItemsManager;
 import dev.jb0s.blockgameenhanced.manager.music.MusicManager;
 import dev.jb0s.blockgameenhanced.manager.party.PartyManager;
 import dev.jb0s.blockgameenhanced.manager.update.GitHubRelease;
 import dev.jb0s.blockgameenhanced.manager.update.UpdateManager;
-import dev.jb0s.blockgameenhanced.module.EquipmentBonusTick;
-import dev.jb0s.blockgameenhanced.module.ExpHudRender;
 import lombok.Getter;
 import lombok.Setter;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.TranslatableText;
 
@@ -67,6 +65,9 @@ public class BlockgameEnhancedClient implements ClientModInitializer {
 
     @Getter
     private static LatencyManager latencyManager;
+
+    @Getter
+    private static MMOCoreManager mmoCoreManager;
 
     @Getter
     private static GitHubRelease availableUpdate;
@@ -124,6 +125,7 @@ public class BlockgameEnhancedClient implements ClientModInitializer {
         depositManager = new DepositManager();
         mmoItemsManager = new MMOItemsManager();
         latencyManager = new LatencyManager();
+        mmoCoreManager = new MMOCoreManager();
 
         // Check for updates.
         // If you're looking for the actual "There's an update" GUI prompt, it's in MixinTitleScreen.java.

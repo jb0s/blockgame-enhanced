@@ -39,7 +39,7 @@ public class MMOItemsManager extends Manager {
     public void init() {
         UseBlockCallback.EVENT.register(this::preventIllegalMMOItemsInteraction);
         UseItemCallback.EVENT.register(this::repeatItemUseForCooldownMessage);
-        ReceiveChatMessageEvent.EVENT.register((client, message) -> visualizeCooldown(client, message));
+        ReceiveChatMessageEvent.EVENT.register(this::visualizeCooldown);
     }
 
     @Override

@@ -15,6 +15,7 @@
   "license": "unlicense",
   "icon": "assets/blockgame/textures/icon.png",
   "environment": "client",
+  "accessWidener": "blockgameenhanced.accesswidener",
   "entrypoints": {
     "client": [
       "dev.jb0s.blockgameenhanced.BlockgameEnhancedClient"

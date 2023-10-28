@@ -91,6 +91,13 @@
 		]
 	},
 
+	"mus.zone.arena.battle_horseman": {
+		"subtitle": "Heartbound OST - Miserable Manic Shadows",
+		"sounds": [
+			"blockgame:music/zone/arena/hb_mms"
+		]
+	},
+
 	"mus.egg.terry": {
 		"subtitle": "Heartbound OST - Hello Terry",
 		"sounds": [

@@ -6,13 +6,19 @@ import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
 import dev.jb0s.blockgameenhanced.BlockgameEnhancedClient;
 import dev.jb0s.blockgameenhanced.event.world.WorldUpdatedEvent;
+import dev.jb0s.blockgameenhanced.gui.hud.immersive.ClassicIngameHud;
+import dev.jb0s.blockgameenhanced.gui.hud.immersive.ImmersiveIngameHud;
 import dev.jb0s.blockgameenhanced.gui.screen.title.TitleScreen;
+import dev.jb0s.blockgameenhanced.manager.config.modules.IngameHudConfig;
+import dev.jb0s.blockgameenhanced.renderer.debug.BlockgameDebugRenderer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.RunArgs;
 import net.minecraft.client.gui.WorldGenerationProgressTracker;
+import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.network.ClientLoginNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.render.debug.DebugRenderer;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.Session;
 import net.minecraft.client.world.ClientWorld;
@@ -41,6 +47,7 @@ import net.minecraft.world.level.storage.LevelStorage;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -75,6 +82,9 @@ public abstract class MixinMinecraftClient {
     @Shadow @Nullable public ClientPlayerEntity player;
 
     @Shadow @Nullable public ClientWorld world;
+    @Mutable @Shadow @Final public InGameHud inGameHud;
+    @Mutable
+    @Shadow @Final public DebugRenderer debugRenderer;
     private static final MusicSound MUSIC_SILENCE = new MusicSound(new SoundEvent(new Identifier("blockgame", "silence")), 999999, 999999, false);
 
     @Inject(method = "getMusicType", at = @At("RETURN"), cancellable = true)
@@ -103,8 +113,27 @@ public abstract class MixinMinecraftClient {
 
     @Inject(method = "<init>", at = @At("RETURN"))
     public void init(RunArgs args, CallbackInfo ci) {
+        MinecraftClient thisMinecraft = (MinecraftClient) (Object) this;
+
         if(BlockgameEnhanced.isOptifinePresent()) {
             startDummyServer("Empty", SaveLoader.DataPackSettingsSupplier::loadFromWorld, SaveLoader.SavePropertiesSupplier::loadFromWorld);
+        }
+
+        // Apply Custom DebugRenderer
+        debugRenderer = new BlockgameDebugRenderer(thisMinecraft);
+
+        // Apply Custom HUD
+        IngameHudConfig ingameHudConfig = BlockgameEnhanced.getConfig().getIngameHudConfig();
+        if(ingameHudConfig.enableCustomHud) {
+            switch (ingameHudConfig.style) {
+                case MODERN:
+                    inGameHud = new ImmersiveIngameHud(thisMinecraft);
+                    break;
+
+                case CLASSIC:
+                    inGameHud = new ClassicIngameHud(thisMinecraft);
+                    break;
+            }
         }
     }
 

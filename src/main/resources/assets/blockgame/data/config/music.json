@@ -75,6 +75,14 @@
 			"soundIds": [
 				"blockgame:mus.zone.origin_city.rain"
 			]
+		},
+		{
+			"id": "mus_battle_arena_horseman",
+			"type": "Battle",
+			"soundIds": [
+				"blockgame:mus.zone.arena.battle_horseman",
+				"blockgame:mus.zone.sunken_cells.victory"
+			]
 		}
 	]
 }

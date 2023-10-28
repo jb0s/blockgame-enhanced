@@ -21,13 +21,12 @@ public class MixinInGameHud {
     public void addChatMessage(MessageType messageType, Text text, UUID uUID, CallbackInfo ci) {
 
         ExpHudConfig hudConfig = BlockgameEnhanced.getConfig().getExpHudConfig();
-        AdvancedExpHudConfig advancedExpHudConfig = hudConfig.getAdvancedExpHudConfig();
 
-        String expTag = advancedExpHudConfig.expChatTag;
-        String coinTag = advancedExpHudConfig.coinChatTag;
-        String coinQuestTag = advancedExpHudConfig.coinQuestChatTag;
+        String expTag = "[EXP]";
+        String coinTag = " Coin.";
+        String coinQuestTag = " Coin!";
 
-        MessageType type = advancedExpHudConfig.chatMessageType;
+        MessageType type = MessageType.SYSTEM;
 
         boolean enabled = hudConfig.expHudEnabled;
         boolean hideExp = hudConfig.chatExpEnabled;

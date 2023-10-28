@@ -15,16 +15,18 @@ public class ExpHudRender {
     public static void onHudRender(MatrixStack matrixStack, float tickDelta) {
         ExpHudConfig config = BlockgameEnhanced.getConfig().getExpHudConfig();
 
-        if (!config.expHudEnabled || ExpHudDataHelper.hideOverlay) return;
+        if (!config.expHudEnabled || ExpHudDataHelper.hideOverlay) {
+            return;
+        }
 
-        float startVertical = config.yPosExpHud;
-        float startHorizontal = config.xPosExpHud;
-        float offset = config.lineSpacingExpHud;
-        float scale = config.expHudScale;
-        float opacity = config.expHudOpacity;
+        float startVertical = 30;
+        float startHorizontal = 30;
+        float offset = 10;
+        float scale = 1;
+        float opacity = 0.3f;
 
-        int textColor = config.textColorExpHud;
-        int coinColor = config.coinColorExpHud;
+        int textColor = 0xAAAAAA;
+        int coinColor = 0xFFAA00;
 
         boolean coinEnabled = config.coinEnabledExpHud;
 

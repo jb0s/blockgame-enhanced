@@ -9,6 +9,10 @@ import me.shedaniel.autoconfig.serializer.PartitioningSerializer;
 public class ModConfig extends PartitioningSerializer.GlobalData {
     @Getter
     @ConfigEntry.Gui.CollapsibleObject(startExpanded = true)
+    IngameHudConfig ingameHudConfig = new IngameHudConfig();
+
+    @Getter
+    @ConfigEntry.Gui.CollapsibleObject(startExpanded = true)
     PartyHudConfig partyHudConfig = new PartyHudConfig();
 
     @Getter

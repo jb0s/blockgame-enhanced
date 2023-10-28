@@ -1,4 +1,5 @@
 ﻿{
+	"comment.1": "~~ Keybinding Menu ~~",
 	"category.blockgame.keybinds": "Blockgame",
 	"key.blockgame.warp_menu": "Quick Warp",
 	"key.blockgame.auction_house": "Open Auction House",
@@ -10,13 +11,32 @@
 	"key.blockgame.backpack": "Open Backpack",
 	"key.blockgame.disposal": "Open Disposal menu",
 	"key.blockgame.deposit": "Open Deposit menu",
+
+	"comment.2": "~~ Title Screen ~~",
 	"menu.blockgame.title.play": "Play",
 	"menu.blockgame.title.debug": "Debug Mode",
 	"menu.blockgame.title.website": "Website",
 	"menu.blockgame.title.wiki": "Wiki",
 	"menu.blockgame.title.watermark": "Blockgame Enhanced v%s by notIrma",
-	"menu.blockgame.quit.title": "Are you sure you want to quit?",
-	"menu.blockgame.quit.description": "Any unsaved changes will NOT be lost. Haha. It's Minecraft.",
+
+	"comment.3": "~~ Adventure Zone Names ~~",
+	"region.blockgame.midgard.origin_city_plaza": "§6Origin City §8(Plaza)",
+	"region.blockgame.midgard.origin_city_farms": "§6Origin City §8(Community Farm)",
+	"region.blockgame.overworld.yggdrasil": "§2Yggdrasil",
+	"region.blockgame.sunken_cells.sunken_cells_dungeon": "§3Sunken Cells §8(Dungeon)",
+	"region.blockgame.sunken_cells.sunken_cells_waiting_room": "§3Sunken Cells §8(Boss Entrance)",
+	"region.blockgame.sunken_cells.sunken_cells_boss": "§3Sunken Cells §8(Boss Room)",
+	"region.blockgame.sunken_cells.sunken_cells_post_boss_area": "§3Sunken Cells §8(Exit Route)",
+	"region.blockgame.krognars_bastion.krognars_dungeon": "§cKrognar's Bastion §8(Dungeon)",
+	"region.blockgame.krognars_bastion.krognars_dungeon_cinder": "§cKrognar's Bastion §8(Cinder's Room)",
+	"region.blockgame.krognars_bastion.krognars_waiting_room_bottom": "§cKrognar's Bastion §8(Ladder)",
+	"region.blockgame.krognars_bastion.krognars_waiting_room": "§cKrognar's Bastion §8(Boss Entrance)",
+	"region.blockgame.midgard.neith_pyramid": "§eNeith §8(Pyramid of Neith)",
+	"region.blockgame.midgard.neith_dock": "§eNeith §8(Dock)",
+	"region.blockgame.midgard.arena_exterior": "§4The Arena §8(Entrance)",
+	"region.blockgame.midgard.arena_interior": "§4The Arena",
+
+	"comment.4": "~~ Warp Menu ~~",
 	"menu.blockgame.warp.header": "Warp Menu",
 	"menu.blockgame.warp.subheader": "Where do you want to go?",
 	"menu.blockgame.warp.button.town": "My Town",
@@ -29,8 +49,12 @@
 	"menu.blockgame.warp.button.rotten_maw": "Rotten Maw",
 	"menu.blockgame.warp.button.arena": "Arena",
 	"menu.blockgame.warp.button.neith": "Neith",
+
+	"comment.5": "~~ Pause Menu ~~",
 	"menu.blockgame.cringe": "Jake",
 	"menu.blockgame.options": "Blockgame Mod...",
+
+	"comment.6": "~~ Party HUD ~~",
 	"hud.blockgame.toast.party.joined.title": "Player joined party",
 	"hud.blockgame.toast.party.joined.description": "%s has joined the party!",
 	"hud.blockgame.toast.party.left.title": "Player left party",
@@ -38,8 +62,12 @@
 	"hud.blockgame.toast.party.disbanded.title": "Party disbanded",
 	"hud.blockgame.toast.party.disbanded.description": "Every player has left, the party has been disbanded.",
 	"hud.blockgame.party.outofrange": "OUT OF RANGE",
+
+	"comment.7": "~~ Join Greeting ~~",
 	"hud.blockgame.message.welcome.1": "§9Welcome! Thank you for using my mod. §c❤",
 	"hud.blockgame.message.welcome.2": "§e⚠ If you run into any issues, please submit an issue on the GitHub repository.",
+
+	"comment.8": "~~ Options Menu ~~",
 	"text.autoconfig.blockgameenhanced.title": "Blockgame Options",
 	"text.autoconfig.blockgameenhanced.option.partyHudConfig": "Party HUD",
 	"text.autoconfig.blockgameenhanced.option.accessibilityConfig": "Accessibility",
@@ -72,6 +100,8 @@
 	"text.autoconfig.blockgameenhanced.option.accessibilityConfig.enableLootAllButton.@Tooltip": "Enables/disables the 'Loot All' button that appears in Chest / Barrel interfaces.",
 	"text.autoconfig.blockgameenhanced.option.accessibilityConfig.enableAutofillDeposit": "Enable Deposit Autofill",
 	"text.autoconfig.blockgameenhanced.option.accessibilityConfig.enableAutofillDeposit.@Tooltip": "Whether or not to automatically put all your currency in the deposit window upon opening.\n(Does not automatically deposit, only fills)",
+
+	"comment.9": "~~ Update Popup ~~",
 	"menu.blockgame.update.header": "Update available",
 	"menu.blockgame.update.message.1": "Blockgame Enhanced %s has been released!",
 	"menu.blockgame.update.message.2": "Update to receive awesome new features and improvements.",
@@ -84,6 +114,7 @@
 	"menu.blockgame.status.online": "There are %s players online:",
 	"menu.blockgame.container.plunder": "Loot All",
 
+	"comment.10": "~~  ~~",
 	"menu.blockgame.modifierHighlighterConfig": "Modifier Highlighter",
 	"menu.blockgame.modifierHighlighterConfig.modifiersEnabled": "Enable Modifier Highlighter",
 	"menu.blockgame.modifierHighlighterConfig.modifiersEnabled.@Tooltip": "If enabled, matching modifiers on items become an Overlay",
@@ -110,6 +141,7 @@
 	"menu.blockgame.modifierHighlighterConfig.rRuneValue4": "Min Value",
 	"menu.blockgame.modifierHighlighterConfig.rRuneValue4.@Tooltip": "Value >= to Match (5)",
 
+	"comment.11": "~~  ~~",
 	"menu.blockgame.modifierHighlighterConfig.advancedModifierHighlighterConfig": "Advanced Modifier Highlighter",
 	"menu.blockgame.modifierHighlighterConfig.advancedModifierHighlighterConfig.modifierHighlight": "Highlight Text",
 	"menu.blockgame.modifierHighlighterConfig.advancedModifierHighlighterConfig.modifierHighlight.@Tooltip": "The Text that will be Overlay on the Item",
@@ -122,6 +154,7 @@
 	"menu.blockgame.modifierHighlighterConfig.advancedModifierHighlighterConfig.modifierHighlightYOffset": "Y Offset",
 	"menu.blockgame.modifierHighlighterConfig.advancedModifierHighlighterConfig.modifierHighlightYOffset.@Tooltip": "The Vertical Position of the Overlay",
 
+	"comment.12": "~~  ~~",
 	"menu.blockgame.expHudConfig": "Experience HUD",
 	"menu.blockgame.expHudConfig.expHudEnabled": "Enable Experience HUD",
 	"menu.blockgame.expHudConfig.expHudEnabled.@Tooltip": "If enabled, a HUD with Experience Statistics\nwill be appear on-screen",
@@ -146,6 +179,7 @@
 	"menu.blockgame.expHudConfig.chatCoinEnabled": "Hide Coin Chat Messages",
 	"menu.blockgame.expHudConfig.chatCoinEnabled.@Tooltip": "If enabled, no &6Coin &fMessages will spam the Chat",
 
+	"comment.13": "~~  ~~",
 	"menu.blockgame.expHudConfig.advancedExpHudConfig": "Advanced Experience HUD",
 	"menu.blockgame.expHudConfig.advancedExpHudConfig.chatMessageType": "Chat Message Type",
 	"menu.blockgame.expHudConfig.advancedExpHudConfig.chatMessageType.@Tooltip": "CHAT, SYSTEM, GAME_INFO",
