@@ -158,6 +158,7 @@ public class TitleScreen extends Screen {
      * @param y2 The Y coordinate to render the logo at.
      */
     public void renderLogo(MatrixStack matrices, int screenWidth, float alpha, int y2) {
+        RenderSystem.enableBlend();;
         RenderSystem.setShaderTexture(0, BLOCKGAME_LOGO_TEXTURE);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, alpha);
 
@@ -167,6 +168,7 @@ public class TitleScreen extends Screen {
         DrawableHelper.drawTexture(matrices, i, y2, 0, 0, 0, textureWidth, textureHeight, textureWidth, textureHeight);
 
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.disableBlend();
     }
 
     /**
