@@ -1,8 +1,9 @@
 package dev.jb0s.blockgameenhanced.manager.mmocore;
 
 import dev.jb0s.blockgameenhanced.event.chat.ReceiveChatMessageEvent;
-import dev.jb0s.blockgameenhanced.helper.DebugHelper;
+import dev.jb0s.blockgameenhanced.gui.hud.immersive.ImmersiveIngameHud;
 import dev.jb0s.blockgameenhanced.manager.Manager;
+import dev.jb0s.blockgameenhanced.manager.mmocore.profession.MMOProfession;
 import lombok.Getter;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.ActionResult;
@@ -25,7 +26,8 @@ public class MMOCoreManager extends Manager {
 
     @Override
     public void init() {
-        ReceiveChatMessageEvent.EVENT.register(this::extractDataFromThing);
+        ReceiveChatMessageEvent.EVENT.register(this::extractStatsFromMessage);
+        ReceiveChatMessageEvent.EVENT.register(this::extractExpDataFromMessage);
     }
 
     @Override
@@ -39,7 +41,7 @@ public class MMOCoreManager extends Manager {
         return lines;
     }
 
-    private ActionResult extractDataFromThing(MinecraftClient minecraftClient, String message) {
+    private ActionResult extractStatsFromMessage(MinecraftClient minecraftClient, String message) {
         String[] split = message.split("\\|");
         if(split.length != 3) {
             return ActionResult.PASS;
@@ -58,6 +60,28 @@ public class MMOCoreManager extends Manager {
             this.hunger = Integer.parseInt(huSet[0]);
             maxHealth = Integer.parseInt(hpSet[1].trim());
             hydration = Float.parseFloat(hySet[0]);
+            return ActionResult.SUCCESS;
+        }
+
+        return ActionResult.PASS;
+    }
+
+    private ActionResult extractExpDataFromMessage(MinecraftClient minecraftClient, String message) {
+        if(!message.startsWith("[EXP]")) {
+            return ActionResult.PASS;
+        }
+
+        String data = message.substring(6);
+        String[] split = data.split(" - ");
+        String[] professionInfo = split[0].split(" ");
+
+        if(minecraftClient.inGameHud instanceof ImmersiveIngameHud immersiveIngameHud) {
+            if(professionInfo[0].trim().equals("Einherjar")) {
+                return ActionResult.SUCCESS;
+            }
+
+            MMOProfession prof = MMOProfession.valueOf(professionInfo[0].trim().toUpperCase());
+            immersiveIngameHud.getImmersiveExpPopupContainer().showExpPopup(prof, Float.parseFloat(split[1].replace("%", "")));
             return ActionResult.SUCCESS;
         }
 

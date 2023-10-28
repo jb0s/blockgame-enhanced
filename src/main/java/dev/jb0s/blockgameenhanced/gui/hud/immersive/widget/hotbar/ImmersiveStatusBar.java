@@ -1,6 +1,7 @@
-package dev.jb0s.blockgameenhanced.gui.hud.immersive.widget;
+package dev.jb0s.blockgameenhanced.gui.hud.immersive.widget.hotbar;
 
 import dev.jb0s.blockgameenhanced.BlockgameEnhancedClient;
+import dev.jb0s.blockgameenhanced.gui.hud.immersive.widget.ImmersiveWidget;
 import dev.jb0s.blockgameenhanced.manager.adventure.AdventureZone;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;

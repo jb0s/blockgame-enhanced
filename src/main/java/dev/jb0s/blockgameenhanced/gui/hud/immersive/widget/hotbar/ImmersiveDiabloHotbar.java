@@ -1,29 +1,26 @@
-package dev.jb0s.blockgameenhanced.gui.hud.immersive.widget;
+package dev.jb0s.blockgameenhanced.gui.hud.immersive.widget.hotbar;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.jb0s.blockgameenhanced.BlockgameEnhancedClient;
+import dev.jb0s.blockgameenhanced.gui.hud.immersive.widget.ImmersiveWidget;
 import dev.jb0s.blockgameenhanced.manager.latency.LatencyManager;
 import dev.jb0s.blockgameenhanced.manager.mmocore.MMOCoreManager;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.option.AttackIndicator;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
-import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
 
-public class NewImmersiveHotbar extends ImmersiveWidget {
+public class ImmersiveDiabloHotbar extends ImmersiveWidget {
     private static final Identifier WIDGETS_TEXTURE = new Identifier("blockgame", "textures/gui/hud/widgets.png");
 
-    public NewImmersiveHotbar(InGameHud inGameHud) {
+    public ImmersiveDiabloHotbar(InGameHud inGameHud) {
         super(inGameHud);
     }
 

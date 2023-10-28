@@ -1,6 +1,7 @@
-package dev.jb0s.blockgameenhanced.gui.hud.immersive.widget;
+package dev.jb0s.blockgameenhanced.gui.hud.immersive.widget.hotbar;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import dev.jb0s.blockgameenhanced.gui.hud.immersive.widget.ImmersiveWidget;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.option.AttackIndicator;

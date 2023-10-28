@@ -30,6 +30,9 @@ public class ImmersiveWidget {
         RenderSystem.disableBlend();
     }
 
+    public void tick() {
+    }
+
     public int getWidth() {
         return 70;
     }
