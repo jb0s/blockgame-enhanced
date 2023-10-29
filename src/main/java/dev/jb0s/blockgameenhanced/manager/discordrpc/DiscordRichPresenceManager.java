@@ -37,16 +37,19 @@ public class DiscordRichPresenceManager extends Manager {
     public void init() {
         client.setListener(new BlockgameIPCListener());
 
-        // Listen for ready event
-        DiscordReadyEvent.EVENT.register((a) -> handleReady());
+        // Damn Zultralord
+        if(!MinecraftClient.IS_SYSTEM_MAC) {
+            // Listen for ready event
+            DiscordReadyEvent.EVENT.register((a) -> handleReady());
 
-        // Update rich presence upon join / disconnect / party update
-        ClientPlayConnectionEvents.JOIN.register((a, b, c) -> setInGame(true));
-        ClientPlayConnectionEvents.DISCONNECT.register((a, b) -> setInGame(false));
-        PartyUpdatedEvent.EVENT.register(this::setPartySize);
+            // Update rich presence upon join / disconnect / party update
+            ClientPlayConnectionEvents.JOIN.register((a, b, c) -> setInGame(true));
+            ClientPlayConnectionEvents.DISCONNECT.register((a, b) -> setInGame(false));
+            PartyUpdatedEvent.EVENT.register(this::setPartySize);
 
-        // Connect
-        safeConnect();
+            // Connect
+            safeConnect();
+        }
     }
 
     @Override
