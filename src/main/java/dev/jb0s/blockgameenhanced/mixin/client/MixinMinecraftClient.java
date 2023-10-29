@@ -6,7 +6,6 @@ import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
 import dev.jb0s.blockgameenhanced.BlockgameEnhancedClient;
 import dev.jb0s.blockgameenhanced.event.world.WorldUpdatedEvent;
-import dev.jb0s.blockgameenhanced.gui.hud.immersive.ClassicIngameHud;
 import dev.jb0s.blockgameenhanced.gui.hud.immersive.ImmersiveIngameHud;
 import dev.jb0s.blockgameenhanced.gui.screen.title.TitleScreen;
 import dev.jb0s.blockgameenhanced.manager.config.modules.IngameHudConfig;
@@ -125,15 +124,7 @@ public abstract class MixinMinecraftClient {
         // Apply Custom HUD
         IngameHudConfig ingameHudConfig = BlockgameEnhanced.getConfig().getIngameHudConfig();
         if(ingameHudConfig.enableCustomHud) {
-            switch (ingameHudConfig.style) {
-                case MODERN:
-                    inGameHud = new ImmersiveIngameHud(thisMinecraft);
-                    break;
-
-                case CLASSIC:
-                    inGameHud = new ClassicIngameHud(thisMinecraft);
-                    break;
-            }
+            inGameHud = new ImmersiveIngameHud(thisMinecraft);
         }
     }
 

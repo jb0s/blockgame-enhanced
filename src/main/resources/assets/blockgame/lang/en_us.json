@@ -100,6 +100,7 @@
 	"text.autoconfig.blockgameenhanced.option.accessibilityConfig.enableLootAllButton.@Tooltip": "Enables/disables the 'Loot All' button that appears in Chest / Barrel interfaces.",
 	"text.autoconfig.blockgameenhanced.option.accessibilityConfig.enableAutofillDeposit": "Enable Deposit Autofill",
 	"text.autoconfig.blockgameenhanced.option.accessibilityConfig.enableAutofillDeposit.@Tooltip": "Whether or not to automatically put all your currency in the deposit window upon opening.\n(Does not automatically deposit, only fills)",
+	"text.autoconfig.blockgameenhanced.option.ingameHudConfig": "Ingame HUD Config",
 	"text.autoconfig.blockgameenhanced.option.ingameHudConfig.enableCustomHud": "Enable Custom HUD",
 	"text.autoconfig.blockgameenhanced.option.ingameHudConfig.enableCustomHud.@Tooltip": "Enable a special HUD layout more tailored to Blockgame.",
 
