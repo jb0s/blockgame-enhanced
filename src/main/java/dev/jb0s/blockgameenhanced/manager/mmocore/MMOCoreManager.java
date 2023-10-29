@@ -1,5 +1,7 @@
 package dev.jb0s.blockgameenhanced.manager.mmocore;
 
+import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
+import dev.jb0s.blockgameenhanced.BlockgameEnhancedClient;
 import dev.jb0s.blockgameenhanced.event.chat.ReceiveChatMessageEvent;
 import dev.jb0s.blockgameenhanced.gui.hud.immersive.ImmersiveIngameHud;
 import dev.jb0s.blockgameenhanced.manager.Manager;
@@ -60,14 +62,14 @@ public class MMOCoreManager extends Manager {
             this.hunger = Integer.parseInt(huSet[0]);
             maxHealth = Integer.parseInt(hpSet[1].trim());
             hydration = Float.parseFloat(hySet[0]);
-            return ActionResult.SUCCESS;
+            return BlockgameEnhanced.getConfig().getIngameHudConfig().enableCustomHud ? ActionResult.SUCCESS : ActionResult.PASS;
         }
 
         return ActionResult.PASS;
     }
 
     private ActionResult extractExpDataFromMessage(MinecraftClient minecraftClient, String message) {
-        if(!message.startsWith("[EXP]")) {
+        if(!message.startsWith("[EXP]") || !BlockgameEnhanced.getConfig().getIngameHudConfig().enableCustomHud) {
             return ActionResult.PASS;
         }
 
