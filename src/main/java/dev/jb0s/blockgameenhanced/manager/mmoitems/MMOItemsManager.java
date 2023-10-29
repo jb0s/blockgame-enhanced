@@ -62,6 +62,11 @@ public class MMOItemsManager extends Manager {
 
         // Send any scheduled packets
         if(!scheduledPackets.isEmpty()) {
+            if(client.getNetworkHandler() == null) {
+                scheduledPackets.clear();
+                return;
+            }
+
             Iterator<ScheduledItemUsePacket> it = scheduledPackets.iterator();
 
             while (it.hasNext()) {
