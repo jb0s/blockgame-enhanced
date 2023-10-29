@@ -152,6 +152,10 @@ public class MMOItemsManager extends Manager {
      * @return Always returns PASS, whether the routine was successful or not.
      */
     public ActionResult visualizeCooldown(MinecraftClient client, String message) {
+        if(!message.startsWith("[CD]")) {
+            return ActionResult.PASS;
+        }
+
         LatencyManager latencyManager = BlockgameEnhancedClient.getLatencyManager();
         ItemUsageEvent itemUsage = latencyManager.getItemUsage();
         if(itemUsage == null) {
@@ -160,8 +164,8 @@ public class MMOItemsManager extends Manager {
 
         ItemStack stack = itemUsage.getItemStack();
 
-        // If message isn't about a cooldown or item in hand doesn't have an MMOItems ability, skip
-        if(!message.startsWith("[CD]") || !MMOItemHelper.hasMMOAbility(stack)) {
+        // If item in hand doesn't have an MMOItems ability, skip
+        if(!MMOItemHelper.hasMMOAbility(stack)) {
             return ActionResult.PASS;
         }
 
