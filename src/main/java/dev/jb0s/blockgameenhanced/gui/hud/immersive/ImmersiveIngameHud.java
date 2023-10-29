@@ -17,17 +17,17 @@ public class ImmersiveIngameHud extends InGameHud {
 
     public ImmersiveIngameHud(MinecraftClient client) {
         super(client);
-        statusBar = new ImmersiveStatusBar(this);
+        //statusBar = new ImmersiveStatusBar(this);
         newImmersiveHotbar = new ImmersiveDiabloHotbar(this);
         immersiveExpPopupContainer = new ImmersiveExpPopupContainer(this);
     }
 
     @Override
     protected void renderHotbar(float tickDelta, MatrixStack matrices) {
-        int bottom = scaledHeight - 22;
+        int bottom = scaledHeight/* - 22*/;
 
-        statusBar.render(matrices, 0, bottom, tickDelta);
-        newImmersiveHotbar.render(matrices, scaledWidth / 2, bottom + 1, tickDelta);
+        //statusBar.render(matrices, 0, bottom, tickDelta);
+        newImmersiveHotbar.render(matrices, scaledWidth / 2, bottom, tickDelta);
         immersiveExpPopupContainer.render(matrices, scaledWidth / 2, bottom - 60, tickDelta);
     }
 
