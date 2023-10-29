@@ -24,6 +24,7 @@ public class HotkeyManager extends Manager {
         bind(InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_B, "key.blockgame.backpack", BackpackBind::handlePressed);
         bind(InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_X, "key.blockgame.disposal", DisposalBind::handlePressed);
         bind(InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_N, "key.blockgame.deposit", DepositBind::handlePressed); // this is such a shit bind
+        bind(InputUtil.Type.KEYSYM, GLFW.GLFW_MOUSE_BUTTON_MIDDLE, "key.blockgame.ping", PingBind::handlePressed);
         bind(InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_F4, "key.blockgame.debug", DebugBind::handlePressed);
     }
 

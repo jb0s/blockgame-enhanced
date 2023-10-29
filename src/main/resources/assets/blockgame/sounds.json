@@ -110,5 +110,18 @@
 		"sounds": [
 			"blockgame:sound/hb_combat_death"
 		]
-    }
+    },
+
+	"mus.party.ping.block": {
+		"subtitle": "Party member marks location",
+		"sounds": [
+			"blockgame:sound/ping_location"
+		]
+	},
+	"mus.party.ping.item": {
+		"subtitle": "Party member marks item",
+		"sounds": [
+			"blockgame:sound/ping_item"
+		]
+	}
 }

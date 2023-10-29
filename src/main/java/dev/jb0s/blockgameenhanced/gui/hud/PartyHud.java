@@ -4,17 +4,24 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
 import dev.jb0s.blockgameenhanced.BlockgameEnhancedClient;
+import dev.jb0s.blockgameenhanced.helper.DebugHelper;
+import dev.jb0s.blockgameenhanced.helper.MathHelper;
 import dev.jb0s.blockgameenhanced.helper.TimeHelper;
 import dev.jb0s.blockgameenhanced.manager.config.ConfigManager;
 import dev.jb0s.blockgameenhanced.manager.party.PartyManager;
 import dev.jb0s.blockgameenhanced.manager.party.PartyMember;
+import dev.jb0s.blockgameenhanced.manager.party.PartyPing;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.*;
+import org.jetbrains.annotations.Debug;
 
 import java.util.ArrayList;
 
@@ -76,6 +83,10 @@ public class PartyHud extends DrawableHelper {
             }
 
             renderPartyMember(matrices, partyMembers.get(i), i + indexOffset);
+        }
+
+        for (PartyPing ping : partyManager.getPartyPings().values()) {
+            renderPartyPing(matrices, ping);
         }
     }
 
@@ -148,5 +159,63 @@ public class PartyHud extends DrawableHelper {
 
             RenderSystem.disableBlend();
         }
+    }
+
+    private static void renderPartyPing(MatrixStack matrices, PartyPing ping) {
+        MinecraftClient minecraft = MinecraftClient.getInstance();
+        ClientPlayerEntity cpe = minecraft.player;
+
+        if (cpe == null || ping.getScreenSpacePos() == null) {
+            return;
+        }
+
+        // Calculate where and how big the ping has to be displayed
+        Vector4f pos = ping.getScreenSpacePos();
+        Vec3d cameraPosVec = MinecraftClient.getInstance().player.getCameraPosVec(0.0f);
+        float distanceToPing = (float) cameraPosVec.distanceTo(ping.getLocation());
+        float uiScale = (float) MinecraftClient.getInstance().getWindow().getScaleFactor();
+        float uiScaleAdjustment = uiScale * 2f / 5f;
+        float size = getDistanceScale(distanceToPing) * 2.5f / uiScale * uiScaleAdjustment;
+
+        matrices.push();
+        matrices.translate((pos.getX() / uiScale), (pos.getY() / uiScale), 0);
+        matrices.scale(size, size, 1f);
+
+        // Calculate ping label text and size
+        String labelText = String.format("%s - %dm", ping.getPartyMember().getPlayerName(), (int) distanceToPing);
+        var labelSize = new Vec2f(MinecraftClient.getInstance().textRenderer.getWidth(labelText), MinecraftClient.getInstance().textRenderer.fontHeight);
+        var labelOffset = labelSize.multiply(-0.5f).add(new Vec2f(0f, labelSize.y * -1.5f));
+
+        // Draw player head
+        matrices.push();
+        matrices.translate(labelOffset.x + ((labelOffset.y / 2) + 3), labelOffset.y, 0);
+        RenderSystem.enableBlend();
+        RenderSystem.setShaderTexture(0, ping.getPartyMember().getPlayer().getSkinTexture());
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1f);
+        DrawableHelper.drawTexture(matrices, -2, -2, (int)labelSize.y + 2, (int)labelSize.y + 2, 8.0f, 8.0f, 8, 8, 64, 64);
+        DrawableHelper.drawTexture(matrices, -2, -2, (int)labelSize.y + 2, (int)labelSize.y + 2, 40.0f, 8.0f, 8, 8, 64, 64);
+        RenderSystem.disableBlend();
+        matrices.pop();
+
+        // Draw text
+        matrices.push();
+        matrices.translate(labelOffset.x - ((labelOffset.y / 2) + 3), labelOffset.y, 0);
+        DrawableHelper.fill(matrices, -2, -2, (int)labelSize.x + 1, (int)labelSize.y, 0x77000000);
+        MinecraftClient.getInstance().textRenderer.draw(matrices, labelText, 0f, 0f, 0xFFFFFFFF);
+        matrices.pop();
+
+        // Draw angled square at origin
+        MathHelper.rotateZ(matrices, (float)(Math.PI / 4f));
+        matrices.translate(-2.5, -2.5, 0);
+        DrawableHelper.fill(matrices, 0, 0, 5, 5, ping.isHovered() ? 0xFFFF0000 : 0xFFFFFFFF);
+
+        matrices.pop();
+    }
+
+    private static float getDistanceScale(float distance) {
+        var scaleMin = 1f;
+        var scale = 2f / Math.pow(distance, 0.3f);
+
+        return (float)Math.max(scaleMin, scale);
     }
 }

@@ -39,7 +39,7 @@ public class MixinClientPlayNetworkHandler {
         }
     }
 
-    @Inject(method = "onOpenScreen", at = @At("HEAD"))
+    @Inject(method = "onOpenScreen", at = @At("HEAD"), cancellable = true)
     public void onOpenScreen(OpenScreenS2CPacket packet, CallbackInfo ci) {
         ClientPlayNetworkHandler thisHandler = (ClientPlayNetworkHandler) (Object) this;
         NetworkThreadUtils.forceMainThread(packet, thisHandler, client);

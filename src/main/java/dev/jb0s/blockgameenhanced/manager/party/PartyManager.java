@@ -5,13 +5,17 @@ import dev.jb0s.blockgameenhanced.event.chat.ReceiveChatMessageEvent;
 import dev.jb0s.blockgameenhanced.event.chat.SendChatMessageEvent;
 import dev.jb0s.blockgameenhanced.event.entity.otherplayer.OtherPlayerTickEvent;
 import dev.jb0s.blockgameenhanced.event.party.PartyUpdatedEvent;
+import dev.jb0s.blockgameenhanced.helper.MathHelper;
 import dev.jb0s.blockgameenhanced.helper.TimeHelper;
 import dev.jb0s.blockgameenhanced.manager.Manager;
 import lombok.Getter;
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.toast.SystemToast;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.SkullItem;
 import net.minecraft.network.packet.s2c.play.InventoryS2CPacket;
@@ -23,9 +27,13 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.math.Matrix4f;
+import net.minecraft.util.math.Vec3d;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 public class PartyManager extends Manager {
@@ -33,6 +41,8 @@ public class PartyManager extends Manager {
     private static final String PARTY_LIST_SCREEN_NAME = "Party";
     private static final String PARTY_CREATION_SCREEN_NAME = "Party Creation";
     private static final SoundEvent PARTY_MEMBER_DEATH_SOUND = new SoundEvent(new Identifier("blockgame", "mus.gui.combat.death"));
+    private static final SoundEvent PING_LOCATION_SOUND = new SoundEvent(new Identifier("blockgame", "mus.party.ping.block"));
+    private static final SoundEvent PING_ITEM_SOUND = new SoundEvent(new Identifier("blockgame", "mus.party.ping.item"));
 
     // todo this is kind of hacky I don't like it. replace with a better system soon?
     private static final String[] TRIGGER_PHRASES = new String[] {
@@ -46,6 +56,9 @@ public class PartyManager extends Manager {
 
     @Getter
     private ArrayList<PartyMember> partyMembers;
+
+    @Getter
+    private HashMap<PartyMember, PartyPing> partyPings;
 
     // Party Updates
     private boolean allowedToQueryServer;
@@ -62,6 +75,7 @@ public class PartyManager extends Manager {
         ReceiveChatMessageEvent.EVENT.register(((client1, message) -> handleChatMessage(message)));
         SendChatMessageEvent.EVENT.register(((client1, message) -> handleSentChatMessage(message)));
         OtherPlayerTickEvent.EVENT.register(((client1, otherPlayer) -> handlePlayerHealth(otherPlayer.getGameProfile().getName(), (int)otherPlayer.getHealth(), (int)otherPlayer.getMaxHealth(), otherPlayer.isAlive())));
+        WorldRenderEvents.END.register(ctx -> preRenderPings(ctx.matrixStack(), ctx.projectionMatrix(), ctx.tickDelta()));
     }
 
     @Override
@@ -79,6 +93,7 @@ public class PartyManager extends Manager {
             isWaitingForPartyScreenContent = false;
             currentPayloadSyncId = 0;
             partyMembers = null;
+            partyPings = null;
             return;
         }
 
@@ -123,6 +138,15 @@ public class PartyManager extends Manager {
             lines.add("Not in a party");
         }
         return lines;
+    }
+
+    public void preRenderPings(MatrixStack matrices, Matrix4f projectionMatrix, float tickDelta) {
+        if(partyPings == null) return;
+
+        Matrix4f x = matrices.peek().getPositionMatrix();
+        for(PartyPing ping : partyPings.values()) {
+            ping.setScreenSpacePos(MathHelper.worldToScreenSpace(ping.getLocation(), x, projectionMatrix));
+        }
     }
 
     /**
@@ -254,6 +278,7 @@ public class PartyManager extends Manager {
     private void handlePlayerJoinedParty(PlayerListEntry player) {
         if(partyMembers == null) {
             partyMembers = new ArrayList<>();
+            partyPings = new HashMap<>();
         }
 
         // Add to party
@@ -282,6 +307,7 @@ public class PartyManager extends Manager {
 
         if(partyMembers.size() == 1) {
             partyMembers = null;
+            partyPings = null;
             allowedToQueryServer = false;
 
             // Toast notification saying that party disbanded
@@ -294,6 +320,7 @@ public class PartyManager extends Manager {
         }
         else {
             partyMembers.remove(member);
+            partyPings.remove(member);
 
             // Toast notification saying that player left
             Text toastTitle = new TranslatableText("hud.blockgame.toast.party.left.title");
@@ -364,6 +391,44 @@ public class PartyManager extends Manager {
             if(messageContainsTrigger) {
                 allowedToQueryServer = true;
                 ticksSinceLastUpdate = PARTY_UPDATE_INTERVAL;
+                return ActionResult.PASS;
+            }
+        }
+
+        // Check for pings
+        if(message.startsWith("[Party] ") && client.world != null) {
+            String[] args = message.split(" ~ ");
+            if(args.length < 2) return ActionResult.PASS;
+
+            if(args[1].equals("Ping")) {
+                if(args.length < 3) return ActionResult.PASS;
+                String pmb = args[0].substring(8, args[0].indexOf(":"));
+                String[] loc = args[2].substring(1, args[2].length() - 1).split(", ");
+                Vec3d pos = new Vec3d(Double.parseDouble(loc[0]), Double.parseDouble(loc[1]), Double.parseDouble(loc[2]));
+                String wld = args[3];
+
+                // Store ping data
+                PartyMember partyMember = getPartyMember(pmb);
+                if(partyPings.containsKey(partyMember)) {
+                    PartyPing ping = partyPings.get(partyMember);
+                    ping.setLocation(pos);
+                    ping.setWorld(wld);
+                }
+                else {
+                    PartyPing ping = new PartyPing(partyMember, pos, wld);
+                    partyPings.put(partyMember, ping);
+                }
+
+                // Play sound indicating new ping data
+                client.world.playSound(pos.x, pos.y, pos.z, PING_LOCATION_SOUND, SoundCategory.PLAYERS, 0.75f, 1.0f, false);
+                return ActionResult.SUCCESS;
+            }
+
+            if(args[1].equals("Unping")) {
+                String pmb = args[0].substring(8, args[0].indexOf(":"));
+                PartyMember partyMember = getPartyMember(pmb);
+                partyPings.remove(partyMember);
+                return ActionResult.SUCCESS;
             }
         }
 
@@ -387,6 +452,27 @@ public class PartyManager extends Manager {
         isWaitingForPartyScreenOpen = true;
         isWaitingForPartyScreenContent = false;
         client.player.sendChatMessage("/party");
+    }
+
+    /**
+     * Attempts to ping/unping a location.
+     */
+    public void tryPing() {
+        ClientPlayerEntity cpe = client.player;
+        if(cpe == null || partyPings == null) return;
+
+        HitResult hit = cpe.raycast(1000.f, 0.0f, false);
+        if(hit.getType().equals(HitResult.Type.BLOCK)) {
+            PartyPing existingPing = partyPings.get(getPartyMember(client.getSession().getUsername()));
+
+            // If we're pinging where a ping already exists, unping instead
+            if(existingPing != null && existingPing.isHovered()) {
+                cpe.sendChatMessage("@~ Unping");
+            }
+            else {
+                cpe.sendChatMessage(String.format("@~ Ping ~ " + hit.getPos().toString() + " ~ " + cpe.world.getRegistryKey().getValue().getPath()));
+            }
+        }
     }
 
     /**
