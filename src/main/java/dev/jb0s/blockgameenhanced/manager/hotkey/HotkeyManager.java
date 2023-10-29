@@ -25,8 +25,6 @@ public class HotkeyManager extends Manager {
         bind(InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_X, "key.blockgame.disposal", DisposalBind::handlePressed);
         bind(InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_N, "key.blockgame.deposit", DepositBind::handlePressed); // this is such a shit bind
         bind(InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_F4, "key.blockgame.debug", DebugBind::handlePressed);
-        bind(InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_GRAVE_ACCENT, "key.blockgame.toggle_exp_hud", ToggleExpHudBind::handlePressed); // Toggle Exp Hud Render
-        bind(InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_HOME, "key.blockgame.switch_exp_hud", SwitchExpModiBind::handlePressed); // Switch between hud modes
     }
 
     @Override
