@@ -32,6 +32,10 @@ public class MMOCoreManager extends Manager {
     }
 
     private ActionResult extractStatsFromMessage(MinecraftClient minecraftClient, String message) {
+        if(!(minecraftClient.inGameHud instanceof ImmersiveIngameHud)) {
+            return ActionResult.PASS;
+        }
+
         String[] split = message.split("\\|");
         if(split.length != 3) {
             return ActionResult.PASS;
