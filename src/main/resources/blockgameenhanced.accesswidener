@@ -12,3 +12,6 @@ extendable method net/minecraft/client/gui/hud/InGameHud renderMountHealth (Lnet
 accessible field net/minecraft/client/gui/hud/InGameHud scaledWidth I
 accessible field net/minecraft/client/gui/hud/InGameHud scaledHeight I
 accessible field net/minecraft/client/gui/hud/InGameHud client Lnet/minecraft/client/MinecraftClient;
+accessible field net/minecraft/client/gui/hud/InGameHud title Lnet/minecraft/text/Text;
+accessible field net/minecraft/client/gui/hud/InGameHud subtitle Lnet/minecraft/text/Text;
+accessible field net/minecraft/client/gui/hud/InGameHud overlayMessage Lnet/minecraft/text/Text;

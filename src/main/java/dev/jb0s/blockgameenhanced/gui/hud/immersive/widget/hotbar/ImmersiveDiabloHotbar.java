@@ -116,6 +116,12 @@ public class ImmersiveDiabloHotbar extends ImmersiveWidget {
         // calculate shite
         MMOCoreManager mmoCoreManager = BlockgameEnhancedClient.getMmoCoreManager();
         float healthPercent = (float) mmoCoreManager.getHealth() / mmoCoreManager.getMaxHealth();
+
+        // If there is an actionbar message, we are not receiving MMO data. Use vanilla data instead to avoid hitches in HUD
+        if(getInGameHud().overlayMessage != null) {
+            healthPercent = playerEntity.getHealth() / playerEntity.getMaxHealth();
+        }
+
         int gaugeHeight = (int) (32.f * healthPercent);
         int yOffset = 32 - gaugeHeight;
 
@@ -168,6 +174,12 @@ public class ImmersiveDiabloHotbar extends ImmersiveWidget {
         // calculate shite
         MMOCoreManager mmoCoreManager = BlockgameEnhancedClient.getMmoCoreManager();
         float hungerPercent = (float) mmoCoreManager.getHunger() / 20;
+
+        // If there is an actionbar message, we are not receiving MMO data. Use vanilla data instead to avoid hitches in HUD
+        if(getInGameHud().overlayMessage != null) {
+            hungerPercent = player.getHungerManager().getFoodLevel() / 20.f;
+        }
+
         int gaugeHeight = (int) (32.f * hungerPercent);
         int yOffset = 32 - gaugeHeight;
 
