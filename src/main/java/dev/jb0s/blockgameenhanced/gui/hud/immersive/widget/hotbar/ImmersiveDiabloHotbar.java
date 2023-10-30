@@ -240,11 +240,14 @@ public class ImmersiveDiabloHotbar extends ImmersiveWidget {
         int latency = latencyManager.getLatency();
         int severity = 0;
 
-        if(latency > 70) severity = 1;
-        if(latency > 160) severity = 2;
-        if(latency > 200) severity = 3;
+        if(latency > 100) severity = 1;
+        if(latency > 175) severity = 2;
+        if(latency > 215) {
+            severity = 3;
+            latency = 215; // clamp it here so bar doesn't get empty
+        }
 
-        int yOffset = (int) (((float) latency / 230.f) * 20); // Add a little more so the bar is always visible
+        int yOffset = (int) (((float) latency / 250.f) * 20); // Add a little more so the bar is always visible
         drawTexture(matrices, x, y + yOffset, severity * 5, 195 + yOffset, 5, 20 - yOffset);
 
         getInGameHud().client.getProfiler().pop();
