@@ -6,6 +6,7 @@ import dev.jb0s.blockgameenhanced.event.chat.ReceiveChatMessageEvent;
 import dev.jb0s.blockgameenhanced.event.chat.SendChatMessageEvent;
 import dev.jb0s.blockgameenhanced.event.entity.otherplayer.OtherPlayerTickEvent;
 import dev.jb0s.blockgameenhanced.event.party.PartyUpdatedEvent;
+import dev.jb0s.blockgameenhanced.helper.DebugHelper;
 import dev.jb0s.blockgameenhanced.helper.MathHelper;
 import dev.jb0s.blockgameenhanced.helper.TimeHelper;
 import dev.jb0s.blockgameenhanced.manager.Manager;
@@ -24,6 +25,7 @@ import net.minecraft.network.packet.s2c.play.OpenScreenS2CPacket;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
@@ -423,8 +425,10 @@ public class PartyManager extends Manager {
                 // Play sound indicating new ping data if worlds match
                 boolean markerWorldMatchesPlayer = partyPings.get(partyMember).getWorld().equals(client.world.getRegistryKey().getValue().getPath());
                 boolean configAllowsMarkerSound = BlockgameEnhanced.getConfig().getPartyHudConfig().markNotify;
-                if(markerWorldMatchesPlayer && configAllowsMarkerSound) {
-                    client.world.playSound(pos.x, pos.y, pos.z, PING_LOCATION_SOUND, SoundCategory.PLAYERS, 0.5f, 1.0f, false);
+                ClientPlayerEntity clientPlayerEntity = MinecraftClient.getInstance().player;
+                if(markerWorldMatchesPlayer && configAllowsMarkerSound && clientPlayerEntity != null) {
+                    Vec3d clampedPos = MathHelper.clampMagnitude(pos.subtract(clientPlayerEntity.getPos()), 0.0, 5.0).add(clientPlayerEntity.getPos());
+                    client.world.playSound(clampedPos.x, clampedPos.y, clampedPos.z, SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.PLAYERS, 0.65f, 0.75f, false);
                 }
 
                 return ActionResult.SUCCESS;

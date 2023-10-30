@@ -13,6 +13,25 @@ import org.lwjgl.BufferUtils;
 public class MathHelper {
     public static final float EPSILON = 0.00001f;
 
+    public static Vec3d clampMagnitude(Vec3d vec, double minRadius, double maxRadius) {
+        double len = vec.x * vec.x + vec.y * vec.y + vec.z * vec.z;
+        if(len == 0.0) return vec;
+
+        double x = maxRadius * maxRadius;
+        if(len > x) {
+            double scalar = Math.sqrt(x / len);
+            return new Vec3d(vec.x * scalar, vec.y * scalar, vec.z * scalar);
+        }
+
+        double y = minRadius * minRadius;
+        if(len < y) {
+            double scalar = Math.sqrt(y / len);
+            return new Vec3d(vec.x * scalar, vec.y * scalar, vec.z * scalar);
+        }
+
+        return vec;
+    }
+
     /*
      * Credit to LukenSkyne for most of these, I suck ass at maths
      */
