@@ -119,7 +119,7 @@ public abstract class MixinMinecraftClient {
         }
 
         // Apply Custom DebugRenderer
-        debugRenderer = new BlockgameDebugRenderer(thisMinecraft);
+        //debugRenderer = new BlockgameDebugRenderer(thisMinecraft);
 
         // Apply Custom HUD
         IngameHudConfig ingameHudConfig = BlockgameEnhanced.getConfig().getIngameHudConfig();
