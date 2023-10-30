@@ -1,6 +1,7 @@
 package dev.jb0s.blockgameenhanced.manager.party;
 
 import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
+import dev.jb0s.blockgameenhanced.BlockgameEnhancedClient;
 import dev.jb0s.blockgameenhanced.event.chat.ReceiveChatMessageEvent;
 import dev.jb0s.blockgameenhanced.event.chat.SendChatMessageEvent;
 import dev.jb0s.blockgameenhanced.event.entity.otherplayer.OtherPlayerTickEvent;
@@ -420,7 +421,9 @@ public class PartyManager extends Manager {
                 }
 
                 // Play sound indicating new ping data if worlds match
-                if(partyPings.get(partyMember).getWorld().equals(client.world.getRegistryKey().getValue().getPath())) {
+                boolean markerWorldMatchesPlayer = partyPings.get(partyMember).getWorld().equals(client.world.getRegistryKey().getValue().getPath());
+                boolean configAllowsMarkerSound = BlockgameEnhanced.getConfig().getPartyHudConfig().markNotify;
+                if(markerWorldMatchesPlayer && configAllowsMarkerSound) {
                     client.world.playSound(pos.x, pos.y, pos.z, PING_LOCATION_SOUND, SoundCategory.PLAYERS, 0.75f, 1.0f, false);
                 }
 

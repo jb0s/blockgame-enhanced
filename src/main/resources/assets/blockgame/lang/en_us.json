@@ -80,6 +80,8 @@
 	"text.autoconfig.blockgameenhanced.option.partyHudConfig.position.@Tooltip": "What corner of the screen the party hud will display at.",
 	"text.autoconfig.blockgameenhanced.option.partyHudConfig.deathNotify": "Play death sounds",
 	"text.autoconfig.blockgameenhanced.option.partyHudConfig.deathNotify.@Tooltip": "Will play the game-over sound when one of your party members dies.",
+	"text.autoconfig.blockgameenhanced.option.partyHudConfig.markNotify.": "Play marker sounds",
+	"text.autoconfig.blockgameenhanced.option.partyHudConfig.markNotify.@Tooltip": "Enable sound that plays when a party member marks a location.",
 	"text.autoconfig.blockgameenhanced.option.accessibilityConfig.enableAutoRespawn": "Automatically respawn",
 	"text.autoconfig.blockgameenhanced.option.accessibilityConfig.enableAutoRespawn.@Tooltip": "If turned on, will automatically respawn you shortly after dying.\nNOTE: Disabling this option will currently disable the custom game-over sequence.\nThis is not intended and will be resolved in a future release.",
 	"text.autoconfig.blockgameenhanced.option.partyHudConfig.outlineMembers": "Outline Party Members",

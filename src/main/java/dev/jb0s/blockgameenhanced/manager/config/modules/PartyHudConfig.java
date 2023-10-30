@@ -21,6 +21,9 @@ public class PartyHudConfig implements ConfigData {
     public boolean deathNotify;
 
     @ConfigEntry.Gui.Tooltip
+    public boolean markNotify;
+
+    @ConfigEntry.Gui.Tooltip
     public boolean outlineMembers;
 
     public PartyHudConfig() {
