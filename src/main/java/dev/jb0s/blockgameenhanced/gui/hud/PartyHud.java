@@ -165,6 +165,11 @@ public class PartyHud extends DrawableHelper {
             return;
         }
 
+        // Don't render pings inter dimensionally
+        if(!cpe.getWorld().getRegistryKey().getValue().getPath().equals(ping.getWorld())) {
+            return;
+        }
+
         // Calculate where and how big the ping has to be displayed
         Vector4f pos = ping.getScreenSpacePos();
         Vec3d cameraPosVec = MinecraftClient.getInstance().player.getCameraPosVec(0.0f);

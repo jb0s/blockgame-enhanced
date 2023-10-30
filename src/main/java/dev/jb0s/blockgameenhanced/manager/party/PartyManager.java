@@ -419,8 +419,11 @@ public class PartyManager extends Manager {
                     partyPings.put(partyMember, ping);
                 }
 
-                // Play sound indicating new ping data
-                client.world.playSound(pos.x, pos.y, pos.z, PING_LOCATION_SOUND, SoundCategory.PLAYERS, 0.75f, 1.0f, false);
+                // Play sound indicating new ping data if worlds match
+                if(partyPings.get(partyMember).getWorld().equals(client.world.getRegistryKey().getValue().getPath())) {
+                    client.world.playSound(pos.x, pos.y, pos.z, PING_LOCATION_SOUND, SoundCategory.PLAYERS, 0.75f, 1.0f, false);
+                }
+
                 return ActionResult.SUCCESS;
             }
 
