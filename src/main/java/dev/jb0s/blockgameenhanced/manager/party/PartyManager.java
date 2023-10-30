@@ -424,7 +424,7 @@ public class PartyManager extends Manager {
                 boolean markerWorldMatchesPlayer = partyPings.get(partyMember).getWorld().equals(client.world.getRegistryKey().getValue().getPath());
                 boolean configAllowsMarkerSound = BlockgameEnhanced.getConfig().getPartyHudConfig().markNotify;
                 if(markerWorldMatchesPlayer && configAllowsMarkerSound) {
-                    client.world.playSound(pos.x, pos.y, pos.z, PING_LOCATION_SOUND, SoundCategory.PLAYERS, 0.75f, 1.0f, false);
+                    client.world.playSound(pos.x, pos.y, pos.z, PING_LOCATION_SOUND, SoundCategory.PLAYERS, 0.5f, 1.0f, false);
                 }
 
                 return ActionResult.SUCCESS;
