@@ -134,13 +134,13 @@ public class MMOItemsManager extends Manager {
      * @return Always returns PASS, whether the routine was successful or not.
      */
     public TypedActionResult<ItemStack> repeatItemUseForCooldownMessage(PlayerEntity playerEntity, World world, Hand hand) {
-        boolean moduleEnabled = BlockgameEnhanced.getConfig().getIngameHudConfig().showCooldownsInHotbar;
-        if(!moduleEnabled) return;
-
         MinecraftClient client = MinecraftClient.getInstance();
         LatencyManager latencyManager = BlockgameEnhancedClient.getLatencyManager();
         ClientPlayerInteractionManager interactionManager = client.interactionManager;
         ItemStack stack = playerEntity.getStackInHand(hand);
+
+        boolean moduleEnabled = BlockgameEnhanced.getConfig().getIngameHudConfig().showCooldownsInHotbar;
+        if(!moduleEnabled) return TypedActionResult.pass(stack);
 
         if(interactionManager.getCurrentGameMode() == GameMode.SPECTATOR) {
             return TypedActionResult.pass(stack);
