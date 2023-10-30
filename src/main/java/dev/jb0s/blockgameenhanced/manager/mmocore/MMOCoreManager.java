@@ -51,7 +51,7 @@ public class MMOCoreManager extends Manager {
             maxHealth = Integer.parseInt(hpSet[1].trim());
             hydration = Float.parseFloat(hySet[0]);
 
-            boolean shouldSuppress = !(BlockgameEnhanced.getConfig().getIngameHudConfig().enableCustomHud || BlockgameEnhanced.getConfig().getIngameHudConfig().showAdvancedStats);
+            boolean shouldSuppress = BlockgameEnhanced.getConfig().getIngameHudConfig().enableCustomHud && !BlockgameEnhanced.getConfig().getIngameHudConfig().showAdvancedStats;
             return shouldSuppress ? ActionResult.SUCCESS : ActionResult.PASS;
         }
 
@@ -63,11 +63,11 @@ public class MMOCoreManager extends Manager {
             return ActionResult.PASS;
         }
 
-        String data = message.substring(6);
-        String[] split = data.split(" - ");
-        String[] professionInfo = split[0].split(" ");
-
         if(minecraftClient.inGameHud instanceof ImmersiveIngameHud immersiveIngameHud) {
+            String data = message.substring(6);
+            String[] split = data.split(" - ");
+            String[] professionInfo = split[0].split(" ");
+
             if(professionInfo[0].trim().equals("Einherjar")) {
                 return ActionResult.SUCCESS;
             }
