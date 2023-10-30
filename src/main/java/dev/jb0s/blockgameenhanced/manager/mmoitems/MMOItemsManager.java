@@ -1,6 +1,7 @@
 package dev.jb0s.blockgameenhanced.manager.mmoitems;
 
 import com.google.common.collect.Maps;
+import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
 import dev.jb0s.blockgameenhanced.BlockgameEnhancedClient;
 import dev.jb0s.blockgameenhanced.event.chat.ReceiveChatMessageEvent;
 import dev.jb0s.blockgameenhanced.helper.MMOItemHelper;
@@ -84,14 +85,19 @@ public class MMOItemsManager extends Manager {
     public List<String> getDebugStats() {
         ArrayList<String> lines = new ArrayList<>();
 
-        lines.add("Tick: " + tick);
-        lines.add("Cooldown items: " + cooldownEntryMap.size());
-        if(!cooldownEntryMap.isEmpty()) {
-            for (Map.Entry<String, MMOItemsCooldownEntry> entry : cooldownEntryMap.entrySet()) {
-                lines.add(" - " + entry + ": " + (entry.getValue().endTick - tick));
+        boolean moduleEnabled = BlockgameEnhanced.getConfig().getIngameHudConfig().showCooldownsInHotbar;
+        if(moduleEnabled) {
+            lines.add("Tick: " + tick);
+            lines.add("Cooldown items: " + cooldownEntryMap.size());
+            if(!cooldownEntryMap.isEmpty()) {
+                for (Map.Entry<String, MMOItemsCooldownEntry> entry : cooldownEntryMap.entrySet()) {
+                    lines.add(" - " + entry + ": " + (entry.getValue().endTick - tick));
+                }
             }
+            return lines;
         }
 
+        lines.add("Disabled by mod config");
         return lines;
     }
 
@@ -128,6 +134,9 @@ public class MMOItemsManager extends Manager {
      * @return Always returns PASS, whether the routine was successful or not.
      */
     public TypedActionResult<ItemStack> repeatItemUseForCooldownMessage(PlayerEntity playerEntity, World world, Hand hand) {
+        boolean moduleEnabled = BlockgameEnhanced.getConfig().getIngameHudConfig().showCooldownsInHotbar;
+        if(!moduleEnabled) return;
+
         MinecraftClient client = MinecraftClient.getInstance();
         LatencyManager latencyManager = BlockgameEnhancedClient.getLatencyManager();
         ClientPlayerInteractionManager interactionManager = client.interactionManager;
@@ -156,6 +165,9 @@ public class MMOItemsManager extends Manager {
      * @return Always returns PASS, whether the routine was successful or not.
      */
     public ActionResult visualizeCooldown(MinecraftClient client, String message) {
+        boolean moduleEnabled = BlockgameEnhanced.getConfig().getIngameHudConfig().showCooldownsInHotbar;
+        if(!moduleEnabled) return ActionResult.PASS;
+
         if(!message.startsWith("[CD]")) {
             return ActionResult.PASS;
         }
