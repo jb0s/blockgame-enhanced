@@ -46,7 +46,6 @@ public class TitleScreen extends Screen {
 
     private ServerInfo serverInfo;
     private int eggClicks;
-    private boolean connectionError;
 
     public TitleScreen() {
         super(Text.of("Title Screen"));
@@ -70,17 +69,18 @@ public class TitleScreen extends Screen {
         serverInfo = new ServerInfo("Blockgame", "mc.blockgame.info", false);
 
         // Start pinging server
-        try {
-            pinger.add(serverInfo, () -> serverInfo.online = true);
-            connectionError = false;
-        }
-        catch (Exception e) {
-            BlockgameEnhanced.LOGGER.error("Failed to fetch server status: " + e.getMessage());
-            connectionError = true;
-            serverInfo.online = false;
-            serverInfo.ping = -1L;
-            serverInfo.playerListSummary = null;
-        }
+        Thread pingThread = new Thread(() -> {
+            try {
+                pinger.add(serverInfo, () -> serverInfo.online = true);
+            }
+            catch (Exception e) {
+                BlockgameEnhanced.LOGGER.error("Failed to fetch server status: " + e.getMessage());
+                serverInfo.online = false;
+                serverInfo.ping = -1L;
+                serverInfo.playerListSummary = null;
+            }
+        });
+        pingThread.start();
 
         // Initialize player
         fakePlayer = new FakePlayer();
@@ -213,12 +213,13 @@ public class TitleScreen extends Screen {
                 LatencyManager latencyManager = BlockgameEnhancedClient.getLatencyManager();
                 latencyManager.setPreLoginLatency((int) serverInfo.ping);
             }
-            else {
+            else if(serverInfo.label != null) {
                 DrawableHelper.drawTextWithShadow(matrices, client.textRenderer, serverInfo.label, (width / 2) + 4, 7, Integer.MAX_VALUE);
             }
         }
         catch (Exception e) {
             DrawableHelper.drawTextWithShadow(matrices, client.textRenderer, SERVER_STATUS_OFFLINE, (width / 2) + 4, 7, Integer.MAX_VALUE);
+            throw e;
         }
 
         // I have no idea how Mojang does anything, their UI code sucks balls
