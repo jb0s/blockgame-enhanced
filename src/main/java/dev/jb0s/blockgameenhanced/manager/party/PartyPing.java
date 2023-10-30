@@ -1,6 +1,5 @@
 package dev.jb0s.blockgameenhanced.manager.party;
 
-import dev.jb0s.blockgameenhanced.helper.DebugHelper;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.client.MinecraftClient;

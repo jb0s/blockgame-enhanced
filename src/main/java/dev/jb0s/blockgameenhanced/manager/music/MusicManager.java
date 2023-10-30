@@ -1,7 +1,6 @@
 package dev.jb0s.blockgameenhanced.manager.music;
 
 import com.google.gson.Gson;
-import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
 import dev.jb0s.blockgameenhanced.event.adventurezone.EnteredWildernessEvent;
 import dev.jb0s.blockgameenhanced.event.adventurezone.EnteredZoneEvent;
 import dev.jb0s.blockgameenhanced.event.bossbattle.BossBattleCommencedEvent;

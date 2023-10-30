@@ -1,7 +1,6 @@
 package dev.jb0s.blockgameenhanced.mixin.gui.screen;
 
 import dev.jb0s.blockgameenhanced.BlockgameEnhancedClient;
-import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import net.fabricmc.fabric.api.client.screen.v1.Screens;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.option.OptionsScreen;

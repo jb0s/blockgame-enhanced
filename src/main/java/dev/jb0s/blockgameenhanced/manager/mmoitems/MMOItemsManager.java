@@ -4,7 +4,6 @@ import com.google.common.collect.Maps;
 import dev.jb0s.blockgameenhanced.BlockgameEnhancedClient;
 import dev.jb0s.blockgameenhanced.event.chat.ReceiveChatMessageEvent;
 import dev.jb0s.blockgameenhanced.helper.MMOItemHelper;
-import dev.jb0s.blockgameenhanced.helper.NetworkHelper;
 import dev.jb0s.blockgameenhanced.manager.Manager;
 import dev.jb0s.blockgameenhanced.manager.latency.LatencyManager;
 import dev.jb0s.blockgameenhanced.manager.latency.event.ItemUsageEvent;

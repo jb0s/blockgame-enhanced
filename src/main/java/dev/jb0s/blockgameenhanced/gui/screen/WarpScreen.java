@@ -1,13 +1,10 @@
 package dev.jb0s.blockgameenhanced.gui.screen;
 
-import dev.jb0s.blockgameenhanced.event.adventurezone.EnteredWildernessEvent;
-import dev.jb0s.blockgameenhanced.event.chat.CommandSuggestionsEvent;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.network.packet.c2s.play.RequestCommandCompletionsC2SPacket;
-import net.minecraft.network.packet.s2c.play.CommandSuggestionsS2CPacket;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 

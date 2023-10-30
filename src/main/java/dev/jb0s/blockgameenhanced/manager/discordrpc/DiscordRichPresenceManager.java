@@ -7,9 +7,7 @@ import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
 import dev.jb0s.blockgameenhanced.event.discordrpc.DiscordReadyEvent;
 import dev.jb0s.blockgameenhanced.event.party.PartyUpdatedEvent;
 import dev.jb0s.blockgameenhanced.manager.Manager;
-import dev.jb0s.blockgameenhanced.manager.config.modules.ModConfig;
 import dev.jb0s.blockgameenhanced.manager.config.structure.DiscordRPCPrivacy;
-import me.shedaniel.autoconfig.AutoConfig;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.minecraft.client.MinecraftClient;
 

@@ -1,8 +1,6 @@
 package dev.jb0s.blockgameenhanced.eggs.thor;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
-import dev.jb0s.blockgameenhanced.BlockgameEnhancedClient;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
@@ -13,7 +11,6 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 
 public class ThorScreen extends Screen {

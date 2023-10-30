@@ -3,7 +3,6 @@ package dev.jb0s.blockgameenhanced.manager.bossbattle;
 import dev.jb0s.blockgameenhanced.event.bossbattle.BossBattleCommencedEvent;
 import dev.jb0s.blockgameenhanced.event.bossbattle.BossBattleEndedEvent;
 import dev.jb0s.blockgameenhanced.helper.BossBarHelper;
-import dev.jb0s.blockgameenhanced.helper.MathHelper;
 import dev.jb0s.blockgameenhanced.manager.Manager;
 import dev.jb0s.blockgameenhanced.manager.adventure.AdventureZoneBoss;
 import lombok.Getter;

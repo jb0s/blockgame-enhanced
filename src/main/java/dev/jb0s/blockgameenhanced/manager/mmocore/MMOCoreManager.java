@@ -1,7 +1,6 @@
 package dev.jb0s.blockgameenhanced.manager.mmocore;
 
 import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
-import dev.jb0s.blockgameenhanced.BlockgameEnhancedClient;
 import dev.jb0s.blockgameenhanced.event.chat.ReceiveChatMessageEvent;
 import dev.jb0s.blockgameenhanced.gui.hud.immersive.ImmersiveIngameHud;
 import dev.jb0s.blockgameenhanced.manager.Manager;
