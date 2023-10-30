@@ -20,7 +20,7 @@ public abstract class MixinInGameHud extends DrawableHelper {
     @Shadow @Final private MinecraftClient client;
     @Shadow public abstract TextRenderer getTextRenderer();
 
-    @Inject(method = "render", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "render", at = @At("RETURN"))
     public void render(MatrixStack matrices, float tickDelta, CallbackInfo ci) {
         // Render HUDs
         PartyHud.render(matrices, tickDelta);
