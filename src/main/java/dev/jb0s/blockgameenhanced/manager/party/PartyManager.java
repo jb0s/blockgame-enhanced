@@ -66,8 +66,14 @@ public class PartyManager extends Manager {
     // Party Updates
     private boolean allowedToQueryServer;
     private int ticksSinceLastUpdate;
+
+    @Getter
     private int currentPayloadSyncId = -1;
+
+    @Getter
     private boolean isWaitingForPartyScreenOpen;
+
+    @Getter
     private boolean isWaitingForPartyScreenContent;
 
     @Override

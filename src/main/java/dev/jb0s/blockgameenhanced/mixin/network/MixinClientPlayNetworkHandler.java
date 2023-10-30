@@ -34,7 +34,8 @@ public class MixinClientPlayNetworkHandler {
         // todo: move this to an event
         PartyManager pm = BlockgameEnhancedClient.getPartyManager();
         boolean pmAcceptedThisPacket = pm.handleInventoryUpdate(packet);
-        if(pmAcceptedThisPacket) {
+        boolean shouldBeDiscardedForPm = pm.isWaitingForPartyScreenOpen() || (pm.isWaitingForPartyScreenContent() && pm.getCurrentPayloadSyncId() != packet.getSyncId());
+        if(pmAcceptedThisPacket || shouldBeDiscardedForPm) {
             ci.cancel();
         }
     }
@@ -49,7 +50,8 @@ public class MixinClientPlayNetworkHandler {
         // todo: move this to the new event
         PartyManager pm = BlockgameEnhancedClient.getPartyManager();
         boolean pmAcceptedThisPacket = pm.handleScreenOpen(packet);
-        if(pmAcceptedThisPacket) {
+        boolean shouldBeDiscardedForPm = (pm.isWaitingForPartyScreenOpen() || pm.isWaitingForPartyScreenContent()) && pm.getCurrentPayloadSyncId() != packet.getSyncId();
+        if(pmAcceptedThisPacket || shouldBeDiscardedForPm) {
             // Send a packet to the server saying we have closed the window, although we never opened it
             CloseHandledScreenC2SPacket pak = new CloseHandledScreenC2SPacket(packet.getSyncId());
             thisHandler.sendPacket(pak);
