@@ -31,17 +31,6 @@ public class MMOCoreManager extends Manager {
         ReceiveChatMessageEvent.EVENT.register(this::extractExpDataFromMessage);
     }
 
-    @Override
-    public List<String> getDebugStats() {
-        ArrayList<String> lines = new ArrayList<>();
-
-        lines.add("HP: " + health + "/" + maxHealth);
-        lines.add("Hunger: " + hunger + "/20");
-        lines.add("Hydration: " + hydration + "/20");
-
-        return lines;
-    }
-
     private ActionResult extractStatsFromMessage(MinecraftClient minecraftClient, String message) {
         String[] split = message.split("\\|");
         if(split.length != 3) {
@@ -61,7 +50,9 @@ public class MMOCoreManager extends Manager {
             this.hunger = Integer.parseInt(huSet[0]);
             maxHealth = Integer.parseInt(hpSet[1].trim());
             hydration = Float.parseFloat(hySet[0]);
-            return BlockgameEnhanced.getConfig().getIngameHudConfig().enableCustomHud ? ActionResult.SUCCESS : ActionResult.PASS;
+
+            boolean shouldSuppress = !(BlockgameEnhanced.getConfig().getIngameHudConfig().enableCustomHud || BlockgameEnhanced.getConfig().getIngameHudConfig().showAdvancedStats);
+            return shouldSuppress ? ActionResult.SUCCESS : ActionResult.PASS;
         }
 
         return ActionResult.PASS;

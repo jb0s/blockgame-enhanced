@@ -103,6 +103,8 @@
 	"text.autoconfig.blockgameenhanced.option.ingameHudConfig": "Ingame HUD Config",
 	"text.autoconfig.blockgameenhanced.option.ingameHudConfig.enableCustomHud": "Enable Custom HUD",
 	"text.autoconfig.blockgameenhanced.option.ingameHudConfig.enableCustomHud.@Tooltip": "Enable a special HUD layout more tailored to Blockgame.",
+	"text.autoconfig.blockgameenhanced.option.ingameHudConfig.showAdvancedStats": "Enable vanilla stats widget",
+	"text.autoconfig.blockgameenhanced.option.ingameHudConfig.showAdvancedStats.@Tooltip": "Displays the vanilla stats bar above the hotbar.",
 
 	"comment.9": "~~ Update Popup ~~",
 	"menu.blockgame.update.header": "Update available",

@@ -11,6 +11,9 @@ public class IngameHudConfig implements ConfigData {
     @ConfigEntry.Gui.RequiresRestart
     public boolean enableCustomHud;
 
+    @ConfigEntry.Gui.Tooltip
+    public boolean showAdvancedStats;
+
     public IngameHudConfig() {
         enableCustomHud = true;
     }
