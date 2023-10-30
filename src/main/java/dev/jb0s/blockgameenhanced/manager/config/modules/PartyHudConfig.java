@@ -31,6 +31,7 @@ public class PartyHudConfig implements ConfigData {
         showSelf = true;
         position = PartyHudPosition.TOP_LEFT;
         deathNotify = true;
+        markNotify = true;
         outlineMembers = true;
     }
 }
