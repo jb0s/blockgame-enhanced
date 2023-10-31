@@ -28,7 +28,7 @@ public class HotkeyManager extends Manager {
         bind(InputUtil.Type.MOUSE, GLFW.GLFW_MOUSE_BUTTON_MIDDLE, "key.blockgame.ping", PingBind::handlePressed);
 
         if(BlockgameEnhanced.DEBUG) {
-            bind(InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_GRAVE_ACCENT, "key.blockgame.debug", DebugBind::handlePressed);
+            bind(InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_F4, "key.blockgame.debug", DebugBind::handlePressed);
         }
     }
 

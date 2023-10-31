@@ -6,7 +6,6 @@
 	"key.blockgame.stats": "Show Stats menu",
 	"key.blockgame.profile": "Show Profile menu",
 	"key.blockgame.ranks": "Show Rank-up menu",
-	"key.blockgame.debug": "Show Debug menu",
 	"key.blockgame.party": "Show Party menu",
 	"key.blockgame.backpack": "Open Backpack",
 	"key.blockgame.disposal": "Open Disposal menu",
@@ -15,7 +14,6 @@
 
 	"comment.2": "~~ Title Screen ~~",
 	"menu.blockgame.title.play": "Play",
-	"menu.blockgame.title.debug": "Debug Mode",
 	"menu.blockgame.title.website": "Website",
 	"menu.blockgame.title.wiki": "Wiki",
 	"menu.blockgame.title.watermark": "Blockgame Enhanced v%s by notIrma",
