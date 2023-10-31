@@ -18,7 +18,7 @@ import java.nio.file.Path;
 public class BlockgameEnhanced implements ModInitializer {
 
     public static final Logger LOGGER = LoggerFactory.getLogger("blockgameenhanced");
-    public static final boolean DEBUG = Boolean.getBoolean("blockgameenhanced.debug");
+    public static final boolean DEBUG = System.getenv("bge-debug").equals("true");
 
     @Getter
     private static boolean modmenuPresent = false;
