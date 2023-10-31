@@ -193,8 +193,8 @@ public class ImmersiveDiabloHotbar extends ImmersiveWidget {
             int txtHeight = textRenderer.fontHeight;
 
             // this will be good eventually
-            textRenderer.draw(matrices, healthVal, centerX - (txtWidth / 2.f) + 2, centerY - (txtHeight / 2.f) + 1, 0x55000000);
-            textRenderer.draw(matrices, healthVal, centerX - (txtWidth / 2.f) + 1, centerY - (txtHeight / 2.f), 0xFFFFFF);
+            textRenderer.draw(matrices, healthVal, centerX - (txtWidth / 2.f), centerY - (txtHeight / 2.f) + 1, 0x55000000);
+            textRenderer.draw(matrices, healthVal, centerX - (txtWidth / 2.f) - 1, centerY - (txtHeight / 2.f), 0xFFFFFF);
             RenderSystem.disableBlend();
             resetShaders();
         }
@@ -236,7 +236,7 @@ public class ImmersiveDiabloHotbar extends ImmersiveWidget {
         }
 
         IngameHudConfig ighConfig = BlockgameEnhanced.getConfig().getIngameHudConfig();
-        if(!ighConfig.showAdvancedStats) {
+        if(!ighConfig.showAdvancedStats && hungerPercent > 0.0f) {
             TextRenderer textRenderer = getInGameHud().getTextRenderer();
             String hungerVal = String.valueOf(player.getHungerManager().getFoodLevel());
 
@@ -276,7 +276,7 @@ public class ImmersiveDiabloHotbar extends ImmersiveWidget {
         drawTexture(matrices, x, y + yOffset, 0, 131 + yOffset, 15, gaugeHeight);
 
         IngameHudConfig ighConfig = BlockgameEnhanced.getConfig().getIngameHudConfig();
-        if(!ighConfig.showAdvancedStats) {
+        if(!ighConfig.showAdvancedStats && hydratePercent > 0.0f) {
             TextRenderer textRenderer = getInGameHud().getTextRenderer();
             String hydrateVal = String.valueOf((int) mmoCoreManager.getHydration());
 
