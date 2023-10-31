@@ -29,5 +29,7 @@ public class DebugBind {
             client.setScreen(new ThorScreen(null));
             return ActionResult.FAIL;
         }
+        
+        return ActionResult.FAIL;
     }
 }
