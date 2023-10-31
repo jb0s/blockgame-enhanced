@@ -4,7 +4,6 @@ import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
 import dev.jb0s.blockgameenhanced.gui.hud.immersive.widget.experience.ImmersiveExpPopupContainer;
 import dev.jb0s.blockgameenhanced.gui.hud.immersive.widget.hotbar.ImmersiveStatusBar;
 import dev.jb0s.blockgameenhanced.gui.hud.immersive.widget.hotbar.ImmersiveDiabloHotbar;
-import dev.jb0s.blockgameenhanced.helper.DebugHelper;
 import lombok.Getter;
 import net.minecraft.client.gui.hud.*;
 import net.minecraft.client.MinecraftClient;

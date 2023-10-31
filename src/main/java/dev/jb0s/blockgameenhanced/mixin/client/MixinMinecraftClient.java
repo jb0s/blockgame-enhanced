@@ -5,11 +5,13 @@ import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
 import dev.jb0s.blockgameenhanced.BlockgameEnhancedClient;
+import dev.jb0s.blockgameenhanced.debug.ImGuiImpl;
 import dev.jb0s.blockgameenhanced.event.world.WorldUpdatedEvent;
 import dev.jb0s.blockgameenhanced.gui.hud.immersive.ImmersiveIngameHud;
 import dev.jb0s.blockgameenhanced.gui.screen.title.TitleScreen;
 import dev.jb0s.blockgameenhanced.manager.config.modules.IngameHudConfig;
 import dev.jb0s.blockgameenhanced.renderer.debug.BlockgameDebugRenderer;
+import lombok.SneakyThrows;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.RunArgs;
 import net.minecraft.client.gui.WorldGenerationProgressTracker;
@@ -55,6 +57,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.Proxy;
 import java.net.SocketAddress;
 import java.util.Queue;
@@ -110,6 +114,7 @@ public abstract class MixinMinecraftClient {
     ///   OPTIFINE COMPATIBILITY   ///
     //////////////////////////////////
 
+    @SneakyThrows
     @Inject(method = "<init>", at = @At("RETURN"))
     public void init(RunArgs args, CallbackInfo ci) {
         MinecraftClient thisMinecraft = (MinecraftClient) (Object) this;
@@ -118,8 +123,14 @@ public abstract class MixinMinecraftClient {
             startDummyServer("Empty", SaveLoader.DataPackSettingsSupplier::loadFromWorld, SaveLoader.SavePropertiesSupplier::loadFromWorld);
         }
 
-        // Apply Custom DebugRenderer
-        //debugRenderer = new BlockgameDebugRenderer(thisMinecraft);
+        // Debug stuff
+        if(BlockgameEnhanced.DEBUG) {
+            debugRenderer = new BlockgameDebugRenderer(thisMinecraft);
+
+            Class<?> implClass = Class.forName("dev.jb0s.blockgameenhanced.debug.ImGuiImpl");
+            Method method = implClass.getMethod("create", long.class);
+            method.invoke(null, thisMinecraft.getWindow().getHandle());
+        }
 
         // Apply Custom HUD
         IngameHudConfig ingameHudConfig = BlockgameEnhanced.getConfig().getIngameHudConfig();

@@ -17,6 +17,11 @@ repositories {
     maven { url "https://maven.terraformersmc.com/releases/" }
 }
 
+configurations {
+    implementation.extendsFrom lib
+    api.extendsFrom lib
+}
+
 dependencies {
     include(implementation('io.github.CDAGaming:DiscordIPC:0.6.1'))
 
@@ -38,6 +43,12 @@ dependencies {
     modApi("me.shedaniel.cloth:cloth-config-fabric:8.2.88") {
         exclude(group: "net.fabricmc.fabric-api")
     }
+
+    // ImGUI
+    lib "io.github.spair:imgui-java-binding:${project.imgui_version}"
+    lib "io.github.spair:imgui-java-lwjgl3:${project.imgui_version}"
+    lib "io.github.spair:imgui-java-natives-windows:${project.imgui_version}"
+    lib "io.github.spair:imgui-java-natives-linux:${project.imgui_version}"
 }
 
 processResources {

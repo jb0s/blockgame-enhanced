@@ -1,5 +1,6 @@
 package dev.jb0s.blockgameenhanced.manager.hotkey;
 
+import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
 import dev.jb0s.blockgameenhanced.manager.Manager;
 import dev.jb0s.blockgameenhanced.manager.hotkey.bind.*;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
@@ -25,7 +26,10 @@ public class HotkeyManager extends Manager {
         bind(InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_X, "key.blockgame.disposal", DisposalBind::handlePressed);
         bind(InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_N, "key.blockgame.deposit", DepositBind::handlePressed); // this is such a shit bind
         bind(InputUtil.Type.MOUSE, GLFW.GLFW_MOUSE_BUTTON_MIDDLE, "key.blockgame.ping", PingBind::handlePressed);
-        bind(InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_F4, "key.blockgame.debug", DebugBind::handlePressed);
+
+        if(BlockgameEnhanced.DEBUG) {
+            bind(InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_GRAVE_ACCENT, "key.blockgame.debug", DebugBind::handlePressed);
+        }
     }
 
     @Override

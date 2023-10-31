@@ -1,6 +1,5 @@
 package dev.jb0s.blockgameenhanced.renderer.debug;
 
-import dev.jb0s.blockgameenhanced.gui.hud.DebugHud;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.debug.DebugRenderer;
@@ -20,9 +19,7 @@ public class BlockgameDebugRenderer extends DebugRenderer {
     public void render(MatrixStack matrices, VertexConsumerProvider.Immediate vertexConsumers, double cameraX, double cameraY, double cameraZ) {
         super.render(matrices, vertexConsumers, cameraX, cameraY, cameraZ);
 
-        if(DebugHud.isVisible()) {
-            adventureZoneDebugRenderer.render(matrices, vertexConsumers, cameraX, cameraY, cameraZ);
-            blockPosDebugRenderer.render(matrices, vertexConsumers, cameraX, cameraY, cameraZ);
-        }
+        //adventureZoneDebugRenderer.render(matrices, vertexConsumers, cameraX, cameraY, cameraZ);
+        //blockPosDebugRenderer.render(matrices, vertexConsumers, cameraX, cameraY, cameraZ);
     }
 }
