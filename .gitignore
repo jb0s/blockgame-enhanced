@@ -30,3 +30,7 @@ notkercape.png
 AN IMPORTANT NOTICE.txt
 bugs.txt
 patch_notes.txt
+
+# Strip all debug code
+src/main/java/dev/jb0s/blockgameenhanced/debug/*.java
+src/main/java/dev/jb0s/blockgameenhanced/debug/**/*.java
