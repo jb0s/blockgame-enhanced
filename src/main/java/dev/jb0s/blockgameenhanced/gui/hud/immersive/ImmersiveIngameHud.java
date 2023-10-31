@@ -1,5 +1,6 @@
 package dev.jb0s.blockgameenhanced.gui.hud.immersive;
 
+import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
 import dev.jb0s.blockgameenhanced.gui.hud.immersive.widget.experience.ImmersiveExpPopupContainer;
 import dev.jb0s.blockgameenhanced.gui.hud.immersive.widget.hotbar.ImmersiveStatusBar;
 import dev.jb0s.blockgameenhanced.gui.hud.immersive.widget.hotbar.ImmersiveDiabloHotbar;
@@ -29,7 +30,14 @@ public class ImmersiveIngameHud extends InGameHud {
 
         //statusBar.render(matrices, 0, bottom, tickDelta);
         newImmersiveHotbar.render(matrices, scaledWidth / 2, bottom, tickDelta);
-        immersiveExpPopupContainer.render(matrices, scaledWidth / 2, bottom - 80, tickDelta);
+
+        boolean shouldRaiseExpBar = !BlockgameEnhanced.getConfig().getIngameHudConfig().enableCustomHud || BlockgameEnhanced.getConfig().getIngameHudConfig().showAdvancedStats;
+        if(shouldRaiseExpBar) {
+            immersiveExpPopupContainer.render(matrices, scaledWidth / 2, bottom - 105, tickDelta);
+        }
+        else {
+            immersiveExpPopupContainer.render(matrices, scaledWidth / 2, bottom - 80, tickDelta);
+        }
     }
 
     @Override
