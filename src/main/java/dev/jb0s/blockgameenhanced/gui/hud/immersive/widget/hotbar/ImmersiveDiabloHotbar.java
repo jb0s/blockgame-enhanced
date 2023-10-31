@@ -1,8 +1,10 @@
 package dev.jb0s.blockgameenhanced.gui.hud.immersive.widget.hotbar;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
 import dev.jb0s.blockgameenhanced.BlockgameEnhancedClient;
 import dev.jb0s.blockgameenhanced.gui.hud.immersive.widget.ImmersiveWidget;
+import dev.jb0s.blockgameenhanced.manager.config.modules.IngameHudConfig;
 import dev.jb0s.blockgameenhanced.manager.latency.LatencyManager;
 import dev.jb0s.blockgameenhanced.manager.mmocore.MMOCoreManager;
 import net.minecraft.client.font.TextRenderer;
@@ -118,7 +120,7 @@ public class ImmersiveDiabloHotbar extends ImmersiveWidget {
         float healthPercent = (float) mmoCoreManager.getHealth() / mmoCoreManager.getMaxHealth();
 
         // If there is an actionbar message, we are not receiving MMO data. Use vanilla data instead to avoid hitches in HUD
-        if(getInGameHud().overlayMessage != null) {
+        if(getInGameHud().overlayMessage != null && getInGameHud().overlayRemaining > 0) {
             healthPercent = playerEntity.getHealth() / playerEntity.getMaxHealth();
         }
 
@@ -136,6 +138,28 @@ public class ImmersiveDiabloHotbar extends ImmersiveWidget {
         else {
             // Normal
             drawTexture(matrices, x, y + yOffset, 0, 99 + yOffset, 32, gaugeHeight);
+        }
+
+        IngameHudConfig ighConfig = BlockgameEnhanced.getConfig().getIngameHudConfig();
+        if(!ighConfig.showAdvancedStats && playerEntity.getAir() == playerEntity.getMaxAir()) {
+            TextRenderer textRenderer = getInGameHud().getTextRenderer();
+            String healthVal = String.valueOf(mmoCoreManager.getHealth());
+
+            if(getInGameHud().overlayMessage != null && getInGameHud().overlayRemaining > 0) {
+                float calc = mmoCoreManager.getMaxHealth() * healthPercent;
+                healthVal = String.valueOf((int) calc);
+            }
+
+            RenderSystem.enableBlend();
+            int centerX = x + 16;
+            int centerY = y + 16;
+            int txtWidth = textRenderer.getWidth(healthVal);
+            int txtHeight = textRenderer.fontHeight;
+
+            textRenderer.draw(matrices, healthVal, centerX - (txtWidth / 2.f) + 2, centerY - (txtHeight / 2.f) + 1, 0x55000000);
+            textRenderer.draw(matrices, healthVal, centerX - (txtWidth / 2.f) + 1, centerY - (txtHeight / 2.f), 0xFFFFFF);
+            RenderSystem.disableBlend();
+            resetShaders();
         }
 
         getInGameHud().client.getProfiler().pop();
@@ -156,6 +180,25 @@ public class ImmersiveDiabloHotbar extends ImmersiveWidget {
         int yOffset = 32 - gaugeHeight;
 
         drawTexture(matrices, x, y + yOffset, 84, 99 + yOffset, 32, gaugeHeight);
+
+        IngameHudConfig ighConfig = BlockgameEnhanced.getConfig().getIngameHudConfig();
+        if(!ighConfig.showAdvancedStats) {
+            TextRenderer textRenderer = getInGameHud().getTextRenderer();
+            String healthVal = String.valueOf((int) vehicle.getHealth());
+
+            RenderSystem.enableBlend();
+            int centerX = x + 16;
+            int centerY = y + 16;
+            int txtWidth = textRenderer.getWidth(healthVal);
+            int txtHeight = textRenderer.fontHeight;
+
+            // this will be good eventually
+            textRenderer.draw(matrices, healthVal, centerX - (txtWidth / 2.f) + 2, centerY - (txtHeight / 2.f) + 1, 0x55000000);
+            textRenderer.draw(matrices, healthVal, centerX - (txtWidth / 2.f) + 1, centerY - (txtHeight / 2.f), 0xFFFFFF);
+            RenderSystem.disableBlend();
+            resetShaders();
+        }
+
         getInGameHud().client.getProfiler().pop();
     }
 
@@ -176,7 +219,7 @@ public class ImmersiveDiabloHotbar extends ImmersiveWidget {
         float hungerPercent = (float) mmoCoreManager.getHunger() / 20;
 
         // If there is an actionbar message, we are not receiving MMO data. Use vanilla data instead to avoid hitches in HUD
-        if(getInGameHud().overlayMessage != null) {
+        if(getInGameHud().overlayMessage != null && getInGameHud().overlayRemaining > 0) {
             hungerPercent = player.getHungerManager().getFoodLevel() / 20.f;
         }
 
@@ -190,6 +233,23 @@ public class ImmersiveDiabloHotbar extends ImmersiveWidget {
         else {
             // Normal
             drawTexture(matrices, x, y + yOffset, 0, 163 + yOffset, 15, gaugeHeight);
+        }
+
+        IngameHudConfig ighConfig = BlockgameEnhanced.getConfig().getIngameHudConfig();
+        if(!ighConfig.showAdvancedStats) {
+            TextRenderer textRenderer = getInGameHud().getTextRenderer();
+            String hungerVal = String.valueOf(player.getHungerManager().getFoodLevel());
+
+            RenderSystem.enableBlend();
+            float centerX = x + 7.5f;
+            int centerY = y + 16;
+            int txtWidth = textRenderer.getWidth(hungerVal);
+            int txtHeight = textRenderer.fontHeight;
+
+            textRenderer.draw(matrices, hungerVal, centerX - (txtWidth / 2.f) + 1, centerY - (txtHeight / 2.f) + 1, 0x55000000);
+            textRenderer.draw(matrices, hungerVal, centerX - (txtWidth / 2.f), centerY - (txtHeight / 2.f), 0xFFFFFF);
+            RenderSystem.disableBlend();
+            resetShaders();
         }
 
         getInGameHud().client.getProfiler().pop();
@@ -214,6 +274,24 @@ public class ImmersiveDiabloHotbar extends ImmersiveWidget {
         int yOffset = 32 - gaugeHeight;
 
         drawTexture(matrices, x, y + yOffset, 0, 131 + yOffset, 15, gaugeHeight);
+
+        IngameHudConfig ighConfig = BlockgameEnhanced.getConfig().getIngameHudConfig();
+        if(!ighConfig.showAdvancedStats) {
+            TextRenderer textRenderer = getInGameHud().getTextRenderer();
+            String hydrateVal = String.valueOf((int) mmoCoreManager.getHydration());
+
+            RenderSystem.enableBlend();
+            int centerX = x + 7;
+            int centerY = y + 16;
+            int txtWidth = textRenderer.getWidth(hydrateVal);
+            int txtHeight = textRenderer.fontHeight;
+
+            textRenderer.draw(matrices, hydrateVal, centerX - (txtWidth / 2.f) + 1, centerY - (txtHeight / 2.f) + 1, 0x55000000);
+            textRenderer.draw(matrices, hydrateVal, centerX - (txtWidth / 2.f), centerY - (txtHeight / 2.f), 0xFFFFFF);
+            RenderSystem.disableBlend();
+            resetShaders();
+        }
+
         getInGameHud().client.getProfiler().pop();
     }
 

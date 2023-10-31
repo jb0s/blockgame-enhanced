@@ -15,3 +15,4 @@ accessible field net/minecraft/client/gui/hud/InGameHud client Lnet/minecraft/cl
 accessible field net/minecraft/client/gui/hud/InGameHud title Lnet/minecraft/text/Text;
 accessible field net/minecraft/client/gui/hud/InGameHud subtitle Lnet/minecraft/text/Text;
 accessible field net/minecraft/client/gui/hud/InGameHud overlayMessage Lnet/minecraft/text/Text;
+accessible field net/minecraft/client/gui/hud/InGameHud overlayRemaining I
