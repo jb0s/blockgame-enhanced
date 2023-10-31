@@ -5,12 +5,10 @@ import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
 import dev.jb0s.blockgameenhanced.BlockgameEnhancedClient;
-import dev.jb0s.blockgameenhanced.debug.ImGuiImpl;
 import dev.jb0s.blockgameenhanced.event.world.WorldUpdatedEvent;
 import dev.jb0s.blockgameenhanced.gui.hud.immersive.ImmersiveIngameHud;
 import dev.jb0s.blockgameenhanced.gui.screen.title.TitleScreen;
 import dev.jb0s.blockgameenhanced.manager.config.modules.IngameHudConfig;
-import dev.jb0s.blockgameenhanced.renderer.debug.BlockgameDebugRenderer;
 import lombok.SneakyThrows;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.RunArgs;
@@ -125,8 +123,6 @@ public abstract class MixinMinecraftClient {
 
         // Debug stuff
         if(BlockgameEnhanced.DEBUG) {
-            debugRenderer = new BlockgameDebugRenderer(thisMinecraft);
-
             Class<?> implClass = Class.forName("dev.jb0s.blockgameenhanced.debug.ImGuiImpl");
             Method method = implClass.getMethod("create", long.class);
             method.invoke(null, thisMinecraft.getWindow().getHandle());
