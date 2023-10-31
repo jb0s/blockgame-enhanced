@@ -24,12 +24,17 @@ public class ImmersiveExpPopup extends ImmersiveWidget {
 
     @Getter
     @Setter
+    private float gained;
+
+    @Getter
+    @Setter
     private int inactivityTicks;
 
-    public ImmersiveExpPopup(InGameHud inGameHud, MMOProfession profession, float percentage) {
+    public ImmersiveExpPopup(InGameHud inGameHud, MMOProfession profession, float percentage, float gained) {
         super(inGameHud);
         mmoProfession = profession;
         setPercentage(percentage);
+        setGained(gained);
     }
 
     @Override
@@ -48,7 +53,7 @@ public class ImmersiveExpPopup extends ImmersiveWidget {
 
         // Draw text
         TextRenderer textRenderer = getInGameHud().client.textRenderer;
-        String string = getMmoProfession().getDisplayName() + "§7 - §a" + percentage + "%";
+        String string = String.format("§a+%d %s §7- §a%.2f%%", (int) getGained(), getMmoProfession().getDisplayName(), percentage);
         int tx = x + ((getWidth() / 2) - (textRenderer.getWidth(string) / 2));
 
         getInGameHud().getTextRenderer().drawWithShadow(matrices, string, (float)tx, y, 0xFFFFFF + ((int)(alpha * 255) << 24));
@@ -69,6 +74,14 @@ public class ImmersiveExpPopup extends ImmersiveWidget {
     @Override
     public int getHeight() {
         return 17;
+    }
+
+    /**
+     * Increase amount of EXP gained on this popup.
+     * @param gained Amount of EXP gained to add
+     */
+    public void addGained(float gained) {
+        setGained(getGained() + gained);
     }
 
     /**

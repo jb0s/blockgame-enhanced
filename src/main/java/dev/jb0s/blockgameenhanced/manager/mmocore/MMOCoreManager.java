@@ -4,6 +4,7 @@ import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
 import dev.jb0s.blockgameenhanced.event.chat.ReceiveChatMessageEvent;
 import dev.jb0s.blockgameenhanced.gui.hud.immersive.ImmersiveIngameHud;
 import dev.jb0s.blockgameenhanced.manager.Manager;
+import dev.jb0s.blockgameenhanced.manager.config.modules.IngameHudConfig;
 import dev.jb0s.blockgameenhanced.manager.mmocore.profession.MMOProfession;
 import lombok.Getter;
 import net.minecraft.client.MinecraftClient;
@@ -63,7 +64,10 @@ public class MMOCoreManager extends Manager {
     }
 
     private ActionResult extractExpDataFromMessage(MinecraftClient minecraftClient, String message) {
-        if(!message.startsWith("[EXP]") || !BlockgameEnhanced.getConfig().getIngameHudConfig().enableCustomHud) {
+        IngameHudConfig ighConfig = BlockgameEnhanced.getConfig().getIngameHudConfig();
+
+        boolean isDisabled = !ighConfig.enableCustomHud || ighConfig.showProfessionExpInChat;
+        if(!message.startsWith("[EXP]") || isDisabled) {
             return ActionResult.PASS;
         }
 
@@ -72,12 +76,10 @@ public class MMOCoreManager extends Manager {
             String[] split = data.split(" - ");
             String[] professionInfo = split[0].split(" ");
 
-            if(professionInfo[0].trim().equals("Einherjar")) {
-                return ActionResult.SUCCESS;
-            }
-
             MMOProfession prof = MMOProfession.valueOf(professionInfo[0].trim().toUpperCase());
-            immersiveIngameHud.getImmersiveExpPopupContainer().showExpPopup(prof, Float.parseFloat(split[1].replace("%", "")));
+            float gained = Float.parseFloat(professionInfo[1].substring(1));
+
+            immersiveIngameHud.getImmersiveExpPopupContainer().showExpPopup(prof, Float.parseFloat(split[1].replace("%", "")), gained);
             return ActionResult.SUCCESS;
         }
 

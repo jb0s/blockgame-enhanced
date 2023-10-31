@@ -19,9 +19,14 @@ public class IngameHudConfig implements ConfigData {
     @ConfigEntry.Gui.RequiresRestart(value = false)
     public boolean showCooldownsInHotbar;
 
+    @ConfigEntry.Gui.Tooltip
+    @ConfigEntry.Gui.RequiresRestart(value = false)
+    public boolean showProfessionExpInChat;
+
     public IngameHudConfig() {
         enableCustomHud = true;
         showAdvancedStats = false;
         showCooldownsInHotbar = true;
+        showProfessionExpInChat = false;
     }
 }

@@ -45,14 +45,15 @@ public class ImmersiveExpPopupContainer extends ImmersiveWidget {
         }
     }
 
-    public void showExpPopup(MMOProfession profession, float percent) {
+    public void showExpPopup(MMOProfession profession, float percent, float gained) {
         if(popupHashMap.containsKey(profession)) {
             popupHashMap.get(profession).setPercentage(percent);
             popupHashMap.get(profession).setInactivityTicks(0);
+            popupHashMap.get(profession).addGained(gained);
             return;
         }
 
-        ImmersiveExpPopup popup = new ImmersiveExpPopup(getInGameHud(), profession, percent);
+        ImmersiveExpPopup popup = new ImmersiveExpPopup(getInGameHud(), profession, percent, gained);
         popupHashMap.put(profession, popup);
     }
 }
