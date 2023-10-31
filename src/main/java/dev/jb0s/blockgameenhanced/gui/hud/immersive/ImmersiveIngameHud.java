@@ -30,7 +30,7 @@ public class ImmersiveIngameHud extends InGameHud {
         //statusBar.render(matrices, 0, bottom, tickDelta);
         newImmersiveHotbar.render(matrices, scaledWidth / 2, bottom, tickDelta);
 
-        boolean shouldRaiseExpBar = !BlockgameEnhanced.getConfig().getIngameHudConfig().enableCustomHud || BlockgameEnhanced.getConfig().getIngameHudConfig().showAdvancedStats;
+        boolean shouldRaiseExpBar = overlayMessage != null && overlayRemaining > 0;
         if(shouldRaiseExpBar) {
             immersiveExpPopupContainer.render(matrices, scaledWidth / 2, bottom - 105, tickDelta);
         }
