@@ -57,7 +57,7 @@ public class ImmersiveDiabloHotbar extends ImmersiveWidget {
 
         // Draw gauges (This isn't even the right word for it LMAO)
         drawHealthGauge(matrices, frameX + 4, frameY + 4, playerEntity);
-        drawAirGauge(matrices, frameX + 25, frameY + 4, playerEntity);
+        drawAirGauge(matrices, frameX + getWidth() + 13, frameY + 3, playerEntity);
         if(!hasVehicle || !(playerEntity.getVehicle() instanceof LivingEntity vehicle)) {
             drawHydrationGauge(matrices, frameX + 278, frameY + 4);
             drawHungerGauge(matrices, frameX + 261, frameY + 4);
@@ -141,7 +141,7 @@ public class ImmersiveDiabloHotbar extends ImmersiveWidget {
         }
 
         IngameHudConfig ighConfig = BlockgameEnhanced.getConfig().getIngameHudConfig();
-        if(!ighConfig.showAdvancedStats && playerEntity.getAir() == playerEntity.getMaxAir()) {
+        if(!ighConfig.showAdvancedStats) {
             TextRenderer textRenderer = getInGameHud().getTextRenderer();
             String healthVal = String.valueOf(mmoCoreManager.getHealth());
 
@@ -307,11 +307,13 @@ public class ImmersiveDiabloHotbar extends ImmersiveWidget {
             getInGameHud().client.getProfiler().push("airMeter");
 
             float airPercent = (float) playerEntity.getAir() / playerEntity.getMaxAir();
-            int yOffset = 32 - (int)(airPercent * 32.f);
+            int yOffset = (int)(airPercent * 27.f);
 
-            // Draw frame, then air filler
-            drawTexture(matrices, x, y, 64, 98, 11, 32);
-            drawTexture(matrices, x + 2, y + yOffset, 75, 98 + yOffset, 9, 32 - yOffset);
+            // Draw bottle and air filler
+            RenderSystem.enableBlend();
+            drawTexture(matrices, x, y, 48, 12, 18, 37);
+            drawTexture(matrices, x + 2, y + 8 + yOffset, 66, 20 + yOffset, 14, 27 - yOffset);
+            RenderSystem.disableBlend();
 
             getInGameHud().client.getProfiler().pop();
         }

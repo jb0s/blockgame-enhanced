@@ -33,6 +33,8 @@ public class MusicManager extends Manager {
 
     private SoundManager soundManager;
     private MusicSoundInstance soundInstance;
+
+    @Getter
     private JsonMusicList musicList;
 
     @Getter
