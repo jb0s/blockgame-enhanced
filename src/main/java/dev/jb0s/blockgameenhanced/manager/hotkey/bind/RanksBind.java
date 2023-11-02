@@ -9,7 +9,7 @@ public class RanksBind {
             return ActionResult.FAIL;
         }
 
-        client.player.sendChatMessage("/ranks");
+        client.getNetworkHandler().sendChatCommand("ranks");
         return ActionResult.SUCCESS;
     }
 }

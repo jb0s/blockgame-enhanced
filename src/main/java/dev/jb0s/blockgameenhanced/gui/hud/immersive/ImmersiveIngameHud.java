@@ -5,9 +5,11 @@ import dev.jb0s.blockgameenhanced.gui.hud.immersive.widget.experience.ImmersiveE
 import dev.jb0s.blockgameenhanced.gui.hud.immersive.widget.hotbar.ImmersiveStatusBar;
 import dev.jb0s.blockgameenhanced.gui.hud.immersive.widget.hotbar.ImmersiveDiabloHotbar;
 import lombok.Getter;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.*;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.JumpingMount;
 
 public class ImmersiveIngameHud extends InGameHud {
     protected ImmersiveStatusBar statusBar;
@@ -17,25 +19,25 @@ public class ImmersiveIngameHud extends InGameHud {
     protected ImmersiveExpPopupContainer immersiveExpPopupContainer;
 
     public ImmersiveIngameHud(MinecraftClient client) {
-        super(client);
+        super(client, client.getItemRenderer());
         //statusBar = new ImmersiveStatusBar(this);
         newImmersiveHotbar = new ImmersiveDiabloHotbar(this);
         immersiveExpPopupContainer = new ImmersiveExpPopupContainer(this);
     }
 
     @Override
-    protected void renderHotbar(float tickDelta, MatrixStack matrices) {
+    protected void renderHotbar(float tickDelta, DrawContext context) {
         int bottom = scaledHeight/* - 22*/;
 
         //statusBar.render(matrices, 0, bottom, tickDelta);
-        newImmersiveHotbar.render(matrices, scaledWidth / 2, bottom, tickDelta);
+        newImmersiveHotbar.render(context, scaledWidth / 2, bottom, tickDelta);
 
         boolean shouldRaiseExpBar = overlayMessage != null && overlayRemaining > 0;
         if(shouldRaiseExpBar) {
-            immersiveExpPopupContainer.render(matrices, scaledWidth / 2, bottom - 105, tickDelta);
+            immersiveExpPopupContainer.render(context, scaledWidth / 2, bottom - 105, tickDelta);
         }
         else {
-            immersiveExpPopupContainer.render(matrices, scaledWidth / 2, bottom - 80, tickDelta);
+            immersiveExpPopupContainer.render(context, scaledWidth / 2, bottom - 80, tickDelta);
         }
     }
 
@@ -48,18 +50,18 @@ public class ImmersiveIngameHud extends InGameHud {
     }
 
     @Override
-    protected void renderStatusBars(MatrixStack matrices) {
+    protected void renderStatusBars(DrawContext context) {
     }
 
     @Override
-    public void renderExperienceBar(MatrixStack matrices, int x) {
+    public void renderExperienceBar(DrawContext context, int x) {
     }
 
     @Override
-    public void renderMountJumpBar(MatrixStack matrices, int x) {
+    public void renderMountJumpBar(JumpingMount mount, DrawContext context, int x) {
     }
 
     @Override
-    public void renderMountHealth(MatrixStack matrices) {
+    public void renderMountHealth(DrawContext context) {
     }
 }

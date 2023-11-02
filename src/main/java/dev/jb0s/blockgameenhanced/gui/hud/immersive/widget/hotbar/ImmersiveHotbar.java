@@ -2,11 +2,10 @@ package dev.jb0s.blockgameenhanced.gui.hud.immersive.widget.hotbar;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.jb0s.blockgameenhanced.gui.hud.immersive.widget.ImmersiveWidget;
-import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.option.AttackIndicator;
 import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Arm;
@@ -30,8 +29,8 @@ public class ImmersiveHotbar extends ImmersiveWidget {
     }
 
     @Override
-    public void render(MatrixStack matrices, int x, int y, float tickDelta) {
-        PlayerEntity playerEntity = getInGameHud().getCameraPlayer();
+    public void render(DrawContext context, int x, int y, float tickDelta) {
+        /*PlayerEntity playerEntity = getInGameHud().getCameraPlayer();
         if (playerEntity == null) {
             return;
         }
@@ -88,6 +87,6 @@ public class ImmersiveHotbar extends ImmersiveWidget {
             getInGameHud().drawTexture(matrices, slotY, slotX, 0, 94, 18, 18);
             getInGameHud().drawTexture(matrices, slotY, slotX + 18 - q, 18, 112 - q, 18, q);
         }
-        RenderSystem.disableBlend();
+        RenderSystem.disableBlend();*/
     }
 }

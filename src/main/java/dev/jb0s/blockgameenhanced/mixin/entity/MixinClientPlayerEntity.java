@@ -18,10 +18,4 @@ public abstract class MixinClientPlayerEntity {
         PartyManager pm = BlockgameEnhancedClient.getPartyManager();
         pm.handlePlayerHealth(thisPlayer.getGameProfile().getName(), (int) thisPlayer.getHealth(), (int) thisPlayer.getMaxHealth(), true);
     }
-
-    @Inject(method = "sendChatMessage", at = @At("HEAD"))
-    public void sendChatMessage(String message, CallbackInfo ci) {
-        ClientPlayerEntity thisPlayer = (ClientPlayerEntity) (Object) this;
-        SendChatMessageEvent.EVENT.invoker().sendChatMessage(thisPlayer, message);
-    }
 }

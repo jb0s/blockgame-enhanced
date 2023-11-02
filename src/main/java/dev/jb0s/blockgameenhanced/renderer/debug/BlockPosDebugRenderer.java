@@ -19,7 +19,7 @@ public class BlockPosDebugRenderer implements DebugRenderer.Renderer {
         }
 
         RenderSystem.enableBlend();
-        DebugRenderer.drawBox(player.getBlockPos(), 0.001f, 0.0f, 0.0f, 0.5f, 0.5f);
+        //DebugRenderer.drawBox(player.getBlockPos(), 0.001f, 0.0f, 0.0f, 0.5f, 0.5f);
         RenderSystem.disableBlend();
     }
 }

@@ -9,7 +9,7 @@ public class DepositBind {
             return ActionResult.FAIL;
         }
 
-        client.player.sendChatMessage("/deposit");
+        client.getNetworkHandler().sendChatCommand("deposit");
         return ActionResult.SUCCESS;
     }
 }

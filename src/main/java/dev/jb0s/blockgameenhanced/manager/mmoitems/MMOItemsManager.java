@@ -152,7 +152,7 @@ public class MMOItemsManager extends Manager {
         }
 
         // This item has an ability, resend the right click packet to trigger a cooldown message from the server, which we then use for the hotbar
-        scheduledPackets.add(new ScheduledItemUsePacket(new PlayerInteractItemC2SPacket(hand), tick, tick + 2));
+        scheduledPackets.add(new ScheduledItemUsePacket(new PlayerInteractItemC2SPacket(hand, 0), tick, tick + 2));
         latencyManager.captureItemUsage(stack);
 
         return TypedActionResult.pass(stack);

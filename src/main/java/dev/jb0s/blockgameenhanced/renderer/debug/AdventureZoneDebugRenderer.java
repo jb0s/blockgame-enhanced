@@ -1,7 +1,6 @@
 package dev.jb0s.blockgameenhanced.renderer.debug;
 
 import com.google.common.collect.Maps;
-import com.mojang.blaze3d.systems.RenderSystem;
 import dev.jb0s.blockgameenhanced.BlockgameEnhancedClient;
 import dev.jb0s.blockgameenhanced.manager.adventure.AdventureZone;
 import net.minecraft.client.MinecraftClient;
@@ -46,13 +45,13 @@ public class AdventureZoneDebugRenderer implements DebugRenderer.Renderer {
                     BlockPos start = new BlockPos(startX, x.getMinY(), startZ);
                     Color col = getOrCreateColor(x.getId());
 
-                    RenderSystem.enableBlend();
+                    /*RenderSystem.enableBlend();
                     DebugRenderer.drawBox(start, start.add(16, x.getMaxY() - x.getMinY(), 16), col.getRed(), col.getGreen(), col.getBlue(), col.getAlpha());
-                    RenderSystem.disableBlend();
+                    RenderSystem.disableBlend();*/
                 }
 
-                DebugRenderer.drawString(x.getId(), startX + 8, player.getEyeY() + 0.15f, startZ + 8, 0xFFFFFF);
-                DebugRenderer.drawString("(" + y[0] + ", " + y[1] + ")", startX + 8, player.getEyeY() - 0.15f, startZ + 8, 0xFFFFFF);
+                //DebugRenderer.drawString(x.getId(), startX + 8, player.getEyeY() + 0.15f, startZ + 8, 0xFFFFFF);
+                //DebugRenderer.drawString("(" + y[0] + ", " + y[1] + ")", startX + 8, player.getEyeY() - 0.15f, startZ + 8, 0xFFFFFF);
             }
         }
     }

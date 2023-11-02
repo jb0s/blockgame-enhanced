@@ -9,7 +9,7 @@ public class BackpackBind {
             return ActionResult.FAIL;
         }
 
-        client.player.sendChatMessage("/backpack");
+        client.getNetworkHandler().sendChatCommand("backpack");
         return ActionResult.SUCCESS;
     }
 }

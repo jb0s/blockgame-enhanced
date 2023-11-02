@@ -1,7 +1,6 @@
 package dev.jb0s.blockgameenhanced.manager.party;
 
 import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
-import dev.jb0s.blockgameenhanced.BlockgameEnhancedClient;
 import dev.jb0s.blockgameenhanced.event.chat.ReceiveChatMessageEvent;
 import dev.jb0s.blockgameenhanced.event.chat.SendChatMessageEvent;
 import dev.jb0s.blockgameenhanced.event.entity.otherplayer.OtherPlayerTickEvent;
@@ -19,7 +18,7 @@ import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.SkullItem;
+import net.minecraft.item.PlayerHeadItem;
 import net.minecraft.network.packet.s2c.play.InventoryS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenScreenS2CPacket;
 import net.minecraft.screen.ScreenHandlerType;
@@ -27,12 +26,11 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3d;
+import org.joml.Matrix4f;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -43,9 +41,9 @@ public class PartyManager extends Manager {
     private static final int PARTY_UPDATE_INTERVAL = 200; // 200 ticks (10 seconds)
     private static final String PARTY_LIST_SCREEN_NAME = "Party";
     private static final String PARTY_CREATION_SCREEN_NAME = "Party Creation";
-    private static final SoundEvent PARTY_MEMBER_DEATH_SOUND = new SoundEvent(new Identifier("blockgame", "mus.gui.combat.death"));
-    private static final SoundEvent PING_LOCATION_SOUND = new SoundEvent(new Identifier("blockgame", "mus.party.ping.block"));
-    private static final SoundEvent PING_ITEM_SOUND = new SoundEvent(new Identifier("blockgame", "mus.party.ping.item"));
+    private static final SoundEvent PARTY_MEMBER_DEATH_SOUND = SoundEvent.of(new Identifier("blockgame", "mus.gui.combat.death"));
+    private static final SoundEvent PING_LOCATION_SOUND = SoundEvent.of(new Identifier("blockgame", "mus.party.ping.block"));
+    private static final SoundEvent PING_ITEM_SOUND = SoundEvent.of(new Identifier("blockgame", "mus.party.ping.item"));
 
     // todo this is kind of hacky I don't like it. replace with a better system soon?
     private static final String[] TRIGGER_PHRASES = new String[] {
@@ -185,7 +183,7 @@ public class PartyManager extends Manager {
         }
 
         int syncId = packet.getSyncId();
-        String name = packet.getName().asString();
+        String name = packet.getName().getString();
         boolean isPartyCreationScreen = name.startsWith(PARTY_CREATION_SCREEN_NAME);
         boolean isPartyMembersScreen = name.startsWith(PARTY_LIST_SCREEN_NAME);
 
@@ -227,7 +225,7 @@ public class PartyManager extends Manager {
             }
 
             // If the item in this slot is a skull, see if we can find a player that owns it.
-            if(stack.getItem() instanceof SkullItem) {
+            if(stack.getItem() instanceof PlayerHeadItem) {
                 String name = stack.getName().getString();
                 PlayerListEntry playerEntry = client.getNetworkHandler().getPlayerListEntry(name);
 
@@ -294,10 +292,10 @@ public class PartyManager extends Manager {
         partyMembers.add(new PartyMember(player));
 
         // Toast notification saying that player joined
-        boolean playerIsMe = player.getProfile().getName().equals(client.getSession().getProfile().getName());
+        boolean playerIsMe = player.getProfile().getName().equals(client.getSession().getUsername());
         if(!playerIsMe) {
-            Text toastTitle = new TranslatableText("hud.blockgame.toast.party.joined.title");
-            Text toastDescription = new TranslatableText("hud.blockgame.toast.party.joined.description", player.getProfile().getName());
+            Text toastTitle = Text.translatable("hud.blockgame.toast.party.joined.title");
+            Text toastDescription = Text.translatable("hud.blockgame.toast.party.joined.description", player.getProfile().getName());
             client.getToastManager().add(new SystemToast(SystemToast.Type.PERIODIC_NOTIFICATION, toastTitle, toastDescription));
         }
 
@@ -320,8 +318,8 @@ public class PartyManager extends Manager {
             allowedToQueryServer = false;
 
             // Toast notification saying that party disbanded
-            Text toastTitle = new TranslatableText("hud.blockgame.toast.party.disbanded.title");
-            Text toastDescription = new TranslatableText("hud.blockgame.toast.party.disbanded.description");
+            Text toastTitle = Text.translatable("hud.blockgame.toast.party.disbanded.title");
+            Text toastDescription = Text.translatable("hud.blockgame.toast.party.disbanded.description");
             client.getToastManager().add(new SystemToast(SystemToast.Type.PERIODIC_NOTIFICATION, toastTitle, toastDescription));
 
             // Invoke party updated event
@@ -332,8 +330,8 @@ public class PartyManager extends Manager {
             partyPings.remove(member);
 
             // Toast notification saying that player left
-            Text toastTitle = new TranslatableText("hud.blockgame.toast.party.left.title");
-            Text toastDescription = new TranslatableText("hud.blockgame.toast.party.left.description", member.getPlayerName());
+            Text toastTitle = Text.translatable("hud.blockgame.toast.party.left.title");
+            Text toastDescription = Text.translatable("hud.blockgame.toast.party.left.description", member.getPlayerName());
             client.getToastManager().add(new SystemToast(SystemToast.Type.PERIODIC_NOTIFICATION, toastTitle, toastDescription));
 
             // Invoke party updated event
@@ -432,6 +430,7 @@ public class PartyManager extends Manager {
                 boolean markerWorldMatchesPlayer = partyPings.get(partyMember).getWorld().equals(client.world.getRegistryKey().getValue().getPath());
                 boolean configAllowsMarkerSound = BlockgameEnhanced.getConfig().getPartyHudConfig().markNotify;
                 ClientPlayerEntity clientPlayerEntity = MinecraftClient.getInstance().player;
+
                 if(markerWorldMatchesPlayer && configAllowsMarkerSound && clientPlayerEntity != null) {
                     Vec3d clampedPos = MathHelper.clampMagnitude(pos.subtract(clientPlayerEntity.getPos()), 0.0, 5.0).add(clientPlayerEntity.getPos());
                     client.world.playSound(clampedPos.x, clampedPos.y, clampedPos.z, SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.PLAYERS, 0.65f, 0.75f, false);
@@ -467,7 +466,7 @@ public class PartyManager extends Manager {
     private void requestPartyPayload() {
         isWaitingForPartyScreenOpen = true;
         isWaitingForPartyScreenContent = false;
-        client.player.sendChatMessage("/party");
+        client.getNetworkHandler().sendChatCommand("party");
     }
 
     /**
@@ -483,10 +482,10 @@ public class PartyManager extends Manager {
 
             // If we're pinging where a ping already exists, unping instead
             if(existingPing != null && existingPing.isHovered()) {
-                cpe.sendChatMessage("@~ Unping");
+                client.getNetworkHandler().sendChatMessage("@~ Unping");
             }
             else {
-                cpe.sendChatMessage(String.format("@~ Ping ~ " + hit.getPos().toString() + " ~ " + cpe.world.getRegistryKey().getValue().getPath()));
+                client.getNetworkHandler().sendChatMessage(String.format("@~ Ping ~ " + hit.getPos().toString() + " ~ " + cpe.getWorld().getRegistryKey().getValue().getPath()));
             }
         }
     }

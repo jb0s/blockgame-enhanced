@@ -6,11 +6,11 @@ import dev.jb0s.blockgameenhanced.manager.config.modules.ModConfig;
 import dev.jb0s.blockgameenhanced.manager.update.GitHubRelease;
 import lombok.Getter;
 import me.shedaniel.autoconfig.AutoConfig;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
 
 public class UpdateScreen extends Screen {
@@ -21,18 +21,18 @@ public class UpdateScreen extends Screen {
     private GitHubRelease release;
     private Text MESSAGE_TEXT_1;
 
-    private static final Text HEADER_TEXT = new TranslatableText("menu.blockgame.update.header");
-    private static final Text MESSAGE_TEXT_2  = new TranslatableText("menu.blockgame.update.message.2");
-    private static final Text UPDATE_BUTTON_TEXT = new TranslatableText("menu.blockgame.update.button.update");
-    private static final Text UPDATE_SNOOZE_TEXT = new TranslatableText("menu.blockgame.update.button.snooze");
-    private static final Text UPDATE_IGNORE_TEXT = new TranslatableText("menu.blockgame.update.button.ignore");
+    private static final Text HEADER_TEXT = Text.translatable("menu.blockgame.update.header");
+    private static final Text MESSAGE_TEXT_2  = Text.translatable("menu.blockgame.update.message.2");
+    private static final Text UPDATE_BUTTON_TEXT = Text.translatable("menu.blockgame.update.button.update");
+    private static final Text UPDATE_SNOOZE_TEXT = Text.translatable("menu.blockgame.update.button.snooze");
+    private static final Text UPDATE_IGNORE_TEXT = Text.translatable("menu.blockgame.update.button.ignore");
 
     public UpdateScreen(GitHubRelease release) {
         super(HEADER_TEXT);
         this.release = release;
 
         // Fuck Java
-        MESSAGE_TEXT_1 = new TranslatableText("menu.blockgame.update.message.1", (release != null ? release.tag_name : "v?.?.?"));
+        MESSAGE_TEXT_1 = Text.translatable("menu.blockgame.update.message.1", (release != null ? release.tag_name : "v?.?.?"));
     }
 
     @Override
@@ -41,31 +41,31 @@ public class UpdateScreen extends Screen {
     }
 
     @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        renderBackground(matrices);
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        renderBackground(context, mouseX, mouseY, delta);
 
         // Render message
-        drawCenteredText(matrices, textRenderer, title, width / 2, 50, 16777215);
-        drawCenteredText(matrices, textRenderer, MESSAGE_TEXT_1, width / 2, 70, 16777215);
-        drawCenteredText(matrices, textRenderer, MESSAGE_TEXT_2, width / 2, 70 + textRenderer.fontHeight + 3, 16777215);
+        context.drawCenteredTextWithShadow(textRenderer, title, width / 2, 50, 16777215);
+        context.drawCenteredTextWithShadow(textRenderer, MESSAGE_TEXT_1, width / 2, 70, 16777215);
+        context.drawCenteredTextWithShadow(textRenderer, MESSAGE_TEXT_2, width / 2, 70 + textRenderer.fontHeight + 3, 16777215);
 
-        super.render(matrices, mouseX, mouseY, delta);
+        super.render(context, mouseX, mouseY, delta);
     }
 
     protected void addButtons(int y) {
-        addDrawableChild(new ButtonWidget(width / 2 - 155, y, 150, 20, UPDATE_BUTTON_TEXT, (button) -> {
+        addDrawableChild(ButtonWidget.builder(UPDATE_BUTTON_TEXT, (button) -> {
             Util.getOperatingSystem().open(release.html_url);
-        }));
-        addDrawableChild(new ButtonWidget(width / 2 - 155 + 160, y, 150, 20, UPDATE_SNOOZE_TEXT, (button) -> {
+        }).position(width / 2 - 155, y).size(150, 20).build());
+        addDrawableChild(ButtonWidget.builder(UPDATE_SNOOZE_TEXT, (button) -> {
             answer();
-        }));
-        addDrawableChild(new ButtonWidget(width / 2 - 155, y + 25, 310, 20, UPDATE_IGNORE_TEXT, (button) -> {
+        }).position(width / 2 - 155 + 160, y).size(150, 20).build());
+        addDrawableChild(ButtonWidget.builder(UPDATE_IGNORE_TEXT, (button) -> {
             // Turn off update checks in user config
             BlockgameEnhanced.getConfig().getAccessibilityConfig().enableUpdateChecker = false;
             AutoConfig.getConfigHolder(ModConfig.class).save();
 
             answer();
-        }));
+        }).position(width / 2 - 155, y + 25).size(310, 20).build());
     }
 
     /**

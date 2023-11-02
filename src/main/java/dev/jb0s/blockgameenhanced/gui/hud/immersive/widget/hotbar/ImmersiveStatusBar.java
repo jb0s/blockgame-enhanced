@@ -5,11 +5,9 @@ import dev.jb0s.blockgameenhanced.gui.hud.immersive.widget.ImmersiveWidget;
 import dev.jb0s.blockgameenhanced.manager.adventure.AdventureZone;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 
 public class ImmersiveStatusBar extends ImmersiveWidget {
     public ImmersiveStatusBar(InGameHud inGameHud) {
@@ -27,24 +25,24 @@ public class ImmersiveStatusBar extends ImmersiveWidget {
     }
 
     @Override
-    public void render(MatrixStack matrices, int x, int y, float tickDelta) {
+    public void render(DrawContext context, int x, int y, float tickDelta) {
         TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
 
         // Dark background
-        DrawableHelper.fill(matrices, x, y, x + getWidth(), y + getHeight(), 0xCF000000);
+        context.fill(x, y, x + getWidth(), y + getHeight(), 0xCF000000);
 
         // Draw texts
         x += 20;
         y = getInGameHud().scaledHeight - ((getHeight() / 2) + (textRenderer.fontHeight / 2));
-        textRenderer.draw(matrices, Text.of("Balance: §65,470.55$"), x, y, 0xFFFFFFFF);
+        context.drawText(textRenderer, Text.of("Balance: §65,470.55$"), x, y, 0xFFFFFFFF, false);
 
         x += 135;
         AdventureZone zone = BlockgameEnhancedClient.getAdventureZoneManager().getCurrentZone();
         if(zone != null) {
-            textRenderer.draw(matrices, "§7▪ " + new TranslatableText(String.format("region.blockgame.%s.%s", zone.getWorld(), zone.getId().toLowerCase())).getString(), x, y, 0xFFFFFFFF);
+            context.drawText(textRenderer, "§7▪ " + Text.translatable(String.format("region.blockgame.%s.%s", zone.getWorld(), zone.getId().toLowerCase())).getString(), x, y, 0xFFFFFFFF, false);
         }
         else {
-            textRenderer.draw(matrices, Text.of("§7▪ §fWilderness"), x, y, 0xFFFFFFFF);
+            context.drawText(textRenderer, Text.of("§7▪ §fWilderness"), x, y, 0xFFFFFFFF, false);
         }
     }
 }

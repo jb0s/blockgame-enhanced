@@ -9,7 +9,7 @@ public class PartyBind {
             return ActionResult.FAIL;
         }
 
-        client.player.sendChatMessage("/party");
+        client.getNetworkHandler().sendChatCommand("party");
         return ActionResult.SUCCESS;
     }
 }

@@ -4,10 +4,10 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.Window;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vector4f;
+import org.joml.Matrix4f;
+import org.joml.Quaternionf;
+import org.joml.Vector4f;
 import org.lwjgl.BufferUtils;
 
 public class MathHelper {
@@ -40,42 +40,42 @@ public class MathHelper {
         GameRenderer gameRenderer = minecraft.gameRenderer;
 
         Vec3d x = gameRenderer.getCamera().getPos().negate().add(pos);
-        Quaternion y = new Quaternion((float) x.x, (float) x.y, (float) x.z, 1.0f);
-        Quaternion z = quatProduct(projMatrix, quatProduct(modelViewMatrix, y));
+        Quaternionf y = new Quaternionf((float) x.x, (float) x.y, (float) x.z, 1.0f);
+        Quaternionf z = quatProduct(projMatrix, quatProduct(modelViewMatrix, y));
 
-        if(z.getW() <= 0f) {
+        if(z.w() <= 0f) {
             return null;
         }
 
         Window w = minecraft.getWindow();
-        Quaternion sp = quatToScreen(z);
-        float a = sp.getX() * w.getWidth();
-        float b = sp.getY() * w.getHeight();
+        Quaternionf sp = quatToScreen(z);
+        float a = sp.x() * w.getWidth();
+        float b = sp.y() * w.getHeight();
 
         if(Float.isInfinite(a) || Float.isInfinite(b)) {
             return null;
         }
 
-        return new Vector4f(a, w.getHeight() - b, sp.getZ(), 1.0f / (sp.getW() * 2.0f));
+        return new Vector4f(a, w.getHeight() - b, sp.z(), 1.0f / (sp.w() * 2.0f));
     }
-    private static Quaternion quatProduct(Matrix4f m4f, Quaternion quat) {
+    private static Quaternionf quatProduct(Matrix4f m4f, Quaternionf quat) {
         var m = BufferUtils.createFloatBuffer(16);
-        m4f.writeRowMajor(m);
+        //m4f.writeExternal();
 
-        return new Quaternion(
-                m.get(0) * quat.getX() + m.get(1) * quat.getY() + m.get(2) * quat.getZ() + m.get(3) * quat.getW(),
-                m.get(4) * quat.getX() + m.get(5) * quat.getY() + m.get(6) * quat.getZ() + m.get(7) * quat.getW(),
-                m.get(8) * quat.getX() + m.get(9) * quat.getY() + m.get(10) * quat.getZ() + m.get(11) * quat.getW(),
-                m.get(12) * quat.getX() + m.get(13) * quat.getY() + m.get(14) * quat.getZ() + m.get(15) * quat.getW()
+        return new Quaternionf(
+                m.get(0) * quat.x() + m.get(1) * quat.y() + m.get(2) * quat.z() + m.get(3) * quat.w(),
+                m.get(4) * quat.x() + m.get(5) * quat.y() + m.get(6) * quat.z() + m.get(7) * quat.w(),
+                m.get(8) * quat.x() + m.get(9) * quat.y() + m.get(10) * quat.z() + m.get(11) * quat.w(),
+                m.get(12) * quat.x() + m.get(13) * quat.y() + m.get(14) * quat.z() + m.get(15) * quat.w()
         );
     }
-    private static Quaternion quatToScreen(Quaternion quat) {
-        var w = 1f / quat.getW() * 0.5f;
+    private static Quaternionf quatToScreen(Quaternionf quat) {
+        var w = 1f / quat.w() * 0.5f;
 
-        return new Quaternion(
-                quat.getX() * w + 0.5f,
-                quat.getY() * w + 0.5f,
-                quat.getZ() * w + 0.5f,
+        return new Quaternionf(
+                quat.x() * w + 0.5f,
+                quat.y() * w + 0.5f,
+                quat.z() * w + 0.5f,
                 w);
     }
     public static void rotateZ(MatrixStack matrices, float theta) {
@@ -87,7 +87,7 @@ public class MathHelper {
         m.put(0f); m.put(0f); m.put(1f); m.put(0f);
         m.put(0f); m.put(0f); m.put(0f); m.put(1f);
 
-        m4f.readRowMajor(m);
+        //m4f.readRowMajor(m);
         matrices.multiplyPositionMatrix(m4f);
     }
 }

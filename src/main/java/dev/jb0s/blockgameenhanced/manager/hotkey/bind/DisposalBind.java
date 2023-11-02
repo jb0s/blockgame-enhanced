@@ -9,7 +9,7 @@ public class DisposalBind {
             return ActionResult.FAIL;
         }
 
-        client.player.sendChatMessage("/disposal");
+        client.getNetworkHandler().sendChatCommand("disposal");
         return ActionResult.SUCCESS;
     }
 }

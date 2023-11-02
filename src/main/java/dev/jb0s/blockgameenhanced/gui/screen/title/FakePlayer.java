@@ -21,14 +21,14 @@ public class FakePlayer extends ClientPlayerEntity {
         super(MinecraftClient.getInstance(), new FakeWorld(), new FakeClientPlayNetHandler(), new StatHandler(), new ClientRecipeBook(), false, false);
 
         MinecraftClient mc = MinecraftClient.getInstance();
-        GameProfile profile = mc.getSession().getProfile();
+        /*GameProfile profile = mc.getSession().getProfile();
         mc.getSkinProvider().loadSkin(profile, (type, resourceLocation, minecraftProfileTexture) -> {
             switch (type) {
                 case SKIN -> skin = resourceLocation;
                 case CAPE -> cape = resourceLocation;
                 case ELYTRA -> elytra = resourceLocation;
             }
-        }, true);
+        }, true);*/
     }
 
     @Override
@@ -36,18 +36,18 @@ public class FakePlayer extends ClientPlayerEntity {
         return true;
     }
 
-    @Override
+    /*@Override
     public Identifier getSkinTexture() {
         if (skin == null)
             return DefaultSkinHelper.getTexture();
 
         return skin;
-    }
+    }*/
 
-    @Override
+    /*@Override
     public String getModel() {
         return "default";
-    }
+    }*/
 
     @Override
     public boolean isSpectator() {
@@ -59,16 +59,16 @@ public class FakePlayer extends ClientPlayerEntity {
         return true;
     }
 
-    @Override
+    /*@Override
     public boolean canRenderCapeTexture() {
         return cape != null;
-    }
+    }*/
 
-    @Nullable
+    /*@Nullable
     @Override
     public Identifier getCapeTexture() {
         return cape;
-    }
+    }*/
 
     @Override
     public boolean isInvisibleTo(PlayerEntity entity) {
