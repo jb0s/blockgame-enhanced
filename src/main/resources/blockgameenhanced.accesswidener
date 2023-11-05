@@ -7,6 +7,7 @@ accessible method net/minecraft/client/gui/hud/InGameHud getCameraPlayer ()Lnet/
 extendable method net/minecraft/client/gui/hud/InGameHud renderHealthBar (Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/entity/player/PlayerEntity;IIIIFIIIZ)V
 extendable method net/minecraft/client/gui/hud/InGameHud renderStatusBars (Lnet/minecraft/client/util/math/MatrixStack;)V
 extendable method net/minecraft/client/gui/hud/InGameHud renderMountHealth (Lnet/minecraft/client/util/math/MatrixStack;)V
+extendable method net/minecraft/client/gui/hud/InGameHud renderVignetteOverlay (Lnet/minecraft/entity/Entity;)V
 
 # InGameHud fields
 accessible field net/minecraft/client/gui/hud/InGameHud scaledWidth I
