@@ -121,13 +121,6 @@ public abstract class MixinMinecraftClient {
             startDummyServer("Empty", SaveLoader.DataPackSettingsSupplier::loadFromWorld, SaveLoader.SavePropertiesSupplier::loadFromWorld);
         }
 
-        // Debug stuff
-        if(BlockgameEnhanced.DEBUG) {
-            Class<?> implClass = Class.forName("dev.jb0s.blockgameenhanced.debug.ImGuiImpl");
-            Method method = implClass.getMethod("create", long.class);
-            method.invoke(null, thisMinecraft.getWindow().getHandle());
-        }
-
         // Apply Custom HUD
         IngameHudConfig ingameHudConfig = BlockgameEnhanced.getConfig().getIngameHudConfig();
         if(ingameHudConfig.enableCustomHud) {
@@ -156,6 +149,20 @@ public abstract class MixinMinecraftClient {
         }
         else if(BlockgameEnhanced.isOptifinePresent()) {
             startDummyServer("Empty", SaveLoader.DataPackSettingsSupplier::loadFromWorld, SaveLoader.SavePropertiesSupplier::loadFromWorld);
+        }
+    }
+
+    @Inject(method = "stop", at = @At("HEAD"))
+    public void stop(CallbackInfo ci) {
+        if(BlockgameEnhancedClient.isRunningCompatibilityServer() && server != null) {
+            server.stop(false);
+        }
+    }
+
+    @Inject(method = "close", at = @At("HEAD"))
+    public void close(CallbackInfo ci) {
+        if(BlockgameEnhancedClient.isRunningCompatibilityServer() && server != null) {
+            server.close();
         }
     }
 
