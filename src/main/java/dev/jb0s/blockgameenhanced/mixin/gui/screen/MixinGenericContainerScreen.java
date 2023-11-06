@@ -2,14 +2,20 @@ package dev.jb0s.blockgameenhanced.mixin.gui.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
+import dev.jb0s.blockgameenhanced.helper.DebugHelper;
+import dev.jb0s.blockgameenhanced.manager.mmocore.vendor.MMOVendor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.GenericContainerScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
+import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.GenericContainerScreenHandler;
 import net.minecraft.screen.slot.SlotActionType;
@@ -19,6 +25,9 @@ import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Mixin(GenericContainerScreen.class)
 public class MixinGenericContainerScreen extends HandledScreen<GenericContainerScreenHandler> implements ScreenHandlerProvider<GenericContainerScreenHandler> {
@@ -73,12 +82,45 @@ public class MixinGenericContainerScreen extends HandledScreen<GenericContainerS
      */
     @Override
     public void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
+        Identifier tex = TEXTURE;
+
+        Pattern pattern = Pattern.compile("(.*) \\(\\d/\\d\\)");
+        Matcher matcher = pattern.matcher(getTitle().getString());
+
+        MMOVendor vendor = null;
+
+        // This is a vendor, show vendor specific ui texture
+        if(matcher.matches()) {
+            String vendorName = matcher.group(1).trim();
+            vendor = MMOVendor.getByName(vendorName);
+
+            if(vendor != null) {
+                tex = new Identifier("blockgame", String.format("textures/gui/container/%s.png", vendor.getUi()));
+                backgroundWidth = 256;
+                titleX = -32;
+            }
+        }
+        else if(getTitle().getString().equals("Auction House")) {
+            tex = new Identifier("blockgame", "textures/gui/container/auction_house.png");
+            backgroundWidth = 256;
+            titleX = 8;
+        }
+
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-        RenderSystem.setShaderTexture(0, TEXTURE);
+        RenderSystem.setShaderTexture(0, tex);
         int i = (this.width - this.backgroundWidth) / 2;
         int j = (this.height - this.backgroundHeight) / 2;
         this.drawTexture(matrices, i, j, 0, 0, this.backgroundWidth, this.rows * 18 + 17);
         this.drawTexture(matrices, i, j + this.rows * 18 + 17, 0, 126, this.backgroundWidth, 96);
+
+        if(vendor != null) {
+            InventoryScreen.drawEntity(x + 192, y + 201, 26, (float)(this.x + 192) - mouseX, (float)(this.y + 203 - 50) - mouseY, client.player);
+
+            PlayerEntity vendorEntity = vendor.getVendorEntity();
+            if(vendorEntity != null) {
+                InventoryScreen.drawEntity(x - 16, y + 115, 26, (float)(this.x - 16) - mouseX, (float)(this.y + 115 - 50) - mouseY, vendorEntity);
+            }
+        }
     }
 }
