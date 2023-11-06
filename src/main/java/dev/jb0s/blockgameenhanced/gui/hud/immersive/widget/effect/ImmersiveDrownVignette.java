@@ -24,7 +24,7 @@ public class ImmersiveDrownVignette extends ImmersiveWidget {
         // The final result is (a + b) divided by the air percentage so that we don't do a drown vignette with PvE/PvP damage
         float a = ((float) player.getAir() / player.getMaxAir()) * 0.75f;
         float b = (player.getHealth() / player.getMaxHealth()) * 0.25f;
-        float c = (a + b) / ((float) player.getAir() / player.getMaxAir());
+        float c = (a + b) * ((float) player.getAir() / player.getMaxAir());
 
         RenderSystem.enableBlend();
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
