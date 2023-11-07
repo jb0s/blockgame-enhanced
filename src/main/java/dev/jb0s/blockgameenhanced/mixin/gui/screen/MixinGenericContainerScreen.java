@@ -2,7 +2,6 @@ package dev.jb0s.blockgameenhanced.mixin.gui.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
-import dev.jb0s.blockgameenhanced.helper.DebugHelper;
 import dev.jb0s.blockgameenhanced.manager.mmocore.vendor.MMOVendor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.GenericContainerScreen;
@@ -13,8 +12,6 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.GenericContainerScreenHandler;
@@ -90,20 +87,22 @@ public class MixinGenericContainerScreen extends HandledScreen<GenericContainerS
         MMOVendor vendor = null;
 
         // This is a vendor, show vendor specific ui texture
-        if(matcher.matches()) {
-            String vendorName = matcher.group(1).trim();
-            vendor = MMOVendor.getByName(vendorName);
+        if(BlockgameEnhanced.DEBUG) {
+            if(matcher.matches()) {
+                String vendorName = matcher.group(1).trim();
+                vendor = MMOVendor.getByName(vendorName);
 
-            if(vendor != null) {
-                tex = new Identifier("blockgame", String.format("textures/gui/container/%s.png", vendor.getUi()));
-                backgroundWidth = 256;
-                titleX = -32;
+                if(vendor != null) {
+                    tex = new Identifier("blockgame", String.format("textures/gui/container/%s.png", vendor.getUi()));
+                    backgroundWidth = 256;
+                    titleX = -32;
+                }
             }
-        }
-        else if(getTitle().getString().equals("Auction House")) {
-            tex = new Identifier("blockgame", "textures/gui/container/auction_house.png");
-            backgroundWidth = 256;
-            titleX = 8;
+            else if(getTitle().getString().equals("Auction House")) {
+                tex = new Identifier("blockgame", "textures/gui/container/auction_house.png");
+                backgroundWidth = 256;
+                titleX = 8;
+            }
         }
 
         RenderSystem.setShader(GameRenderer::getPositionTexShader);

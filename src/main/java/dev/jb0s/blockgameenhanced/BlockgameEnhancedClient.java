@@ -16,7 +16,6 @@ import dev.jb0s.blockgameenhanced.manager.music.MusicManager;
 import dev.jb0s.blockgameenhanced.manager.party.PartyManager;
 import dev.jb0s.blockgameenhanced.manager.update.GitHubRelease;
 import dev.jb0s.blockgameenhanced.manager.update.UpdateManager;
-import dev.jb0s.blockgameenhanced.manager.vendor.VendorManager;
 import lombok.Getter;
 import lombok.Setter;
 import net.fabricmc.api.ClientModInitializer;
@@ -69,9 +68,6 @@ public class BlockgameEnhancedClient implements ClientModInitializer {
 
     @Getter
     private static MMOCoreManager mmoCoreManager;
-
-    @Getter
-    private static VendorManager vendorManager;
 
     @Getter
     @Setter
