@@ -2,6 +2,7 @@ package dev.jb0s.blockgameenhanced.manager.update;
 
 import com.google.gson.Gson;
 import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
+import dev.jb0s.blockgameenhanced.BlockgameEnhancedClient;
 import dev.jb0s.blockgameenhanced.manager.Manager;
 import net.fabricmc.loader.api.FabricLoader;
 
@@ -13,6 +14,26 @@ import java.net.URL;
 public class UpdateManager extends Manager {
     private static final String USER_AGENT = "BlockgameEnhancedClient";
     private static final String LATEST_RELEASE_ENDPOINT_URL = "https://api.github.com/repos/jb0s/blockgame-enhanced/releases/latest";
+
+    @Override
+    public void init() {
+        // Check for updates.
+        // If you're looking for the actual "There's an update" GUI prompt, it's in MixinTitleScreen.java.
+        if(BlockgameEnhanced.getConfig().getAccessibilityConfig().enableUpdateChecker) {
+            GitHubRelease availableUpdate = checkForUpdates();
+            BlockgameEnhancedClient.setAvailableUpdate(availableUpdate);
+
+            if(availableUpdate != null) {
+                BlockgameEnhanced.LOGGER.info("New update available: " + availableUpdate.tag_name);
+            }
+            else {
+                BlockgameEnhanced.LOGGER.info("Mod is up-to-date");
+            }
+        }
+        else {
+            BlockgameEnhanced.LOGGER.info("Update checking is disabled by user");
+        }
+    }
 
     /**
      * Determines whether an update is available using GitHub API.

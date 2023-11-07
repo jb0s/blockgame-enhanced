@@ -16,6 +16,7 @@ import dev.jb0s.blockgameenhanced.manager.music.MusicManager;
 import dev.jb0s.blockgameenhanced.manager.party.PartyManager;
 import dev.jb0s.blockgameenhanced.manager.update.GitHubRelease;
 import dev.jb0s.blockgameenhanced.manager.update.UpdateManager;
+import dev.jb0s.blockgameenhanced.manager.vendor.VendorManager;
 import lombok.Getter;
 import lombok.Setter;
 import net.fabricmc.api.ClientModInitializer;
@@ -70,6 +71,10 @@ public class BlockgameEnhancedClient implements ClientModInitializer {
     private static MMOCoreManager mmoCoreManager;
 
     @Getter
+    private static VendorManager vendorManager;
+
+    @Getter
+    @Setter
     private static GitHubRelease availableUpdate;
 
     @Getter
@@ -121,21 +126,6 @@ public class BlockgameEnhancedClient implements ClientModInitializer {
         mmoItemsManager = new MMOItemsManager();
         latencyManager = new LatencyManager();
         mmoCoreManager = new MMOCoreManager();
-
-        // Check for updates.
-        // If you're looking for the actual "There's an update" GUI prompt, it's in MixinTitleScreen.java.
-        if(BlockgameEnhanced.getConfig().getAccessibilityConfig().enableUpdateChecker) {
-            availableUpdate = updateManager.checkForUpdates();
-            if(getAvailableUpdate() != null) {
-                BlockgameEnhanced.LOGGER.info("New update available: " + getAvailableUpdate().tag_name);
-            }
-            else {
-                BlockgameEnhanced.LOGGER.info("Mod is up-to-date");
-            }
-        }
-        else {
-            BlockgameEnhanced.LOGGER.info("Update checking is disabled by user");
-        }
 
         // Tick all managers after client ticks
         ClientTickEvents.END_CLIENT_TICK.register((client) -> {
