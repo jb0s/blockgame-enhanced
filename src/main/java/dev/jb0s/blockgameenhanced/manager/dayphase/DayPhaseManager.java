@@ -42,17 +42,6 @@ public class DayPhaseManager extends Manager {
         }
     }
 
-    @Override
-    public List<String> getDebugStats() {
-        ArrayList<String> lines = new ArrayList<>();
-        if(client.world == null)
-            return lines;
-
-        lines.add("World Time: " + client.world.getTimeOfDay() % 24000);
-        lines.add("Day Phase: " + currentDayPhase);
-        return lines;
-    }
-
     /**
      * Recalculates the current day phase and returns it.
      */

@@ -25,14 +25,6 @@ public abstract class Manager {
     }
 
     /**
-     * Used to display useful debugging information when the F4 debug menu is up.
-     * @implNote Make sure to separate with newlines.
-     */
-    public List<String> getDebugStats() {
-        return null;
-    }
-
-    /**
      * Creates an instance of this manager and binds its events to the game.
      * This is called in the constructor and should not be called manually.
      */

@@ -79,18 +79,6 @@ public class AdventureZoneManager extends Manager {
         }
     }
 
-    @Override
-    public List<String> getDebugStats() {
-        ArrayList<String> lines = new ArrayList<>();
-        World world = MinecraftClient.getInstance().world;
-        lines.add("World: " + world.getRegistryKey().getValue().getPath());
-        lines.add("Current Zone: " + (currentZone != null ? currentZone.getId() : "null"));
-        lines.add("Zone Music Type: " + (currentZone != null ? currentZone.getMusicType() : "null"));
-        lines.add("Zone Music: " + (currentZone != null ? currentZone.getMusic() : "null"));
-        lines.add("Data loaded: " + (adventureZones.getAdventureZones().length > 0));
-        return lines;
-    }
-
     /**
      * Compiles a list of all Adventure Zones for the provided dimension.
      * @param world The dimension to fetch all zones for.

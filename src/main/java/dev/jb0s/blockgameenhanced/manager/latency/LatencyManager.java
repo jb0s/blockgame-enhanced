@@ -66,19 +66,6 @@ public class LatencyManager extends Manager {
         }
     }
 
-    @Override
-    public List<String> getDebugStats() {
-        ArrayList<String> lines = new ArrayList<>();
-
-        lines.add("Actual Latency: " + getLatency() + "ms");
-        lines.add("Heartbeat Latency: " + heartbeatLatency + "ms");
-        lines.add("Pre-login Latency: " + preLoginLatency + "ms");
-        lines.add("Is Client caught up: " + isClientCaughtUp + ", " + catchUpReason);
-        lines.add("Captured Item Usages: " + capturedItemUsages.size());
-
-        return lines;
-    }
-
     public void captureItemUsage(ItemStack itemStack) {
         ItemUsageEvent event = new ItemUsageEvent(itemStack);
         capturedItemUsages.add(event);

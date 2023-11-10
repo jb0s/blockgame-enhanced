@@ -81,26 +81,6 @@ public class MMOItemsManager extends Manager {
         }
     }
 
-    @Override
-    public List<String> getDebugStats() {
-        ArrayList<String> lines = new ArrayList<>();
-
-        boolean moduleEnabled = BlockgameEnhanced.getConfig().getIngameHudConfig().showCooldownsInHotbar;
-        if(moduleEnabled) {
-            lines.add("Tick: " + tick);
-            lines.add("Cooldown items: " + cooldownEntryMap.size());
-            if(!cooldownEntryMap.isEmpty()) {
-                for (Map.Entry<String, MMOItemsCooldownEntry> entry : cooldownEntryMap.entrySet()) {
-                    lines.add(" - " + entry + ": " + (entry.getValue().endTick - tick));
-                }
-            }
-            return lines;
-        }
-
-        lines.add("Disabled by mod config");
-        return lines;
-    }
-
     /**
      * Callback that checks if the player is trying to place an MMOItem that has interaction disabled, and blocks doing so.
      * @param playerEntity The Player Entity that is trying to place the block.

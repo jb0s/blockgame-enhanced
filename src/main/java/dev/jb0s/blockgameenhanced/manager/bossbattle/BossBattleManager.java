@@ -95,16 +95,4 @@ public class BossBattleManager extends Manager {
         currentBattle = boss;
         currentBattleState = boss != null ? BattleState.PENDING_START : BattleState.NO_BATTLE;
     }
-
-    @Override
-    public List<String> getDebugStats() {
-        ArrayList<String> lines = new ArrayList<>();
-        lines.add("Current Battle: " + (currentBattle != null ? currentBattle.getBoss() : "null"));
-        lines.add("Current Battle State: " + currentBattleState.toString());
-        lines.add("Boss Bars:");
-        for (ClientBossBar bossBar : BossBarHelper.getBossBars().values()) {
-            lines.add("- " + bossBar.getName().getString() + " (" + bossBar.getPercent() + "%)");
-        }
-        return lines;
-    }
 }

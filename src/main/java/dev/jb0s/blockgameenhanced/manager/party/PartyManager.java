@@ -119,36 +119,6 @@ public class PartyManager extends Manager {
         }
     }
 
-    @Override
-    public List<String> getDebugStats() {
-        ArrayList<String> lines = new ArrayList<>();
-        if(client == null || client.world == null) {
-            return lines;
-        }
-
-        lines.add("Is Allowed To Query: " + allowedToQueryServer);
-        lines.add("Ticks Since Last Update: " + ticksSinceLastUpdate);
-        lines.add("Is Waiting For Party Screen Open: " + isWaitingForPartyScreenOpen);
-        lines.add("Is Waiting For Party Screen Content: " + isWaitingForPartyScreenContent);
-        lines.add("Current Payload Sync ID: " + currentPayloadSyncId);
-        lines.add("World Time No Modulo: " + client.world.getTimeOfDay());
-        if(partyMembers != null) {
-            lines.add("Party Members:");
-            for (PartyMember pm : partyMembers) {
-                PlayerListEntry p = pm.getPlayer();
-                if(p == null) {
-                    lines.add("- Invalid player" + String.format(" (%d until removal)", PARTY_UPDATE_INTERVAL - ticksSinceLastUpdate));
-                    continue;
-                }
-                lines.add("- " + p.getProfile().getName() + String.format(" (%d/%d HP)", pm.getHealth(), pm.getMaxHealth()));
-            }
-        }
-        else {
-            lines.add("Not in a party");
-        }
-        return lines;
-    }
-
     public void preRenderPings(MatrixStack matrices, Matrix4f projectionMatrix, float tickDelta) {
         if(partyPings == null) return;
 

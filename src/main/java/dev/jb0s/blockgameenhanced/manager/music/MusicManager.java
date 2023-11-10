@@ -167,19 +167,6 @@ public class MusicManager extends Manager {
         }
     }
 
-    @Override
-    public List<String> getDebugStats() {
-        ArrayList<String> lines = new ArrayList<>();
-        lines.add("Is Playing: " + isPlaying());
-        lines.add("Is Fading: " + isFading());
-        lines.add("Is Muted: " + isMuted());
-        lines.add("Is Refreshing: " + isRefreshing());
-        lines.add("Current Music: " + (currentMusic != null ? currentMusic.getId() : "null"));
-        lines.add("Desired Music: " + (desiredMusic != null ? desiredMusic.getId() : "null"));
-        lines.add("Now Playing: " + ((soundInstance != null && soundInstance.getSound() != null) ? soundInstance.getSound().getIdentifier() : "null"));
-        return lines;
-    }
-
     /**
      * Play a music track.
      * @param music The ID of the music track to play.
