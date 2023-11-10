@@ -243,7 +243,7 @@ public class TitleScreen extends Screen {
         addDrawableChild(new ButtonWidget(width / 4 - 75, l + 24, 74, 20, BUTTON_WEBSITE, (button) -> Util.getOperatingSystem().open("https://blockgame.info")));
 
         // Add Wiki Button
-        addDrawableChild(new ButtonWidget(width / 4 + 1, l + 24, 74, 20, BUTTON_WIKI, (button) -> Util.getOperatingSystem().open("https://blockgame.piratesoftware.wiki/")));
+        addDrawableChild(new ButtonWidget(width / 4 + 1, l + 24, 74, 20, BUTTON_WIKI, (button) -> Util.getOperatingSystem().open("https://blockgame.piratesoftware.wiki")));
 
         // Add Play Button
         addDrawableChild(new ButtonWidget(width / 4 - 75, l, 150, 20, BUTTON_PLAY, (button) -> ConnectScreen.connect(this, this.client, ServerAddress.parse("mc.blockgame.info"), new ServerInfo("BlockGame", "mc.blockgame.info", false))));
