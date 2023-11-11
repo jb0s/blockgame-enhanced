@@ -2,16 +2,30 @@ package dev.jb0s.blockgameenhanced.manager.mmocore;
 
 import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
 import dev.jb0s.blockgameenhanced.event.chat.ReceiveChatMessageEvent;
+import dev.jb0s.blockgameenhanced.event.chat.ReceiveFormattedChatMessageEvent;
 import dev.jb0s.blockgameenhanced.gui.hud.immersive.ImmersiveIngameHud;
 import dev.jb0s.blockgameenhanced.manager.Manager;
 import dev.jb0s.blockgameenhanced.manager.config.modules.IngameHudConfig;
 import dev.jb0s.blockgameenhanced.manager.mmocore.profession.MMOProfession;
 import lombok.Getter;
+import net.minecraft.block.NoteBlock;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.PlayerListEntry;
+import net.minecraft.client.sound.PositionedSoundInstance;
+import net.minecraft.client.sound.SoundEngine;
+import net.minecraft.client.sound.SoundInstance;
+import net.minecraft.sound.MusicSound;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.*;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Formatting;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.time.format.TextStyle;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class MMOCoreManager extends Manager {
     @Getter
@@ -30,6 +44,83 @@ public class MMOCoreManager extends Manager {
     public void init() {
         ReceiveChatMessageEvent.EVENT.register(this::extractStatsFromMessage);
         ReceiveChatMessageEvent.EVENT.register(this::extractExpDataFromMessage);
+        ReceiveFormattedChatMessageEvent.EVENT.register(this::extractMentionedPlayersFromMessage);
+    }
+
+    private ActionResult extractMentionedPlayersFromMessage(MinecraftClient minecraftClient, Text message) {
+        if (!(minecraftClient.inGameHud instanceof ImmersiveIngameHud)) {
+            return ActionResult.PASS;
+        }
+
+        IngameHudConfig hudConfig = BlockgameEnhanced.getConfig().getIngameHudConfig();
+        if (!hudConfig.enableMentions) {
+            return ActionResult.PASS;
+        }
+
+        int ColonIndex = message.getString().indexOf(":");
+        if (ColonIndex == -1) {
+            return ActionResult.PASS;
+        }
+
+        String playerName = minecraftClient.getSession().getUsername();
+        List<String> aliasList = Arrays.asList(hudConfig.mentionAliases.toLowerCase().split(","));
+        String currentPlayerName = minecraftClient.player.getName().getString();
+
+        MutableText processedMessage = new LiteralText("");
+        boolean mentionFound = false;
+
+        boolean isMessage = false;
+
+        for (Text sibling : message.getSiblings()) {
+            if (sibling instanceof LiteralText) {
+                LiteralText literalText = (LiteralText) sibling;
+                Style originalStyle = sibling.getStyle();
+                String[] words = literalText.getString().split(" ", -1);
+
+                for (int i = 0; i < words.length; i++) {
+                    String word = words[i];
+
+                    if (word.contains(":")) {
+                        isMessage = true;
+                    }
+
+                    MutableText wordText = new LiteralText(word).setStyle(originalStyle);
+
+                    if(isMessage) {
+                        // Check if the word is a mention, but not the current player's name
+                        if (word.equalsIgnoreCase(playerName) || aliasList.contains(word.toLowerCase())) {
+                            wordText = wordText.formatted(Formatting.YELLOW, Formatting.ITALIC);
+                            mentionFound = true;
+                        }
+                    }
+
+                    processedMessage.append(wordText);
+                    if (i < words.length - 1) {
+                        processedMessage.append(" ");
+                    }
+                }
+            } else {
+                processedMessage.append(sibling.copy());
+            }
+        }
+
+        if (mentionFound) {
+            minecraftClient.inGameHud.getChatHud().addMessage(processedMessage);
+
+            if (hudConfig.enableMentionSound && minecraftClient.world != null && minecraftClient.player != null) {
+                playMentionSound(minecraftClient);
+            }
+        }
+
+        return mentionFound ? ActionResult.CONSUME : ActionResult.PASS;
+    }
+
+    private void playMentionSound(MinecraftClient minecraftClient) {
+        BlockPos playerPos = minecraftClient.player.getBlockPos();
+        PositionedSoundInstance soundInstance = new PositionedSoundInstance(
+                SoundEvents.BLOCK_NOTE_BLOCK_HARP, SoundCategory.PLAYERS, 1.0F, 1.0F, playerPos
+        );
+        minecraftClient.getSoundManager().play(soundInstance);
     }
 
     private ActionResult extractStatsFromMessage(MinecraftClient minecraftClient, String message) {

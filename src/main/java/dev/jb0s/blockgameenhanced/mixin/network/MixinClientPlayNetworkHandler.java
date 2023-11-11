@@ -3,6 +3,7 @@ package dev.jb0s.blockgameenhanced.mixin.network;
 import dev.jb0s.blockgameenhanced.BlockgameEnhancedClient;
 import dev.jb0s.blockgameenhanced.event.chat.CommandSuggestionsEvent;
 import dev.jb0s.blockgameenhanced.event.chat.ReceiveChatMessageEvent;
+import dev.jb0s.blockgameenhanced.event.chat.ReceiveFormattedChatMessageEvent;
 import dev.jb0s.blockgameenhanced.event.network.ServerPingEvent;
 import dev.jb0s.blockgameenhanced.event.screen.ScreenOpenedEvent;
 import dev.jb0s.blockgameenhanced.event.screen.ScreenReceivedInventoryEvent;
@@ -12,6 +13,7 @@ import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.packet.c2s.play.CloseHandledScreenC2SPacket;
 import net.minecraft.network.packet.s2c.play.*;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -64,6 +66,15 @@ public class MixinClientPlayNetworkHandler {
     @Inject(method = "onGameMessage", at = @At("HEAD"), cancellable = true)
     public void onGameMessage(GameMessageS2CPacket packet, CallbackInfo ci) {
         ActionResult result = ReceiveChatMessageEvent.EVENT.invoker().receiveChatMessage(client, packet.getMessage().getString());
+
+        if(result != ActionResult.PASS) {
+            ci.cancel();
+        }
+    }
+
+    @Inject(method = "onGameMessage", at = @At("HEAD"), cancellable = true)
+    public void onFormattedChatMessage(GameMessageS2CPacket packet, CallbackInfo ci) {
+        ActionResult result = ReceiveFormattedChatMessageEvent.EVENT.invoker().receiveFormattedChatMessage(client, packet.getMessage());
 
         if(result != ActionResult.PASS) {
             ci.cancel();
