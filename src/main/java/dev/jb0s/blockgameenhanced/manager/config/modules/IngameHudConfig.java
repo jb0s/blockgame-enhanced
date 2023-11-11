@@ -23,25 +23,10 @@ public class IngameHudConfig implements ConfigData {
     @ConfigEntry.Gui.RequiresRestart(value = false)
     public boolean showProfessionExpInChat;
 
-    @ConfigEntry.Gui.Tooltip
-    @ConfigEntry.Gui.RequiresRestart(value = false)
-    public String mentionAliases;
-
-    @ConfigEntry.Gui.Tooltip
-    @ConfigEntry.Gui.RequiresRestart(value = false)
-    public boolean enableMentions;
-
-    @ConfigEntry.Gui.Tooltip
-    @ConfigEntry.Gui.RequiresRestart(value = false)
-    public boolean enableMentionSound;
-
     public IngameHudConfig() {
         enableCustomHud = true;
         showAdvancedStats = false;
         showCooldownsInHotbar = true;
         showProfessionExpInChat = false;
-        mentionAliases = "";
-        enableMentions = true;
-        enableMentionSound = true;
     }
 }

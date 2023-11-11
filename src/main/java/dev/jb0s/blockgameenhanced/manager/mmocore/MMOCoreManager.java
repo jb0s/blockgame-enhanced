@@ -5,6 +5,7 @@ import dev.jb0s.blockgameenhanced.event.chat.ReceiveChatMessageEvent;
 import dev.jb0s.blockgameenhanced.event.chat.ReceiveFormattedChatMessageEvent;
 import dev.jb0s.blockgameenhanced.gui.hud.immersive.ImmersiveIngameHud;
 import dev.jb0s.blockgameenhanced.manager.Manager;
+import dev.jb0s.blockgameenhanced.manager.config.modules.ChatConfig;
 import dev.jb0s.blockgameenhanced.manager.config.modules.IngameHudConfig;
 import dev.jb0s.blockgameenhanced.manager.mmocore.profession.MMOProfession;
 import lombok.Getter;
@@ -52,7 +53,7 @@ public class MMOCoreManager extends Manager {
             return ActionResult.PASS;
         }
 
-        IngameHudConfig hudConfig = BlockgameEnhanced.getConfig().getIngameHudConfig();
+        ChatConfig hudConfig = BlockgameEnhanced.getConfig().getChatConfig();
         if (!hudConfig.enableMentions) {
             return ActionResult.PASS;
         }
