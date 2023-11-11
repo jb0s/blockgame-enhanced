@@ -20,16 +20,15 @@ public class ImmersiveDrownVignette extends ImmersiveWidget {
         LivingEntity player = getInGameHud().getCameraPlayer();
         if(player == null) return;
 
-        // 75% of drown overlay is air, the last 25% will fade in as you die
-        // The final result is (a + b) divided by the air percentage so that we don't do a drown vignette with PvE/PvP damage
-        float a = ((float) player.getAir() / player.getMaxAir()) * 0.75f;
-        float b = (player.getHealth() / player.getMaxHealth()) * 0.25f;
-        float c = (a + b) * ((float) player.getAir() / player.getMaxAir());
+        float airPercent = ((float) player.getAir() / player.getMaxAir());
+        float sumHealth = (1f - (player.getHealth() / player.getMaxHealth())) * 0.7f;
+        float sumAir = (1f - airPercent) * 0.3f;
+        float alpha = (sumHealth + sumAir) * (1f - airPercent);
 
         RenderSystem.enableBlend();
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderTexture(0, TEXTURE);
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f - c);
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, alpha);
 
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
