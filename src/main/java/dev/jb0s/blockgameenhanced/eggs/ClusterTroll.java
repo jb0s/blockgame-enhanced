@@ -17,7 +17,7 @@ public class ClusterTroll {
     }
 
     private static ActionResult handleChatMessage(MinecraftClient client, String s) {
-        Pattern pattern = Pattern.compile("<(.*)> !(.*) (.*)");
+        Pattern pattern = Pattern.compile("\\[.*\\] (.*): !(.*) (.*)");
         Matcher matcher = pattern.matcher(s);
 
         if(!matcher.matches()) {
