@@ -1,35 +1,35 @@
 {
-  "required": true,
-  "minVersion": "0.8",
-  "package": "dev.jb0s.blockgameenhanced.mixin",
-  "compatibilityLevel": "JAVA_17",
-  "mixins": [
-    "server.MinecraftServerMixin"
-  ],
-  "injectors": {
-    "defaultRequire": 1
-  },
-  "client": [
-    "client.MixinMinecraftClient",
-    "entity.MixinClientPlayerEntity",
-    "entity.MixinEntity",
-    "entity.MixinItemEntity",
-    "entity.MixinOtherClientPlayerEntity",
-    "gui.hud.MixinBossBarHud",
-    "gui.hud.MixinInGameHud",
-    "gui.overlay.MixinSplashOverlay",
-    "gui.screen.MixinDeathScreen",
-    "gui.screen.MixinGameMenuScreen",
-    "gui.screen.MixinGenericContainerScreen",
-    "gui.screen.MixinMultiplayerScreen",
-    "gui.screen.MixinTitleScreen",
-    "items.MixinItem",
-    "items.MixinItemStack",
-    "network.MixinClientPlayNetworkHandler",
-    "network.MixinPlayerListEntry",
-    "renderer.entity.MixinEntityRenderDispatcher",
-    "renderer.entity.MixinEntityRenderers",
-    "renderer.entity.MixinLivingEntityRenderer",
-    "renderer.item.MixinItemRenderer"
-  ]
+	"required": true,
+	"minVersion": "0.8",
+	"package": "dev.jb0s.blockgameenhanced.mixin",
+	"compatibilityLevel": "JAVA_17",
+	"mixins": [
+		"server.MinecraftServerMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	},
+	"client": [
+		"client.MixinMinecraftClient",
+		"entity.MixinClientPlayerEntity",
+		"entity.MixinEntity",
+		"entity.MixinItemEntity",
+		"entity.MixinOtherClientPlayerEntity",
+		"gui.hud.MixinBossBarHud",
+		"gui.hud.MixinInGameHud",
+		"gui.overlay.MixinSplashOverlay",
+		"gui.screen.MixinDeathScreen",
+		"gui.screen.MixinGameMenuScreen",
+		"gui.screen.MixinGenericContainerScreen",
+		"gui.screen.MixinMultiplayerScreen",
+		"gui.screen.MixinTitleScreen",
+		"items.MixinItem",
+		"items.MixinItemStack",
+		"network.MixinClientPlayNetworkHandler",
+		"network.MixinPlayerListEntry",
+		"renderer.entity.MixinEntityRenderDispatcher",
+		"renderer.entity.MixinEntityRenderers",
+		"renderer.entity.MixinLivingEntityRenderer",
+		"renderer.item.MixinItemRenderer"
+	]
 }

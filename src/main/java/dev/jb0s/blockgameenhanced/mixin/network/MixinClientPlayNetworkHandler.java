@@ -6,13 +6,19 @@ import dev.jb0s.blockgameenhanced.event.chat.ReceiveChatMessageEvent;
 import dev.jb0s.blockgameenhanced.event.network.ServerPingEvent;
 import dev.jb0s.blockgameenhanced.event.screen.ScreenOpenedEvent;
 import dev.jb0s.blockgameenhanced.event.screen.ScreenReceivedInventoryEvent;
+import dev.jb0s.blockgameenhanced.gui.hud.immersive.ImmersiveIngameHud;
+import dev.jb0s.blockgameenhanced.helper.DebugHelper;
 import dev.jb0s.blockgameenhanced.manager.party.PartyManager;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
+import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.entity.ItemEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.packet.c2s.play.CloseHandledScreenC2SPacket;
 import net.minecraft.network.packet.s2c.play.*;
 import net.minecraft.util.ActionResult;
+import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -23,6 +29,25 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ClientPlayNetworkHandler.class)
 public class MixinClientPlayNetworkHandler {
     @Shadow @Final private MinecraftClient client;
+
+    @Inject(method = "onItemPickupAnimation", at = @At("HEAD"))
+    public void onItemPickupAnimation(ItemPickupAnimationS2CPacket packet, CallbackInfo ci) {
+        MinecraftClient minecraft = MinecraftClient.getInstance();
+        ClientPlayerEntity cpe = minecraft.player;
+        World world = minecraft.world;
+        if(cpe == null || world == null) return;
+
+        if(packet.getCollectorEntityId() != cpe.getId()) {
+            return;
+        }
+
+        if(minecraft.inGameHud instanceof ImmersiveIngameHud immersiveIngameHud) {
+            if(world.getEntityById(packet.getEntityId()) instanceof ItemEntity itemEntity) {
+                ItemStack stack = itemEntity.getStack().copy();
+                immersiveIngameHud.getImmersivePickupStream().addPickup(stack, packet.getStackAmount());
+            }
+        }
+    }
 
     @Inject(method = "onInventory", at = @At("HEAD"), cancellable = true)
     public void onInventory(InventoryS2CPacket packet, CallbackInfo ci) {
