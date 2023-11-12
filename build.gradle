@@ -94,10 +94,6 @@ jar {
     }
 
     exclude ("**/debug/*")
-
-    manifest {
-        attributes 'Main-Class': 'dev.jb0s.blockgameenhanced.installer.Installer'
-    }
 }
 
 // configure the maven publication
