@@ -65,6 +65,13 @@ public class ImmersivePickupStream extends ImmersiveWidget {
 
     public void addPickup(ItemStack itemStack, int amount) {
         if(pickupHashMap.containsKey(itemStack.getName())) {
+
+            // BUG: If we don't do this check the count will be doubled.
+            // This is because the godforsaken server sends two packets when picking up a single item. (≖､≖╬)
+            if(pickupHashMap.get(itemStack.getName()).getInactivityTicks() == 0) {
+                return;
+            }
+
             pickupHashMap.get(itemStack.getName()).addAmount(amount);
             pickupHashMap.get(itemStack.getName()).setInactivityTicks(0);
             return;
