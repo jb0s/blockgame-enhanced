@@ -4,7 +4,7 @@ import com.google.common.util.concurrent.Runnables;
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
 import dev.jb0s.blockgameenhanced.BlockgameEnhancedClient;
-import dev.jb0s.blockgameenhanced.eggs.thor.ThorScreen;
+import dev.jb0s.blockgameenhanced.eggs.ThorScreen;
 import dev.jb0s.blockgameenhanced.manager.config.ConfigManager;
 import dev.jb0s.blockgameenhanced.manager.latency.LatencyManager;
 import lombok.SneakyThrows;

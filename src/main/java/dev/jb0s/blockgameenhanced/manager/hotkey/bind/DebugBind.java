@@ -1,7 +1,7 @@
 package dev.jb0s.blockgameenhanced.manager.hotkey.bind;
 
 import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
-import dev.jb0s.blockgameenhanced.eggs.thor.ThorScreen;
+import dev.jb0s.blockgameenhanced.eggs.ThorScreen;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.ActionResult;

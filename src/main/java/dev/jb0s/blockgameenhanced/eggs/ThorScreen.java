@@ -1,4 +1,4 @@
-package dev.jb0s.blockgameenhanced.eggs.thor;
+package dev.jb0s.blockgameenhanced.eggs;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
