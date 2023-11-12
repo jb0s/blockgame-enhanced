@@ -22,6 +22,7 @@ public abstract class MixinPlayerListEntry {
         String username = getProfile().getName();
         switch (username) {
             case "jakm" -> cir.setReturnValue(DEVELOPER_CAPE);
+            case "notIrma" -> cir.setReturnValue(DEVELOPER_CAPE);
             case "PirateSoftware" -> cir.setReturnValue(PIRATESOFTWARE_CAPE);
             case "Notker" -> cir.setReturnValue(NOTKER_CAPE);
         }
