@@ -1,7 +1,7 @@
 package dev.jb0s.blockgameenhanced.helper;
 
 import com.google.gson.Gson;
-import dev.jb0s.blockgameenhanced.manager.mmoitems.MMOItemsAbility;
+import dev.jb0s.blockgameenhanced.gamefeature.mmoitems.MMOItemsAbility;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 

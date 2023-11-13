@@ -1,19 +1,15 @@
 package dev.jb0s.blockgameenhanced.gui.hud.immersive;
 
-import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
 import dev.jb0s.blockgameenhanced.gui.hud.immersive.widget.effect.ImmersiveDrownVignette;
 import dev.jb0s.blockgameenhanced.gui.hud.immersive.widget.experience.ImmersiveExpPopupContainer;
-import dev.jb0s.blockgameenhanced.gui.hud.immersive.widget.hotbar.ImmersiveStatusBar;
 import dev.jb0s.blockgameenhanced.gui.hud.immersive.widget.hotbar.ImmersiveDiabloHotbar;
 import dev.jb0s.blockgameenhanced.gui.hud.immersive.widget.pickups.ImmersivePickupStream;
 import lombok.Getter;
-import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.hud.*;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.math.MatrixStack;
 
 public class ImmersiveIngameHud extends InGameHud {
-    protected ImmersiveStatusBar statusBar;
     protected ImmersiveDiabloHotbar newImmersiveHotbar;
     protected ImmersiveDrownVignette immersiveDrownVignette;
 
@@ -25,7 +21,6 @@ public class ImmersiveIngameHud extends InGameHud {
 
     public ImmersiveIngameHud(MinecraftClient client) {
         super(client);
-        //statusBar = new ImmersiveStatusBar(this);
         newImmersiveHotbar = new ImmersiveDiabloHotbar(this);
         immersiveExpPopupContainer = new ImmersiveExpPopupContainer(this);
         immersiveDrownVignette = new ImmersiveDrownVignette(this);

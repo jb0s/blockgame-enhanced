@@ -3,12 +3,13 @@ package dev.jb0s.blockgameenhanced.gui.hud;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
-import dev.jb0s.blockgameenhanced.BlockgameEnhancedClient;
+import dev.jb0s.blockgameenhanced.event.gamefeature.party.PartyPingEvent;
+import dev.jb0s.blockgameenhanced.event.gamefeature.party.PartyUpdatedEvent;
+import dev.jb0s.blockgameenhanced.gamefeature.party.PartyGameFeature;
 import dev.jb0s.blockgameenhanced.helper.MathHelper;
 import dev.jb0s.blockgameenhanced.helper.TimeHelper;
-import dev.jb0s.blockgameenhanced.manager.party.PartyManager;
-import dev.jb0s.blockgameenhanced.manager.party.PartyMember;
-import dev.jb0s.blockgameenhanced.manager.party.PartyPing;
+import dev.jb0s.blockgameenhanced.gamefeature.party.PartyMember;
+import dev.jb0s.blockgameenhanced.gamefeature.party.PartyPing;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -20,6 +21,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 @Environment(value = EnvType.CLIENT)
 public class PartyHud extends DrawableHelper {
@@ -38,16 +40,16 @@ public class PartyHud extends DrawableHelper {
     private static final int OUT_OF_RANGE_THRESHOLD = 2;
 
     private static MinecraftClient client;
-    private static PartyManager partyManager;
+    private static ArrayList<PartyMember> partyMembers;
+    private static HashMap<PartyMember, PartyPing> partyPings;
 
     public static void render(MatrixStack matrices, float tickDelta) {
         timer += tickDelta;
         if(client == null) {
             client = MinecraftClient.getInstance();
-            return;
-        }
-        if(partyManager == null) {
-            partyManager = BlockgameEnhancedClient.getPartyManager();
+
+            PartyUpdatedEvent.EVENT.register(PartyHud::onPartyUpdate);
+            PartyPingEvent.EVENT.register(PartyHud::onPartyPing);
             return;
         }
 
@@ -57,7 +59,7 @@ public class PartyHud extends DrawableHelper {
         }
 
         // Don't draw if we're not in a party
-        if(partyManager.getPartyMembers() == null) {
+        if(partyMembers == null) {
             return;
         }
 
@@ -66,7 +68,6 @@ public class PartyHud extends DrawableHelper {
             return;
         }
 
-        ArrayList<PartyMember> partyMembers = partyManager.getPartyMembers();
         int indexOffset = 0;
         for (int i = 0; i < partyMembers.size(); i++) {
             boolean allowRenderSelf = BlockgameEnhanced.getConfig().getPartyHudConfig().showSelf;
@@ -81,9 +82,17 @@ public class PartyHud extends DrawableHelper {
             renderPartyMember(matrices, partyMembers.get(i), i + indexOffset);
         }
 
-        for (PartyPing ping : partyManager.getPartyPings().values()) {
+        for (PartyPing ping : partyPings.values()) {
             renderPartyPing(matrices, ping);
         }
+    }
+
+    private static void onPartyPing(PartyGameFeature partyGameFeature) {
+        partyPings = partyGameFeature.getPartyPings();
+    }
+
+    private static void onPartyUpdate(PartyGameFeature partyGameFeature) {
+        partyMembers = partyGameFeature.getPartyMembers();
     }
 
     private static void renderPartyMember(MatrixStack matrices, PartyMember member, int index) {

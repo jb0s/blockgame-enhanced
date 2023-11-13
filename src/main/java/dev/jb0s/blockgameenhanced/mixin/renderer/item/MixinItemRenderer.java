@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
 import dev.jb0s.blockgameenhanced.BlockgameEnhancedClient;
-import dev.jb0s.blockgameenhanced.manager.mmoitems.MMOItemsAbility;
+import dev.jb0s.blockgameenhanced.gamefeature.mmoitems.MMOItemsAbility;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.BufferBuilder;
@@ -35,7 +35,8 @@ public abstract class MixinItemRenderer {
         NbtCompound nbt = stack.getOrCreateNbt();
 
         // Render MMOItems cooldown
-        String tag = nbt.getString("MMOITEMS_ABILITY");
+        // todo bruhhhhhh
+        /*String tag = nbt.getString("MMOITEMS_ABILITY");
         if(tag != null) {
             MMOItemsAbility[] itemAbilities = gson.fromJson(tag, MMOItemsAbility[].class);
             if(itemAbilities != null && itemAbilities.length > 0) {
@@ -52,7 +53,7 @@ public abstract class MixinItemRenderer {
                     RenderSystem.enableDepthTest();
                 }
             }
-        }
+        }*/
 
         if(BlockgameEnhanced.isNotkerMmoPresent()) {
             // Compatibility with Notker's McMMO Item Durability viewer.

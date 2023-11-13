@@ -1,6 +1,6 @@
 package dev.jb0s.blockgameenhanced.event.bossbattle;
 
-import dev.jb0s.blockgameenhanced.manager.adventure.AdventureZoneBoss;
+import dev.jb0s.blockgameenhanced.gamefeature.zone.ZoneBoss;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 
@@ -11,5 +11,5 @@ public interface BossBattleCommencedEvent {
         }
     });
 
-    void bossBattleCommenced(AdventureZoneBoss boss);
+    void bossBattleCommenced(ZoneBoss boss);
 }

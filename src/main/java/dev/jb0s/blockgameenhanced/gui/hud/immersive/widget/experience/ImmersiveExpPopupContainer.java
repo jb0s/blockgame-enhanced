@@ -1,7 +1,7 @@
 package dev.jb0s.blockgameenhanced.gui.hud.immersive.widget.experience;
 
 import dev.jb0s.blockgameenhanced.gui.hud.immersive.widget.ImmersiveWidget;
-import dev.jb0s.blockgameenhanced.manager.mmocore.profession.MMOProfession;
+import dev.jb0s.blockgameenhanced.gamefeature.mmostats.MMOProfession;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.util.math.MatrixStack;
 

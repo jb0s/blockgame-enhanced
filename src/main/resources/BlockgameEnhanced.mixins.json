@@ -21,8 +21,6 @@
 		"gui.screen.MixinDeathScreen",
 		"gui.screen.MixinGameMenuScreen",
 		"gui.screen.MixinGenericContainerScreen",
-		"gui.screen.MixinMultiplayerScreen",
-		"gui.screen.MixinTitleScreen",
 		"items.MixinItem",
 		"items.MixinItemStack",
 		"network.MixinClientPlayNetworkHandler",

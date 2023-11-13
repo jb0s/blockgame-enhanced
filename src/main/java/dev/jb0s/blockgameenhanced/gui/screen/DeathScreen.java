@@ -2,9 +2,9 @@ package dev.jb0s.blockgameenhanced.gui.screen;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import dev.jb0s.blockgameenhanced.BlockgameEnhancedClient;
-import dev.jb0s.blockgameenhanced.manager.music.MusicManager;
-import dev.jb0s.blockgameenhanced.manager.music.types.Music;
+import dev.jb0s.blockgameenhanced.event.entity.player.PlayerRespawnedEvent;
+import dev.jb0s.blockgameenhanced.gamefeature.jukebox.types.Music;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.sound.SoundManager;
@@ -25,9 +25,6 @@ public class DeathScreen extends Screen {
     private static final int RESPAWN_THRESHOLD = 50;
     private static final SoundEvent DEATH_SOUND = new SoundEvent(new Identifier("blockgame", "mus.gui.combat.death"));
 
-    // Managers
-    private static MusicManager musicManager;
-
     // Stats
     private boolean isWaitingForPlayer;
     private int ticks;
@@ -39,8 +36,6 @@ public class DeathScreen extends Screen {
     @Override
     public void init() {
         super.init();
-
-        musicManager = BlockgameEnhancedClient.getMusicManager();
 
         PlayerEntity playerEntity = client.player;
         SoundManager soundManager = client.getSoundManager();
@@ -117,10 +112,6 @@ public class DeathScreen extends Screen {
         // Close menu
         close();
 
-        // Restart music
-        Music music = musicManager.getDesiredMusic();
-        if(music != null) {
-            musicManager.playMusic(music.getId(), true, 0);
-        }
+        PlayerRespawnedEvent.EVENT.invoker().playerRespawned(MinecraftClient.getInstance());
     }
 }

@@ -1,11 +1,16 @@
 {
-	"adventureZones": [
+	"zones": [
 		{
 			"id": "ORIGIN_CITY_PLAZA",
 			"world": "midgard",
 			"musicType": "TimeOfDay",
 			"adventure": true,
-			"music": "mus_zone_origincity",
+			"music": null,
+			"battle": {
+				"boss": "Bring",
+				"music": "mus_battle_arena_horseman",
+				"victoryDelay": 0
+			},
 			"minY": 38,
 			"maxY": 1000,
 			"chunks": [

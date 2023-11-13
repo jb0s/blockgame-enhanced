@@ -1,21 +1,17 @@
 package dev.jb0s.blockgameenhanced.mixin.network;
 
-import dev.jb0s.blockgameenhanced.BlockgameEnhancedClient;
 import dev.jb0s.blockgameenhanced.event.chat.CommandSuggestionsEvent;
 import dev.jb0s.blockgameenhanced.event.chat.ReceiveChatMessageEvent;
 import dev.jb0s.blockgameenhanced.event.network.ServerPingEvent;
 import dev.jb0s.blockgameenhanced.event.screen.ScreenOpenedEvent;
 import dev.jb0s.blockgameenhanced.event.screen.ScreenReceivedInventoryEvent;
 import dev.jb0s.blockgameenhanced.gui.hud.immersive.ImmersiveIngameHud;
-import dev.jb0s.blockgameenhanced.helper.DebugHelper;
-import dev.jb0s.blockgameenhanced.manager.party.PartyManager;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.NetworkThreadUtils;
-import net.minecraft.network.packet.c2s.play.CloseHandledScreenC2SPacket;
 import net.minecraft.network.packet.s2c.play.*;
 import net.minecraft.util.ActionResult;
 import net.minecraft.world.World;
@@ -57,12 +53,12 @@ public class MixinClientPlayNetworkHandler {
         ScreenReceivedInventoryEvent.EVENT.invoker().screenReceivedInventory(packet);
 
         // todo: move this to an event
-        PartyManager pm = BlockgameEnhancedClient.getPartyManager();
+        /*PartyManager pm = BlockgameEnhancedClient.getPartyManager();
         boolean pmAcceptedThisPacket = pm.handleInventoryUpdate(packet);
         boolean shouldBeDiscardedForPm = pm.isWaitingForPartyScreenOpen() || (pm.isWaitingForPartyScreenContent() && pm.getCurrentPayloadSyncId() != packet.getSyncId());
         if(pmAcceptedThisPacket || shouldBeDiscardedForPm) {
             ci.cancel();
-        }
+        }*/
     }
 
     @Inject(method = "onOpenScreen", at = @At("HEAD"), cancellable = true)
@@ -73,7 +69,7 @@ public class MixinClientPlayNetworkHandler {
         ScreenOpenedEvent.EVENT.invoker().screenOpened(packet);
 
         // todo: move this to the new event
-        PartyManager pm = BlockgameEnhancedClient.getPartyManager();
+        /*PartyManager pm = BlockgameEnhancedClient.getPartyManager();
         boolean pmAcceptedThisPacket = pm.handleScreenOpen(packet);
         boolean shouldBeDiscardedForPm = (pm.isWaitingForPartyScreenOpen() || pm.isWaitingForPartyScreenContent()) && pm.getCurrentPayloadSyncId() != packet.getSyncId();
         if(pmAcceptedThisPacket || shouldBeDiscardedForPm) {
@@ -83,7 +79,7 @@ public class MixinClientPlayNetworkHandler {
 
             // We're good now, cancel the rest of the packet handling
             ci.cancel();
-        }
+        }*/
     }
 
     @Inject(method = "onGameMessage", at = @At("HEAD"), cancellable = true)

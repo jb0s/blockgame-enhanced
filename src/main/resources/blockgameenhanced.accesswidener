@@ -1,6 +1,9 @@
 accessWidener v1 named
 
-# InGameHud methods
+# net.minecraft.client.MinecraftClient
+mutable field net/minecraft/client/MinecraftClient inGameHud Lnet/minecraft/client/gui/hud/InGameHud;
+
+# net.minecraft.client.gui.hud.InGameHud
 extendable method net/minecraft/client/gui/hud/InGameHud renderHotbar (FLnet/minecraft/client/util/math/MatrixStack;)V
 accessible method net/minecraft/client/gui/hud/InGameHud renderHotbarItem (IIFLnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/item/ItemStack;I)V
 accessible method net/minecraft/client/gui/hud/InGameHud getCameraPlayer ()Lnet/minecraft/entity/player/PlayerEntity;
@@ -8,8 +11,6 @@ extendable method net/minecraft/client/gui/hud/InGameHud renderHealthBar (Lnet/m
 extendable method net/minecraft/client/gui/hud/InGameHud renderStatusBars (Lnet/minecraft/client/util/math/MatrixStack;)V
 extendable method net/minecraft/client/gui/hud/InGameHud renderMountHealth (Lnet/minecraft/client/util/math/MatrixStack;)V
 extendable method net/minecraft/client/gui/hud/InGameHud renderVignetteOverlay (Lnet/minecraft/entity/Entity;)V
-
-# InGameHud fields
 accessible field net/minecraft/client/gui/hud/InGameHud scaledWidth I
 accessible field net/minecraft/client/gui/hud/InGameHud scaledHeight I
 accessible field net/minecraft/client/gui/hud/InGameHud client Lnet/minecraft/client/MinecraftClient;
