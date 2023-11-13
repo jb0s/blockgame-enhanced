@@ -1,6 +1,5 @@
 package dev.jb0s.blockgameenhanced;
 
-import dev.jb0s.blockgameenhanced.eggs.ClusterTroll;
 import dev.jb0s.blockgameenhanced.gui.screen.title.TitleScreen;
 import dev.jb0s.blockgameenhanced.manager.Manager;
 import dev.jb0s.blockgameenhanced.manager.adventure.AdventureZoneManager;
@@ -130,8 +129,5 @@ public class BlockgameEnhancedClient implements ClientModInitializer {
                 manager.tick(client);
             }
         });
-
-        // Shhhh... it's a secret
-        ClusterTroll.init();
     }
 }
