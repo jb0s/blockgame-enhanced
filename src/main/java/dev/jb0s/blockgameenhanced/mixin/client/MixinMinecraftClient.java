@@ -121,13 +121,6 @@ public abstract class MixinMinecraftClient {
             startDummyServer("Empty", SaveLoader.DataPackSettingsSupplier::loadFromWorld, SaveLoader.SavePropertiesSupplier::loadFromWorld);
         }
 
-        // Debug stuff
-        if(BlockgameEnhanced.DEBUG) {
-            Class<?> implClass = Class.forName("dev.jb0s.blockgameenhanced.debug.ImGuiImpl");
-            Method method = implClass.getMethod("create", long.class);
-            method.invoke(null, thisMinecraft.getWindow().getHandle());
-        }
-
         // Apply Custom HUD
         IngameHudConfig ingameHudConfig = BlockgameEnhanced.getConfig().getIngameHudConfig();
         if(ingameHudConfig.enableCustomHud) {
