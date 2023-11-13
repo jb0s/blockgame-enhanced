@@ -13,6 +13,7 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.*;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.gui.screen.option.OptionsScreen;
+import net.minecraft.client.gui.screen.world.SelectWorldScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.PressableTextWidget;
 import net.minecraft.client.network.*;
@@ -88,6 +89,7 @@ public class TitleScreen extends Screen {
         initButtons();
         initCopyright();
         initWatermark();
+        if(BlockgameEnhanced.DEBUG) initDebug();
     }
 
     @Override
@@ -283,6 +285,31 @@ public class TitleScreen extends Screen {
     }
 
     /**
+     * Adds debug elements.
+     */
+    private void initDebug() {
+        int l = (height / 2) - 7;
+        addDrawableChild(new ButtonWidget(12, 12, 50, 20, Text.of("auth"), (button) -> {
+            try
+            {
+                Class<?> modsScreenClass = Class.forName("me.axieum.mcmod.authme.impl.gui.MicrosoftAuthScreen");
+                Constructor<?> constructor = modsScreenClass.getConstructor(Screen.class, Screen.class);
+                Screen screen = (Screen)constructor.newInstance(this, new TitleScreen());
+
+                client.setScreen(screen);
+            }
+            catch (Exception e)
+            {
+                client.getToastManager().add(new SystemToast(SystemToast.Type.PACK_LOAD_FAILURE, Text.of("Error"), Text.of(e.getMessage())));
+                client.setScreen(new ThorScreen(this));
+            }
+        }));
+        addDrawableChild(new ButtonWidget(64, 12, 50, 20, Text.of("testworld"), (button) -> {
+            client.setScreen(new SelectWorldScreen(this));
+        }));
+    }
+
+    /**
      * Initializes the copyright notice from Mojang.
      */
     private void initCopyright() {
@@ -298,6 +325,15 @@ public class TitleScreen extends Screen {
      */
     private void initWatermark() {
         assert client != null;
+
+        if(BlockgameEnhanced.DEBUG) {
+            Text txt = Text.of("Blockgame Enhanced TEST BUILD");
+            int i = this.textRenderer.getWidth(txt);
+            int j = this.width - i - 2;
+            this.addDrawableChild(new PressableTextWidget(j, this.height - 10, i, 10, txt, (x) -> {}, this.textRenderer));
+            return;
+        }
+
         int i = this.textRenderer.getWidth(WATERMARK);
         int j = this.width - i - 2;
         this.addDrawableChild(new PressableTextWidget(j, this.height - 10, i, 10, WATERMARK, (button) -> {
