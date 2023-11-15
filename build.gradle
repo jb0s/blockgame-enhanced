@@ -24,7 +24,8 @@ configurations {
 
 dependencies {
     include(implementation('io.github.CDAGaming:DiscordIPC:0.6.1'))
-
+    //needed for discord RPC
+    lib "com.kohlschutter.junixsocket:junixsocket-core:2.8.3"
     // Project Lombok
     compileOnly 'org.projectlombok:lombok:1.18.26'
     annotationProcessor 'org.projectlombok:lombok:1.18.26'
