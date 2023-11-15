@@ -19,7 +19,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class ConfigManager {
-    private static final Path INVENTORY_SNAPSHOT_PATH = Paths.get(PathHelper.getBlockgamePath().toString(), "INVENTORY.dat");
+    private static final Path INVENTORY_SNAPSHOT_PATH = Path.of(PathHelper.getBlockgamePath() + "INVENTORY.dat");
 
     public ConfigManager() {
         // Register events
