@@ -11,6 +11,8 @@
 	"key.blockgame.disposal": "Open Disposal menu",
 	"key.blockgame.deposit": "Open Deposit menu",
 	"key.blockgame.ping": "Mark location",
+	"key.blockgame.craft": "Craft",
+	"key.blockgame.compact": "Compact",
 
 	"comment.2": "~~ Title Screen ~~",
 	"menu.blockgame.title.play": "Play",

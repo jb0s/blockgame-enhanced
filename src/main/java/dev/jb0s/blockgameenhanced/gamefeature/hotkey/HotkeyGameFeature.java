@@ -28,6 +28,8 @@ public class HotkeyGameFeature extends GameFeature {
         bind(InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_B, "key.blockgame.backpack", BackpackBind::handlePressed);
         bind(InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_X, "key.blockgame.disposal", DisposalBind::handlePressed);
         bind(InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_N, "key.blockgame.deposit", DepositBind::handlePressed); // this is such a shit bind
+        bind(InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_C, "key.blockgame.craft", CraftBind::handlePressed);
+        bind(InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_PERIOD, "key.blockgame.compact", CompactBind::handlePressed);
         bind(InputUtil.Type.MOUSE, GLFW.GLFW_MOUSE_BUTTON_MIDDLE, "key.blockgame.ping", PingBind::handlePressed);
 
         if(BlockgameEnhanced.DEBUG) {
