@@ -3,7 +3,6 @@ package dev.jb0s.blockgameenhanced.gamefeature.party;
 import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
 import dev.jb0s.blockgameenhanced.BlockgameEnhancedClient;
 import dev.jb0s.blockgameenhanced.event.chat.ReceiveChatMessageEvent;
-import dev.jb0s.blockgameenhanced.event.chat.SendChatMessageEvent;
 import dev.jb0s.blockgameenhanced.event.entity.otherplayer.OtherPlayerTickEvent;
 import dev.jb0s.blockgameenhanced.event.gamefeature.party.PartyPingEvent;
 import dev.jb0s.blockgameenhanced.event.party.PartyUpdatedEvent;
