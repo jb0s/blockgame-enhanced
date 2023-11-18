@@ -1,10 +1,13 @@
 package dev.jb0s.blockgameenhanced.gamefeature.mmoitems;
 
 import com.google.common.collect.Maps;
+import com.google.gson.Gson;
+import com.mojang.blaze3d.systems.RenderSystem;
 import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
 import dev.jb0s.blockgameenhanced.BlockgameEnhancedClient;
 import dev.jb0s.blockgameenhanced.event.chat.ReceiveChatMessageEvent;
 import dev.jb0s.blockgameenhanced.event.gamefeature.mmoitems.ItemUsageEvent;
+import dev.jb0s.blockgameenhanced.event.renderer.item.ItemRendererDrawEvent;
 import dev.jb0s.blockgameenhanced.gamefeature.GameFeature;
 import dev.jb0s.blockgameenhanced.helper.MMOItemHelper;
 import dev.jb0s.blockgameenhanced.helper.NetworkHelper;
@@ -15,7 +18,11 @@ import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
+import net.minecraft.client.render.*;
+import net.minecraft.client.render.item.ItemRenderer;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -44,6 +51,7 @@ public class MMOItemsGameFeature extends GameFeature {
     @Getter
     private boolean isClientCaughtUp;
 
+    private final Gson gson = new Gson();
     private final Map<String, MMOItemsCooldownEntry> cooldownEntryMap = Maps.newHashMap();
     private final ArrayList<ScheduledItemUsePacket> scheduledPackets = new ArrayList<>();
     private final ArrayList<ItemUsageEvent> capturedItemUsages = new ArrayList<>();
@@ -56,11 +64,74 @@ public class MMOItemsGameFeature extends GameFeature {
         UseBlockCallback.EVENT.register(this::preventIllegalMMOItemsInteraction);
         UseItemCallback.EVENT.register(this::repeatItemUseForCooldownMessage);
         ReceiveChatMessageEvent.EVENT.register(this::visualizeCooldown);
+        ItemRendererDrawEvent.EVENT.register(this::drawItemCooldownOverlay);
+        ItemRendererDrawEvent.EVENT.register(this::drawItemChargeCounter);
         ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
             tick = 0;
             isClientCaughtUp = false;
             heartbeatLatency = 0;
         });
+    }
+
+    /**
+     * Draws charge count for items with charges
+     */
+    private ActionResult drawItemChargeCounter(TextRenderer textRenderer, ItemStack itemStack, int x, int y, String countLabel) {
+        NbtCompound nbt = itemStack.getOrCreateNbt();
+
+        if(BlockgameEnhanced.isNotkerMmoPresent()) {
+            // Compatibility with Notker's McMMO Item Durability viewer.
+            return ActionResult.PASS;
+        }
+
+        MatrixStack matrixStack = new MatrixStack();
+        if(nbt.getInt("MMOITEMS_MAX_CONSUME") != 0 && itemStack.getCount() == 1) {
+            String chargeCountString = countLabel == null ? String.valueOf(nbt.getInt("MMOITEMS_MAX_CONSUME")) : countLabel;
+            VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
+
+            matrixStack.translate(0.0, 0.0, (MinecraftClient.getInstance().inGameHud.getZOffset() + 300.0f));
+
+            // Shitty outline (Notch did it first!)
+            textRenderer.draw(chargeCountString, (float)(x + 19 - 2 - textRenderer.getWidth(chargeCountString)) + 1, (float)(y + 6 + 3), 0x000000, false, matrixStack.peek().getPositionMatrix(), immediate, false, 0, LightmapTextureManager.MAX_LIGHT_COORDINATE);
+            textRenderer.draw(chargeCountString, (float)(x + 19 - 2 - textRenderer.getWidth(chargeCountString)) - 1, (float)(y + 6 + 3), 0x000000, false, matrixStack.peek().getPositionMatrix(), immediate, false, 0, LightmapTextureManager.MAX_LIGHT_COORDINATE);
+            textRenderer.draw(chargeCountString, (float)(x + 19 - 2 - textRenderer.getWidth(chargeCountString)), (float)(y + 6 + 3) + 1, 0x000000, false, matrixStack.peek().getPositionMatrix(), immediate, false, 0, LightmapTextureManager.MAX_LIGHT_COORDINATE);
+            textRenderer.draw(chargeCountString, (float)(x + 19 - 2 - textRenderer.getWidth(chargeCountString)), (float)(y + 6 + 3) - 1, 0x000000, false, matrixStack.peek().getPositionMatrix(), immediate, false, 0, LightmapTextureManager.MAX_LIGHT_COORDINATE);
+
+            matrixStack.translate(0.0, 0.0, 0.001f);
+            textRenderer.draw(chargeCountString, (float)(x + 19 - 2 - textRenderer.getWidth(chargeCountString)), (float)(y + 6 + 3), 0x7EFC20, false, matrixStack.peek().getPositionMatrix(), immediate, false, 0, LightmapTextureManager.MAX_LIGHT_COORDINATE);
+
+            immediate.draw();
+            return ActionResult.SUCCESS;
+        }
+
+        return ActionResult.PASS;
+    }
+
+    /**
+     * Draw cooldown for items
+     */
+    private ActionResult drawItemCooldownOverlay(TextRenderer textRenderer, ItemStack itemStack, int x, int y, String countLabel) {
+        NbtCompound nbt = itemStack.getOrCreateNbt();
+        String tag = nbt.getString("MMOITEMS_ABILITY");
+        if(tag != null) {
+            MMOItemsAbility[] itemAbilities = gson.fromJson(tag, MMOItemsAbility[].class);
+            if(itemAbilities != null && itemAbilities.length > 0) {
+                float cooldownProgressForThisStack = getCooldownProgress(itemAbilities[0].Id, MinecraftClient.getInstance().getTickDelta());
+                if (cooldownProgressForThisStack > 0.0f) {
+                    RenderSystem.disableDepthTest();
+                    RenderSystem.disableTexture();
+                    RenderSystem.enableBlend();
+                    RenderSystem.defaultBlendFunc();
+                    Tessellator tessellator2 = Tessellator.getInstance();
+                    BufferBuilder bufferBuilder2 = tessellator2.getBuffer();
+                    renderGuiQuad(bufferBuilder2, x, y + MathHelper.floor(16.0f * (1.0f - cooldownProgressForThisStack)), 16, MathHelper.ceil(16.0f * cooldownProgressForThisStack), 255, 255, 255, 127);
+                    RenderSystem.enableTexture();
+                    RenderSystem.enableDepthTest();
+                }
+            }
+        }
+
+        return ActionResult.PASS;
     }
 
     @Override
@@ -301,6 +372,20 @@ public class MMOItemsGameFeature extends GameFeature {
         int pl = BlockgameEnhancedClient.getPreloginLatency();
         int dif = BlockgameEnhancedClient.getPreloginLatency() - heartbeatLatency;
         return (dif > LATENCY_MARGIN_OF_ERROR && !isClientCaughtUp) ? pl : hb;
+    }
+
+    /**
+     * Renders a quad on the GUI. Adapted from ItemRenderer.class
+     */
+    private void renderGuiQuad(BufferBuilder buffer, int x, int y, int width, int height, int red, int green, int blue, int alpha) {
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+        buffer.vertex(x + 0, y + 0, 0.0).color(red, green, blue, alpha).next();
+        buffer.vertex(x + 0, y + height, 0.0).color(red, green, blue, alpha).next();
+        buffer.vertex(x + width, y + height, 0.0).color(red, green, blue, alpha).next();
+        buffer.vertex(x + width, y + 0, 0.0).color(red, green, blue, alpha).next();
+        buffer.end();
+        BufferRenderer.draw(buffer);
     }
 
     record MMOItemsCooldownEntry(int startTick, int endTick) { }
