@@ -112,6 +112,8 @@
 	"text.autoconfig.blockgameenhanced.option.ingameHudConfig.showCooldownsInHotbar.@Tooltip": "Enables/disables a visual cooldown display in the hotbar rather than chat.",
 	"text.autoconfig.blockgameenhanced.option.ingameHudConfig.showProfessionExpInChat": "Show Profession EXP in chat",
 	"text.autoconfig.blockgameenhanced.option.ingameHudConfig.showProfessionExpInChat.@Tooltip": "Shows Profession EXP gained in chat instead of an EXP popup.",
+	"text.autoconfig.blockgameenhanced.option.ingameHudConfig.enablePickupStream": "Enable loot overview",
+	"text.autoconfig.blockgameenhanced.option.ingameHudConfig.enablePickupStream.@Tooltip": "Enable brief item summaries on display when picking up loot",
 
 	"comment.9": "~~ Update Popup ~~",
 	"menu.blockgame.update.header": "Update available",

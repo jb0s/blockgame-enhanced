@@ -23,9 +23,8 @@ public class ImmersivePickupStream extends ImmersiveWidget {
         int i = 0;
 
         if(!pickupHashMap.isEmpty()) {
-            Iterator<Map.Entry<Text, ImmersivePickup>> it = pickupHashMap.entrySet().iterator();
 
-            while(it.hasNext()) {
+            for(Iterator<Map.Entry<Text, ImmersivePickup>> it = pickupHashMap.entrySet().iterator(); it.hasNext(); ) {
                 Map.Entry<Text, ImmersivePickup> entry = it.next();
                 int sx = x - entry.getValue().getWidth();
                 int sy = y + ((entry.getValue().getHeight() + 5) * i);

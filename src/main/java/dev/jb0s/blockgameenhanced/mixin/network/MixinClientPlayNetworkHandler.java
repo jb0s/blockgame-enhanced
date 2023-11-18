@@ -1,5 +1,6 @@
 package dev.jb0s.blockgameenhanced.mixin.network;
 
+import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
 import dev.jb0s.blockgameenhanced.event.chat.CommandSuggestionsEvent;
 import dev.jb0s.blockgameenhanced.event.chat.ReceiveChatMessageEvent;
 import dev.jb0s.blockgameenhanced.event.network.ServerPingEvent;
@@ -39,7 +40,8 @@ public class MixinClientPlayNetworkHandler {
         }
 
         if(minecraft.inGameHud instanceof ImmersiveIngameHud immersiveIngameHud) {
-            if(world.getEntityById(packet.getEntityId()) instanceof ItemEntity itemEntity) {
+            boolean enablePickupStream = BlockgameEnhanced.getConfig().getIngameHudConfig().enablePickupStream;
+            if(world.getEntityById(packet.getEntityId()) instanceof ItemEntity itemEntity && enablePickupStream) {
                 ItemStack stack = itemEntity.getStack().copy();
                 immersiveIngameHud.getImmersivePickupStream().addPickup(stack, packet.getStackAmount());
             }

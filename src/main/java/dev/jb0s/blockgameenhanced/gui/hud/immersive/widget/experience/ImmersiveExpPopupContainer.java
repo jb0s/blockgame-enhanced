@@ -22,9 +22,7 @@ public class ImmersiveExpPopupContainer extends ImmersiveWidget {
         int i = 0;
 
         if(!popupHashMap.isEmpty()) {
-            Iterator<Map.Entry<MMOProfession, ImmersiveExpPopup>> it = popupHashMap.entrySet().iterator();
-
-            while (it.hasNext()) {
+            for(Iterator<Map.Entry<MMOProfession, ImmersiveExpPopup>> it = popupHashMap.entrySet().iterator(); it.hasNext(); ) {
                 Map.Entry<MMOProfession, ImmersiveExpPopup> entry = it.next();
                 int sx = x - (entry.getValue().getWidth() / 2);
                 int sy = y - ((entry.getValue().getHeight() + 10) * i);
