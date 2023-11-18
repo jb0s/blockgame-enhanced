@@ -4,6 +4,8 @@ import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
 import dev.jb0s.blockgameenhanced.BlockgameEnhancedClient;
 import dev.jb0s.blockgameenhanced.event.chat.ReceiveChatMessageEvent;
 import dev.jb0s.blockgameenhanced.event.entity.otherplayer.OtherPlayerTickEvent;
+import dev.jb0s.blockgameenhanced.event.entity.player.PlayerTickEvent;
+import dev.jb0s.blockgameenhanced.event.gamefeature.hotkey.PingHotkeyPressedEvent;
 import dev.jb0s.blockgameenhanced.event.gamefeature.party.PartyPingEvent;
 import dev.jb0s.blockgameenhanced.event.gamefeature.party.PartyUpdatedEvent;
 import dev.jb0s.blockgameenhanced.event.screen.ScreenOpenedEvent;
@@ -17,10 +19,10 @@ import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.network.OtherClientPlayerEntity;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.SkullItem;
 import net.minecraft.network.packet.s2c.play.InventoryS2CPacket;
@@ -66,9 +68,11 @@ public class PartyGameFeature extends GameFeature {
         // Subscribe to events
         ReceiveChatMessageEvent.EVENT.register(((client1, message) -> handleChatMessage(message)));
         OtherPlayerTickEvent.EVENT.register(((client1, otherPlayer) -> handlePlayerHealth(otherPlayer, (int)otherPlayer.getHealth(), (int)otherPlayer.getMaxHealth(), otherPlayer.isAlive())));
+        PlayerTickEvent.EVENT.register(((client1, player) -> handlePlayerHealth(player, (int)player.getHealth(), (int)player.getMaxHealth(), player.isAlive())));
         WorldRenderEvents.END.register(ctx -> preRenderPings(ctx.matrixStack(), ctx.projectionMatrix(), ctx.tickDelta()));
         ScreenOpenedEvent.EVENT.register(this::handleScreenOpen);
         ScreenReceivedInventoryEvent.EVENT.register(this::handleInventoryUpdate);
+        PingHotkeyPressedEvent.EVENT.register(this::tryPing);
     }
 
     @Override
@@ -262,7 +266,7 @@ public class PartyGameFeature extends GameFeature {
      * @param maxHealth The maximum amount of health that they have. This is usually 20, but can be increased with max hp boost.
      * @param isAlive Whether the player entity is considered "alive" or not. This is more trustworthy than checking (health == 0).
      */
-    public void handlePlayerHealth(OtherClientPlayerEntity player, int health, int maxHealth, boolean isAlive) {
+    public void handlePlayerHealth(PlayerEntity player, int health, int maxHealth, boolean isAlive) {
         if(partyMembers == null)
             return;
 
@@ -392,7 +396,7 @@ public class PartyGameFeature extends GameFeature {
     /**
      * Attempts to ping/unping a location.
      */
-    public void tryPing() {
+    public void tryPing(MinecraftClient client) {
         ClientPlayerEntity cpe = getMinecraftClient().player;
         if(cpe == null || partyPings == null) return;
 
