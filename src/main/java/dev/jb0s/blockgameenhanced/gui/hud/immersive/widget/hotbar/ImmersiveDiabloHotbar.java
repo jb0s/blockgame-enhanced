@@ -2,6 +2,7 @@ package dev.jb0s.blockgameenhanced.gui.hud.immersive.widget.hotbar;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
+import dev.jb0s.blockgameenhanced.BlockgameEnhancedClient;
 import dev.jb0s.blockgameenhanced.event.gamefeature.mmostats.MMOStatsUpdatedEvent;
 import dev.jb0s.blockgameenhanced.gamefeature.mmostats.MMOStatsGameFeature;
 import dev.jb0s.blockgameenhanced.gui.hud.immersive.widget.ImmersiveWidget;
@@ -338,7 +339,7 @@ public class ImmersiveDiabloHotbar extends ImmersiveWidget {
     private void drawLatencyMeter(MatrixStack matrices, int x, int y) {
         getInGameHud().client.getProfiler().push("latencyMeter");
 
-        int latency = 0; // todo lole
+        int latency = BlockgameEnhancedClient.getLatency();
         int severity = 0;
 
         if(latency > 100) severity = 1;

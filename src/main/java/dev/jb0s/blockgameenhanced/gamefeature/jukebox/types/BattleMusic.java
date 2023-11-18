@@ -16,8 +16,7 @@ public class BattleMusic extends Music {
     }
 
     @Override
-    public Identifier getSoundId() {
-        // todo reimplement
+    public Identifier getSoundId(int id) {
         /*BossBattleManager bossBattleManager = BlockgameEnhancedClient.getBossBattleManager();
         ZoneBoss bossBattle = bossBattleManager.getCurrentBattle();
         ZoneBossBattleState battleState = bossBattleManager.getCurrentBattleState();
@@ -30,7 +29,7 @@ public class BattleMusic extends Music {
         if(bossBattle == null || battleState == ZoneBossBattleState.BATTLE_ENDED)
             return identifiers.get(1);*/
 
-        return identifiers.get(0);
+        return identifiers.get(id);
     }
 
     public static BattleMusic fromJSON(JsonMusic json) {

@@ -51,6 +51,14 @@ public class BlockgameEnhancedClient implements ClientModInitializer {
     @Setter
     private static boolean isCompatibilityServerReady;
 
+    @Getter
+    @Setter
+    private static int preloginLatency;
+
+    @Getter
+    @Setter
+    private static int latency;
+
     @Override
     public void onInitializeClient() {
         BlockgameEnhanced.LOGGER.info("Welcome to Blockgame Enhanced");

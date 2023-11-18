@@ -1,6 +1,7 @@
 package dev.jb0s.blockgameenhanced.gamefeature.jukebox;
 
 import com.google.gson.Gson;
+import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
 import dev.jb0s.blockgameenhanced.BlockgameEnhancedClient;
 import dev.jb0s.blockgameenhanced.event.adventurezone.EnteredWildernessEvent;
 import dev.jb0s.blockgameenhanced.event.adventurezone.PlayerEnteredZoneEvent;
@@ -11,6 +12,7 @@ import dev.jb0s.blockgameenhanced.event.entity.player.PlayerRespawnedEvent;
 import dev.jb0s.blockgameenhanced.event.gamefeature.challenges.ChallengeStartedEvent;
 import dev.jb0s.blockgameenhanced.gamefeature.GameFeature;
 import dev.jb0s.blockgameenhanced.gamefeature.challenges.Challenge;
+import dev.jb0s.blockgameenhanced.gamefeature.dayphase.DayPhase;
 import dev.jb0s.blockgameenhanced.gamefeature.jukebox.json.JsonMusic;
 import dev.jb0s.blockgameenhanced.gamefeature.jukebox.json.JsonMusicList;
 import dev.jb0s.blockgameenhanced.gamefeature.jukebox.types.BattleMusic;
@@ -19,6 +21,7 @@ import dev.jb0s.blockgameenhanced.gamefeature.jukebox.types.RandomMusic;
 import dev.jb0s.blockgameenhanced.gamefeature.jukebox.types.TimeOfDayMusic;
 import dev.jb0s.blockgameenhanced.gamefeature.zone.Zone;
 import dev.jb0s.blockgameenhanced.gamefeature.zone.ZoneBoss;
+import dev.jb0s.blockgameenhanced.gamefeature.zoneboss.ZoneBossBattleState;
 import lombok.Getter;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -37,9 +40,13 @@ public class JukeboxGameFeature extends GameFeature {
 
     private SoundManager soundManager;
     private MusicSoundInstance soundInstance;
+
+    // State trackers
     private Zone currentZone;
     private ZoneBoss currentBoss;
+    private ZoneBossBattleState currentBossBattleState;
     private Challenge currentChallenge;
+    private DayPhase currentDayPhase = DayPhase.NONE;
 
     @Getter
     private JsonMusicList musicList;
@@ -73,6 +80,12 @@ public class JukeboxGameFeature extends GameFeature {
                 return;
             }
 
+            currentZone = zone;
+            if(currentZone == null || currentZone.getBattle() == null) {
+                currentBoss = null;
+                currentBossBattleState = ZoneBossBattleState.NO_BATTLE;
+            }
+
             if(zone.getMusic() != null) {
                 playMusic(zone.getMusic(), false, 0);
             }
@@ -83,6 +96,10 @@ public class JukeboxGameFeature extends GameFeature {
 
         // Stop any zone music when player enters wilderness.
         EnteredWildernessEvent.EVENT.register((client, playerEntity) -> {
+            currentZone = null;
+            currentBoss = null;
+            currentBossBattleState = ZoneBossBattleState.NO_BATTLE;
+
             if(currentChallenge == null) {
                 stopMusic(true);
             }
@@ -90,16 +107,22 @@ public class JukeboxGameFeature extends GameFeature {
 
         // Play boss music when a battle has begun.
         BossBattleCommencedEvent.EVENT.register(((boss) -> {
+            currentBoss = boss;
+            currentBossBattleState = ZoneBossBattleState.IN_PROGRESS;
+
             if(currentChallenge == null) {
                 playMusic(boss.getMusic(), false, 0);
             }
         }));
 
         // Refresh the music when the player defeats a boss so that the victory music plays.
-        BossBattleEndedEvent.EVENT.register(((boss) -> {
+        BossBattleEndedEvent.EVENT.register(((boss, state) -> {
             if(currentChallenge != null) {
                 return;
             }
+
+            currentBoss = null;
+            currentBossBattleState = state;
 
             if(currentMusic instanceof BattleMusic) {
                 refresh();
@@ -108,6 +131,8 @@ public class JukeboxGameFeature extends GameFeature {
 
         // Refresh the music when the current day phase changes, and we're playing Time Of Day based music.
         DayPhaseChangedEvent.EVENT.register((dayPhase -> {
+            currentDayPhase = dayPhase;
+
             if(currentMusic != null && currentMusic.getType().equals("TimeOfDay")) {
                 refresh();
             }
@@ -159,12 +184,12 @@ public class JukeboxGameFeature extends GameFeature {
             muted = false;
 
             if(isPlaying()) {
-                soundInstance = new MusicSoundInstance(new SoundEvent(currentMusic.getSoundId()), SoundCategory.MUSIC, 1f, 1f, getMinecraftClient().player);
+                soundInstance = new MusicSoundInstance(new SoundEvent(currentMusic.getSoundId(getMusicSoundIndex())), SoundCategory.MUSIC, 1f, 1f, getMinecraftClient().player);
                 soundManager.play(soundInstance);
             }
         }
 
-        if(isFading()) {
+        if(isFading() && soundInstance.getSound() != null) {
             if(desiredMusic != null && desiredMusic.getId().equals(currentMusic.getId()) && !isRefreshing())  {
                 fading = false;
                 soundInstance.setVolume(1f);
@@ -229,7 +254,8 @@ public class JukeboxGameFeature extends GameFeature {
             currentMusic = mus;
             desiredMusic = mus;
 
-            soundInstance = new MusicSoundInstance(new SoundEvent(mus.getSoundId()), SoundCategory.MUSIC, 1f, 1f, playerEntity);
+            BlockgameEnhanced.LOGGER.info("Now playing: " + music + " (" + getMusicSoundIndex() + ")");
+            soundInstance = new MusicSoundInstance(new SoundEvent(mus.getSoundId(getMusicSoundIndex())), SoundCategory.MUSIC, 1f, 1f, playerEntity);
             soundManager.play(soundInstance, delay);
             playing = true;
             return;
@@ -305,5 +331,19 @@ public class JukeboxGameFeature extends GameFeature {
         }
 
         return null;
+    }
+
+    /**
+     * Gets the sound index for a music track.
+     */
+    private int getMusicSoundIndex() {
+        if(currentChallenge != null) {
+            return 0;
+        }
+        else if(currentBossBattleState != ZoneBossBattleState.NO_BATTLE) {
+            return (currentBoss == null | currentBossBattleState == ZoneBossBattleState.BATTLE_ENDED) ? 1 : 0;
+        }
+
+        return currentDayPhase.getId();
     }
 }

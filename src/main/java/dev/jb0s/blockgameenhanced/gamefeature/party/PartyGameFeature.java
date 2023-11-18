@@ -5,7 +5,7 @@ import dev.jb0s.blockgameenhanced.BlockgameEnhancedClient;
 import dev.jb0s.blockgameenhanced.event.chat.ReceiveChatMessageEvent;
 import dev.jb0s.blockgameenhanced.event.entity.otherplayer.OtherPlayerTickEvent;
 import dev.jb0s.blockgameenhanced.event.gamefeature.party.PartyPingEvent;
-import dev.jb0s.blockgameenhanced.event.party.PartyUpdatedEvent;
+import dev.jb0s.blockgameenhanced.event.gamefeature.party.PartyUpdatedEvent;
 import dev.jb0s.blockgameenhanced.event.screen.ScreenOpenedEvent;
 import dev.jb0s.blockgameenhanced.event.screen.ScreenReceivedInventoryEvent;
 import dev.jb0s.blockgameenhanced.gamefeature.GameFeature;
@@ -78,7 +78,7 @@ public class PartyGameFeature extends GameFeature {
         if(getMinecraftClient().world == null) {
             if(partyMembers != null) {
                 // We need to invoke this event to let all other managers know the party disbanded due to a disconnect
-                PartyUpdatedEvent.EVENT.invoker().partyUpdated(0);
+                PartyUpdatedEvent.EVENT.invoker().partyUpdatedEvent(this);
             }
 
             currentPayloadSyncId = -1;
@@ -216,8 +216,7 @@ public class PartyGameFeature extends GameFeature {
         }
 
         // Invoke party updated event
-        PartyUpdatedEvent.EVENT.invoker().partyUpdated(partyMembers.size()); // todo remove this
-        dev.jb0s.blockgameenhanced.event.gamefeature.party.PartyUpdatedEvent.EVENT.invoker().partyUpdatedEvent(this);
+        PartyUpdatedEvent.EVENT.invoker().partyUpdatedEvent(this);
     }
 
     /**
@@ -239,8 +238,7 @@ public class PartyGameFeature extends GameFeature {
             getMinecraftClient().getToastManager().add(new SystemToast(SystemToast.Type.PERIODIC_NOTIFICATION, toastTitle, toastDescription));
 
             // Invoke party updated event
-            PartyUpdatedEvent.EVENT.invoker().partyUpdated(0); // todo remove this
-            dev.jb0s.blockgameenhanced.event.gamefeature.party.PartyUpdatedEvent.EVENT.invoker().partyUpdatedEvent(this);
+            PartyUpdatedEvent.EVENT.invoker().partyUpdatedEvent(this);
         }
         else {
             partyMembers.remove(member);
@@ -252,8 +250,7 @@ public class PartyGameFeature extends GameFeature {
             getMinecraftClient().getToastManager().add(new SystemToast(SystemToast.Type.PERIODIC_NOTIFICATION, toastTitle, toastDescription));
 
             // Invoke party updated event
-            PartyUpdatedEvent.EVENT.invoker().partyUpdated(partyMembers.size()); // todo remove this
-            dev.jb0s.blockgameenhanced.event.gamefeature.party.PartyUpdatedEvent.EVENT.invoker().partyUpdatedEvent(this);
+            PartyUpdatedEvent.EVENT.invoker().partyUpdatedEvent(this);
         }
     }
 

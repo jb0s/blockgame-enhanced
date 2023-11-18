@@ -20,7 +20,7 @@ public class RandomMusic extends Music {
     }
 
     @Override
-    public Identifier getSoundId() {
+    public Identifier getSoundId(int id) {
         return soundIds.get(random.nextInt(soundIds.size()));
     }
 

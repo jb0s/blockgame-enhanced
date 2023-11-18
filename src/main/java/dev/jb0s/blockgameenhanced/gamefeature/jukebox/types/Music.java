@@ -19,7 +19,7 @@ public class Music {
         this.soundId = soundId;
     }
 
-    public Identifier getSoundId() {
+    public Identifier getSoundId(int id) {
         return soundId;
     }
 

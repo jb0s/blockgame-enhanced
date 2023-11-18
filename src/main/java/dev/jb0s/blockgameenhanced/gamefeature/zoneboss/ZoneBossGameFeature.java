@@ -100,7 +100,7 @@ public class ZoneBossGameFeature extends GameFeature {
      */
     private void endBossBattle() {
         currentBattleState = ZoneBossBattleState.BATTLE_ENDED;
-        BossBattleEndedEvent.EVENT.invoker().bossBattleEnded(currentBattle);
+        BossBattleEndedEvent.EVENT.invoker().bossBattleEnded(currentBattle, currentBattleState);
         currentBattle = null;
     }
 

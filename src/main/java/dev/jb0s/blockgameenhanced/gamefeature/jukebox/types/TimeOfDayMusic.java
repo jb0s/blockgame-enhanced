@@ -16,8 +16,7 @@ public class TimeOfDayMusic extends Music {
     }
 
     @Override
-    public Identifier getSoundId() {
-        // todo bruh
+    public Identifier getSoundId(int id) {
         /*DayPhaseManager dayPhaseManager = BlockgameEnhancedClient.getDayPhaseManager();
         DayPhase dayPhase = dayPhaseManager.getCurrentDayPhase();
 
@@ -31,7 +30,13 @@ public class TimeOfDayMusic extends Music {
         // 2: Evening
         // 3: Night
         return identifiers.get(dayPhase.getId());*/
-        return identifiers.get(0);
+
+        // No sound if invalid DayPhase
+        if(id == -1) {
+            return null;
+        }
+
+        return identifiers.get(id);
     }
 
     public static TimeOfDayMusic fromJSON(JsonMusic json) {

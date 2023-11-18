@@ -208,9 +208,8 @@ public class TitleScreen extends Screen {
                     }
                 }
 
-                // Update prelogin latency info todo update this
-                //LatencyManager latencyManager = BlockgameEnhancedClient.getLatencyManager();
-                //latencyManager.setPreLoginLatency((int) serverInfo.ping);
+                // Update prelogin latency info
+                BlockgameEnhancedClient.setPreloginLatency((int) serverInfo.ping);
             }
             else if(serverInfo.label != null) {
                 DrawableHelper.drawTextWithShadow(matrices, client.textRenderer, serverInfo.label, (width / 2) + 4, 7, Integer.MAX_VALUE);

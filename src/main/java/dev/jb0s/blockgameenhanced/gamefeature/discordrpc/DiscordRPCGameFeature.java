@@ -6,9 +6,10 @@ import com.jagrosh.discordipc.entities.RichPresence;
 import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
 import dev.jb0s.blockgameenhanced.BlockgameEnhancedClient;
 import dev.jb0s.blockgameenhanced.event.discordrpc.DiscordReadyEvent;
-import dev.jb0s.blockgameenhanced.event.party.PartyUpdatedEvent;
+import dev.jb0s.blockgameenhanced.event.gamefeature.party.PartyUpdatedEvent;
 import dev.jb0s.blockgameenhanced.gamefeature.GameFeature;
 import dev.jb0s.blockgameenhanced.config.structure.DiscordRPCPrivacy;
+import dev.jb0s.blockgameenhanced.gamefeature.party.PartyGameFeature;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.minecraft.client.MinecraftClient;
 
@@ -94,6 +95,14 @@ public class DiscordRPCGameFeature extends GameFeature {
             // cry about it
             BlockgameEnhanced.LOGGER.info("Failed to send Rich Presence update! ({})", e.getMessage());
         }
+    }
+
+    /**
+     * Sets the amount of players in a party on the rich presence. Hidden if size is 0.
+     * @param gameFeature The party gamefeature.
+     */
+    public void setPartySize(PartyGameFeature gameFeature) {
+        setPartySize(gameFeature.getPartyMembers() != null ? gameFeature.getPartyMembers().size() : 0);
     }
 
     /**

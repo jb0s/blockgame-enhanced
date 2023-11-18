@@ -121,6 +121,9 @@ public class MMOItemsGameFeature extends GameFeature {
             isClientCaughtUp = true;
             //catchUpReason = "Client is reasonable";
         }
+
+        // Update latency value
+        BlockgameEnhancedClient.setLatency(getLatency());
     }
 
     /**
