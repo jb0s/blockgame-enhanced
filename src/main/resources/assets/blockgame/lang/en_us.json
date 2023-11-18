@@ -114,6 +114,8 @@
 	"text.autoconfig.blockgameenhanced.option.ingameHudConfig.showProfessionExpInChat.@Tooltip": "Shows Profession EXP gained in chat instead of an EXP popup.",
 	"text.autoconfig.blockgameenhanced.option.ingameHudConfig.enablePickupStream": "Enable loot overview",
 	"text.autoconfig.blockgameenhanced.option.ingameHudConfig.enablePickupStream.@Tooltip": "Enable brief item summaries on display when picking up loot",
+	"text.autoconfig.blockgameenhanced.option.ingameHudConfig.enableDrownFx": "Enable drowning effects",
+	"text.autoconfig.blockgameenhanced.option.ingameHudConfig.enableDrownFx.@Tooltip": "Enables a more obvious visual cue for running out of air and drowning",
 
 	"comment.9": "~~ Update Popup ~~",
 	"menu.blockgame.update.header": "Update available",

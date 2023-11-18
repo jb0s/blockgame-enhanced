@@ -1,5 +1,6 @@
 package dev.jb0s.blockgameenhanced.gui.hud.immersive;
 
+import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
 import dev.jb0s.blockgameenhanced.gui.hud.immersive.widget.effect.ImmersiveDrownVignette;
 import dev.jb0s.blockgameenhanced.gui.hud.immersive.widget.experience.ImmersiveExpPopupContainer;
 import dev.jb0s.blockgameenhanced.gui.hud.immersive.widget.hotbar.ImmersiveDiabloHotbar;
@@ -31,7 +32,10 @@ public class ImmersiveIngameHud extends InGameHud {
     protected void renderHotbar(float tickDelta, MatrixStack matrices) {
         int bottom = scaledHeight/* - 22*/;
 
-        immersiveDrownVignette.render(matrices, 0, 0, tickDelta);
+        if(BlockgameEnhanced.getConfig().getIngameHudConfig().enableDrownFx) {
+            immersiveDrownVignette.render(matrices, 0, 0, tickDelta);
+        }
+
         newImmersiveHotbar.render(matrices, scaledWidth / 2, bottom, tickDelta);
 
         boolean shouldRaiseExpBar = overlayMessage != null && overlayRemaining > 0;

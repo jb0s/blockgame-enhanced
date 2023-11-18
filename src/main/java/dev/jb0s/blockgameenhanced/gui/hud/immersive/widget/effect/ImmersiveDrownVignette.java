@@ -21,8 +21,8 @@ public class ImmersiveDrownVignette extends ImmersiveWidget {
         if(player == null) return;
 
         float airPercent = ((float) player.getAir() / player.getMaxAir());
-        float sumHealth = (1f - (player.getHealth() / player.getMaxHealth())) * 0.7f;
-        float sumAir = (1f - airPercent) * 0.3f;
+        float sumHealth = (1f - (player.getHealth() / player.getMaxHealth())) * 0.4f;
+        float sumAir = (1f - airPercent) * 0.6f;
         float alpha = (sumHealth + sumAir) * (1f - airPercent);
 
         RenderSystem.enableBlend();
