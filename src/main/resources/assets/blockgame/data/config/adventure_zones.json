@@ -5,12 +5,7 @@
 			"world": "midgard",
 			"musicType": "TimeOfDay",
 			"adventure": true,
-			"music": null,
-			"battle": {
-				"boss": "Bring",
-				"music": "mus_battle_arena_horseman",
-				"victoryDelay": 0
-			},
+			"music": "mus_zone_origincity",
 			"minY": 38,
 			"maxY": 1000,
 			"chunks": [
