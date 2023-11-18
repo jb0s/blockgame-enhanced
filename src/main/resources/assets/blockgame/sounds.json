@@ -106,10 +106,7 @@
 	},
 
 	"mus.challenge.speedrun": {
-		"subtitle": "A Hat in Time OST - Collapsing Time Rift",
-		"sounds": [
-			"blockgame:music/challenge/ahit_collapse_ph"
-		]
+		"sounds": []
 	},
 	
 	"mus.gui.combat.death": {
