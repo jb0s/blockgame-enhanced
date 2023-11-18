@@ -13,6 +13,7 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.packet.s2c.play.InventoryS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenScreenS2CPacket;
 import net.minecraft.screen.slot.SlotActionType;
+import net.minecraft.util.ActionResult;
 
 public class BetterGUIGameFeature extends GameFeature {
     private int waitingForSyncId;
@@ -29,30 +30,31 @@ public class BetterGUIGameFeature extends GameFeature {
      * Callback that checks if the menu that the server has opened is the Currency Deposit menu, and if so stores its sync id.
      * @param packet Packet data for the menu that has opened.
      */
-    public void handleScreenOpen(OpenScreenS2CPacket packet) {
+    public ActionResult handleScreenOpen(OpenScreenS2CPacket packet) {
 
         // If the menu is called "Deposit", store the sync id, so we can start putting currency in this menu
         // todo: This is easily forged by just creating a chest called "Deposit". We should do integrity checks
         if(packet.getName().asString().equals("Deposit")) {
             waitingForSyncId = packet.getSyncId();
-            return;
+            return ActionResult.PASS;
         }
 
         waitingForSyncId = -1;
+        return ActionResult.PASS;
     }
 
     /**
      * Callback that checks if the inventory contents for a menu matches the sync id we've stored, and puts currency in the inventory if so.
      * @param packet Packet data for the inventory inside the menu.
      */
-    public void handleScreenInventoryData(InventoryS2CPacket packet) {
+    public ActionResult handleScreenInventoryData(InventoryS2CPacket packet) {
         if(packet.getSyncId() != waitingForSyncId) {
-            return;
+            return ActionResult.PASS;
         }
 
         // If the user has disallowed us to autofill, cancel here
         if(!BlockgameEnhanced.getConfig().getAccessibilityConfig().enableAutofillDeposit) {
-            return;
+            return ActionResult.PASS;
         }
 
         MinecraftClient mc = MinecraftClient.getInstance();
@@ -75,5 +77,6 @@ public class BetterGUIGameFeature extends GameFeature {
 
         // If we don't reset it right after, the client will absolutely SLAM the server with packets
         waitingForSyncId = -1;
+        return ActionResult.PASS;
     }
 }

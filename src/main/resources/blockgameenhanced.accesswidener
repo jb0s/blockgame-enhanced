@@ -18,3 +18,14 @@ accessible field net/minecraft/client/gui/hud/InGameHud title Lnet/minecraft/tex
 accessible field net/minecraft/client/gui/hud/InGameHud subtitle Lnet/minecraft/text/Text;
 accessible field net/minecraft/client/gui/hud/InGameHud overlayMessage Lnet/minecraft/text/Text;
 accessible field net/minecraft/client/gui/hud/InGameHud overlayRemaining I
+
+# net.minecraft.entity.Entity
+accessible method net/minecraft/entity/Entity getFlag (I)Z
+accessible method net/minecraft/entity/Entity setFlag (IZ)V
+
+# net.minecraft.client.gui.screen.Screen
+accessible method net/minecraft/client/gui/screen/Screen addDrawableChild (Lnet/minecraft/client/gui/Element;)Lnet/minecraft/client/gui/Element;
+accessible method net/minecraft/client/gui/screen/Screen remove (Lnet/minecraft/client/gui/Element;)V
+accessible field net/minecraft/client/gui/screen/Screen children Ljava/util/List;
+accessible field net/minecraft/client/gui/screen/Screen drawables Ljava/util/List;
+accessible field net/minecraft/client/gui/screen/Screen selectables Ljava/util/List;

@@ -82,8 +82,10 @@ public class PartyHud extends DrawableHelper {
             renderPartyMember(matrices, partyMembers.get(i), i + indexOffset);
         }
 
-        for (PartyPing ping : partyPings.values()) {
-            renderPartyPing(matrices, ping);
+        if(partyPings != null) {
+            for (PartyPing ping : partyPings.values()) {
+                renderPartyPing(matrices, ping);
+            }
         }
     }
 

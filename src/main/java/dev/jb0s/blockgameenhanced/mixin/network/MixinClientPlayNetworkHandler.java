@@ -12,6 +12,7 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.NetworkThreadUtils;
+import net.minecraft.network.packet.c2s.play.CloseHandledScreenC2SPacket;
 import net.minecraft.network.packet.s2c.play.*;
 import net.minecraft.util.ActionResult;
 import net.minecraft.world.World;
@@ -50,15 +51,10 @@ public class MixinClientPlayNetworkHandler {
         ClientPlayNetworkHandler thisHandler = (ClientPlayNetworkHandler) (Object) this;
         NetworkThreadUtils.forceMainThread(packet, thisHandler, client);
 
-        ScreenReceivedInventoryEvent.EVENT.invoker().screenReceivedInventory(packet);
-
-        // todo: move this to an event
-        /*PartyManager pm = BlockgameEnhancedClient.getPartyManager();
-        boolean pmAcceptedThisPacket = pm.handleInventoryUpdate(packet);
-        boolean shouldBeDiscardedForPm = pm.isWaitingForPartyScreenOpen() || (pm.isWaitingForPartyScreenContent() && pm.getCurrentPayloadSyncId() != packet.getSyncId());
-        if(pmAcceptedThisPacket || shouldBeDiscardedForPm) {
+        ActionResult result = ScreenReceivedInventoryEvent.EVENT.invoker().screenReceivedInventory(packet);
+        if(result != ActionResult.PASS) {
             ci.cancel();
-        }*/
+        }
     }
 
     @Inject(method = "onOpenScreen", at = @At("HEAD"), cancellable = true)
@@ -66,20 +62,15 @@ public class MixinClientPlayNetworkHandler {
         ClientPlayNetworkHandler thisHandler = (ClientPlayNetworkHandler) (Object) this;
         NetworkThreadUtils.forceMainThread(packet, thisHandler, client);
 
-        ScreenOpenedEvent.EVENT.invoker().screenOpened(packet);
-
-        // todo: move this to the new event
-        /*PartyManager pm = BlockgameEnhancedClient.getPartyManager();
-        boolean pmAcceptedThisPacket = pm.handleScreenOpen(packet);
-        boolean shouldBeDiscardedForPm = (pm.isWaitingForPartyScreenOpen() || pm.isWaitingForPartyScreenContent()) && pm.getCurrentPayloadSyncId() != packet.getSyncId();
-        if(pmAcceptedThisPacket || shouldBeDiscardedForPm) {
+        ActionResult result = ScreenOpenedEvent.EVENT.invoker().screenOpened(packet);
+        if(result != ActionResult.PASS) {
             // Send a packet to the server saying we have closed the window, although we never opened it
             CloseHandledScreenC2SPacket pak = new CloseHandledScreenC2SPacket(packet.getSyncId());
             thisHandler.sendPacket(pak);
 
             // We're good now, cancel the rest of the packet handling
             ci.cancel();
-        }*/
+        }
     }
 
     @Inject(method = "onGameMessage", at = @At("HEAD"), cancellable = true)

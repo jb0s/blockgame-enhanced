@@ -8,7 +8,9 @@ import dev.jb0s.blockgameenhanced.event.bossbattle.BossBattleCommencedEvent;
 import dev.jb0s.blockgameenhanced.event.bossbattle.BossBattleEndedEvent;
 import dev.jb0s.blockgameenhanced.event.dayphase.DayPhaseChangedEvent;
 import dev.jb0s.blockgameenhanced.event.entity.player.PlayerRespawnedEvent;
+import dev.jb0s.blockgameenhanced.event.gamefeature.challenges.ChallengeStartedEvent;
 import dev.jb0s.blockgameenhanced.gamefeature.GameFeature;
+import dev.jb0s.blockgameenhanced.gamefeature.challenges.Challenge;
 import dev.jb0s.blockgameenhanced.gamefeature.jukebox.json.JsonMusic;
 import dev.jb0s.blockgameenhanced.gamefeature.jukebox.json.JsonMusicList;
 import dev.jb0s.blockgameenhanced.gamefeature.jukebox.types.BattleMusic;
@@ -37,6 +39,7 @@ public class JukeboxGameFeature extends GameFeature {
     private MusicSoundInstance soundInstance;
     private Zone currentZone;
     private ZoneBoss currentBoss;
+    private Challenge currentChallenge;
 
     @Getter
     private JsonMusicList musicList;
@@ -66,6 +69,10 @@ public class JukeboxGameFeature extends GameFeature {
 
         // Play zone music when player enters zone.
         PlayerEnteredZoneEvent.EVENT.register((client, playerEntity, zone) -> {
+            if(currentChallenge != null) {
+                return;
+            }
+
             if(zone.getMusic() != null) {
                 playMusic(zone.getMusic(), false, 0);
             }
@@ -76,16 +83,24 @@ public class JukeboxGameFeature extends GameFeature {
 
         // Stop any zone music when player enters wilderness.
         EnteredWildernessEvent.EVENT.register((client, playerEntity) -> {
-            stopMusic(true);
+            if(currentChallenge == null) {
+                stopMusic(true);
+            }
         });
 
         // Play boss music when a battle has begun.
         BossBattleCommencedEvent.EVENT.register(((boss) -> {
-            playMusic(boss.getMusic(), false, 0);
+            if(currentChallenge == null) {
+                playMusic(boss.getMusic(), false, 0);
+            }
         }));
 
         // Refresh the music when the player defeats a boss so that the victory music plays.
         BossBattleEndedEvent.EVENT.register(((boss) -> {
+            if(currentChallenge != null) {
+                return;
+            }
+
             if(currentMusic instanceof BattleMusic) {
                 refresh();
             }
@@ -104,6 +119,12 @@ public class JukeboxGameFeature extends GameFeature {
             if(music != null) {
                 playMusic(music.getId(), true, 0);
             }
+        }));
+
+        // Play challenge music when player is doing a challenge
+        ChallengeStartedEvent.EVENT.register((challenge -> {
+            currentChallenge = challenge;
+            playMusic("mus_challenge_speedrun", false, 0);
         }));
     }
 

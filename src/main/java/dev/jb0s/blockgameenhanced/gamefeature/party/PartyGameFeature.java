@@ -5,8 +5,12 @@ import dev.jb0s.blockgameenhanced.BlockgameEnhancedClient;
 import dev.jb0s.blockgameenhanced.event.chat.ReceiveChatMessageEvent;
 import dev.jb0s.blockgameenhanced.event.chat.SendChatMessageEvent;
 import dev.jb0s.blockgameenhanced.event.entity.otherplayer.OtherPlayerTickEvent;
+import dev.jb0s.blockgameenhanced.event.gamefeature.party.PartyPingEvent;
 import dev.jb0s.blockgameenhanced.event.party.PartyUpdatedEvent;
+import dev.jb0s.blockgameenhanced.event.screen.ScreenOpenedEvent;
+import dev.jb0s.blockgameenhanced.event.screen.ScreenReceivedInventoryEvent;
 import dev.jb0s.blockgameenhanced.gamefeature.GameFeature;
+import dev.jb0s.blockgameenhanced.helper.DebugHelper;
 import dev.jb0s.blockgameenhanced.helper.MathHelper;
 import dev.jb0s.blockgameenhanced.helper.TimeHelper;
 import lombok.Getter;
@@ -14,6 +18,7 @@ import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.network.OtherClientPlayerEntity;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.math.MatrixStack;
@@ -36,22 +41,15 @@ import net.minecraft.util.math.Vec3d;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class PartyGameFeature extends GameFeature {
-    private static final int PARTY_UPDATE_INTERVAL = 200; // 200 ticks (10 seconds)
     private static final String PARTY_LIST_SCREEN_NAME = "Party";
-    private static final String PARTY_CREATION_SCREEN_NAME = "Party Creation";
     private static final SoundEvent PARTY_MEMBER_DEATH_SOUND = new SoundEvent(new Identifier("blockgame", "mus.gui.combat.death"));
-    private static final SoundEvent PING_LOCATION_SOUND = new SoundEvent(new Identifier("blockgame", "mus.party.ping.block"));
-    private static final SoundEvent PING_ITEM_SOUND = new SoundEvent(new Identifier("blockgame", "mus.party.ping.item"));
-
-    // todo this is kind of hacky I don't like it. replace with a better system soon?
-    private static final String[] TRIGGER_PHRASES = new String[] {
-            "You sent a party invite to #",
-            "# joined your party!",
-            "You successfully joined #",
-            "You were transfered the party ownership."
-    };
+    private static final String JOINED_PARTY_MESSAGE_REGEX = "(.*) joined your party!";
+    private static final String LEFT_PARTY_MESSAGE_REGEX = "(.*) has left the party.";
+    private static final String LEFT_GAME_MESSAGE_REGEX = "(.*) left the game";
 
     @Getter
     private ArrayList<PartyMember> partyMembers;
@@ -59,18 +57,8 @@ public class PartyGameFeature extends GameFeature {
     @Getter
     private HashMap<PartyMember, PartyPing> partyPings;
 
-    // Party Updates
-    private boolean allowedToQueryServer;
-    private int ticksSinceLastUpdate;
-
     @Getter
     private int currentPayloadSyncId = -1;
-
-    @Getter
-    private boolean isWaitingForPartyScreenOpen;
-
-    @Getter
-    private boolean isWaitingForPartyScreenContent;
 
     @Override
     public void init(MinecraftClient minecraftClient, BlockgameEnhancedClient blockgameClient) {
@@ -78,40 +66,25 @@ public class PartyGameFeature extends GameFeature {
 
         // Subscribe to events
         ReceiveChatMessageEvent.EVENT.register(((client1, message) -> handleChatMessage(message)));
-        SendChatMessageEvent.EVENT.register(((client1, message) -> handleSentChatMessage(message)));
-        OtherPlayerTickEvent.EVENT.register(((client1, otherPlayer) -> handlePlayerHealth(otherPlayer.getGameProfile().getName(), (int)otherPlayer.getHealth(), (int)otherPlayer.getMaxHealth(), otherPlayer.isAlive())));
+        OtherPlayerTickEvent.EVENT.register(((client1, otherPlayer) -> handlePlayerHealth(otherPlayer, (int)otherPlayer.getHealth(), (int)otherPlayer.getMaxHealth(), otherPlayer.isAlive())));
         WorldRenderEvents.END.register(ctx -> preRenderPings(ctx.matrixStack(), ctx.projectionMatrix(), ctx.tickDelta()));
+        ScreenOpenedEvent.EVENT.register(this::handleScreenOpen);
+        ScreenReceivedInventoryEvent.EVENT.register(this::handleInventoryUpdate);
     }
 
     @Override
     public void tick() {
         // If we've gotten disconnected or are not allowed to query the server,
         // we should reset our state completely, immediately.
-        if(getMinecraftClient().world == null || !isAllowedToQueryServer()) {
+        if(getMinecraftClient().world == null) {
             if(partyMembers != null) {
                 // We need to invoke this event to let all other managers know the party disbanded due to a disconnect
                 PartyUpdatedEvent.EVENT.invoker().partyUpdated(0);
             }
 
-            ticksSinceLastUpdate = 0;
-            isWaitingForPartyScreenOpen = false;
-            isWaitingForPartyScreenContent = false;
-            currentPayloadSyncId = 0;
+            currentPayloadSyncId = -1;
             partyMembers = null;
             partyPings = null;
-            return;
-        }
-
-        // Request a party update every time we exceed the interval,
-        // unless the player currently has a screen up. This is to prevent desync.
-        boolean preventUpdates = getMinecraftClient().currentScreen != null;
-        if(!isWaitingForPartyScreenOpen && !isWaitingForPartyScreenContent) {
-            ticksSinceLastUpdate++;
-
-            if(ticksSinceLastUpdate >= PARTY_UPDATE_INTERVAL && !preventUpdates) {
-                ticksSinceLastUpdate = 0;
-                requestPartyPayload();
-            }
         }
     }
 
@@ -129,42 +102,24 @@ public class PartyGameFeature extends GameFeature {
      * @param packet The incoming packet data.
      * @return Whether this packet had info that the party manager needed.
      */
-    public boolean handleScreenOpen(OpenScreenS2CPacket packet) {
-
+    public ActionResult handleScreenOpen(OpenScreenS2CPacket packet) {
         // If the screen we've just opened is anything but a generic grid that could display party info, we don't wanna mess with the screens. It breaks shit.
-        if(packet.getScreenHandlerType() != ScreenHandlerType.GENERIC_9X3 &&
-                packet.getScreenHandlerType() != ScreenHandlerType.GENERIC_9X6) {
-            return false;
-        }
-
-        // This is a weird one. If a menu is opened and an inventory packet for
-        // a different menu comes through, it causes a shit ton of desync. The
-        // only way to mitigate this without errors is to prevent any menus from
-        // opening while we are waiting for the party inventory content packet.
-        if(isWaitingForPartyScreenContent) {
-            return true;
-        }
-
-        // If we're not waiting for a screen to open, we don't care. It's the user opening a menu.
-        if(!isWaitingForPartyScreenOpen) {
-            return false;
+        if(packet.getScreenHandlerType() != ScreenHandlerType.GENERIC_9X3 && packet.getScreenHandlerType() != ScreenHandlerType.GENERIC_9X6) {
+            return ActionResult.PASS;
         }
 
         int syncId = packet.getSyncId();
         String name = packet.getName().asString();
-        boolean isPartyCreationScreen = name.startsWith(PARTY_CREATION_SCREEN_NAME);
         boolean isPartyMembersScreen = name.startsWith(PARTY_LIST_SCREEN_NAME);
 
         // Disregard this packet if it's unrelated to the party manager
-        if(!isPartyCreationScreen && !isPartyMembersScreen) {
-            return false;
+        if(!isPartyMembersScreen) {
+            return ActionResult.PASS;
         }
 
         // Update values so we can wait for the inventory content packet
         currentPayloadSyncId = syncId;
-        isWaitingForPartyScreenOpen = false;
-        isWaitingForPartyScreenContent = true;
-        return true;
+        return ActionResult.PASS;
     }
 
     /**
@@ -172,15 +127,10 @@ public class PartyGameFeature extends GameFeature {
      * @param packet The incoming packet data.
      * @return Whether this packet had info that the party manager needed.
      */
-    public boolean handleInventoryUpdate(InventoryS2CPacket packet) {
-        // If we weren't waiting for an inventory content packet, this packet is worthless to us.
-        if(!isWaitingForPartyScreenContent) {
-            return false;
-        }
-
+    public ActionResult handleInventoryUpdate(InventoryS2CPacket packet) {
         // If this inventory update is not for our party window, disregard it.
         if(currentPayloadSyncId != packet.getSyncId()) {
-            return false;
+            return ActionResult.PASS;
         }
 
         // This packet is useful, start scanning for all player heads in the menu.
@@ -236,14 +186,8 @@ public class PartyGameFeature extends GameFeature {
             }
         }
 
-        // Disallow any further requests if we got no party members
-        if(partyMembers == null) {
-            allowedToQueryServer = false;
-        }
-
-        // Stop waiting for packets, this packet had all the info we needed.
-        isWaitingForPartyScreenContent = false;
-        return true;
+        currentPayloadSyncId = -1;
+        return ActionResult.PASS;
     }
 
     /**
@@ -254,6 +198,11 @@ public class PartyGameFeature extends GameFeature {
         if(partyMembers == null) {
             partyMembers = new ArrayList<>();
             partyPings = new HashMap<>();
+        }
+
+        // Don't allow duplicate party members
+        if(isPlayerInParty(player)) {
+            return;
         }
 
         // Add to party
@@ -268,7 +217,8 @@ public class PartyGameFeature extends GameFeature {
         }
 
         // Invoke party updated event
-        PartyUpdatedEvent.EVENT.invoker().partyUpdated(partyMembers.size());
+        PartyUpdatedEvent.EVENT.invoker().partyUpdated(partyMembers.size()); // todo remove this
+        dev.jb0s.blockgameenhanced.event.gamefeature.party.PartyUpdatedEvent.EVENT.invoker().partyUpdatedEvent(this);
     }
 
     /**
@@ -283,7 +233,6 @@ public class PartyGameFeature extends GameFeature {
         if(partyMembers.size() == 1) {
             partyMembers = null;
             partyPings = null;
-            allowedToQueryServer = false;
 
             // Toast notification saying that party disbanded
             Text toastTitle = new TranslatableText("hud.blockgame.toast.party.disbanded.title");
@@ -291,7 +240,8 @@ public class PartyGameFeature extends GameFeature {
             getMinecraftClient().getToastManager().add(new SystemToast(SystemToast.Type.PERIODIC_NOTIFICATION, toastTitle, toastDescription));
 
             // Invoke party updated event
-            PartyUpdatedEvent.EVENT.invoker().partyUpdated(0);
+            PartyUpdatedEvent.EVENT.invoker().partyUpdated(0); // todo remove this
+            dev.jb0s.blockgameenhanced.event.gamefeature.party.PartyUpdatedEvent.EVENT.invoker().partyUpdatedEvent(this);
         }
         else {
             partyMembers.remove(member);
@@ -303,29 +253,36 @@ public class PartyGameFeature extends GameFeature {
             getMinecraftClient().getToastManager().add(new SystemToast(SystemToast.Type.PERIODIC_NOTIFICATION, toastTitle, toastDescription));
 
             // Invoke party updated event
-            PartyUpdatedEvent.EVENT.invoker().partyUpdated(partyMembers.size());
+            PartyUpdatedEvent.EVENT.invoker().partyUpdated(partyMembers.size()); // todo remove this
+            dev.jb0s.blockgameenhanced.event.gamefeature.party.PartyUpdatedEvent.EVENT.invoker().partyUpdatedEvent(this);
         }
     }
 
     /**
      * Handle an incoming HP update from a player entity in the world.
      * Every ticking player entity sends this data to us, we only care about our party members though.
-     * @param playerName The name of the player that is sending us their health data.
+     * @param player The entity of the player that is sending us their health data.
      * @param health The amount of health that they have. This is a vanilla value, 0 - 20.
      * @param maxHealth The maximum amount of health that they have. This is usually 20, but can be increased with max hp boost.
      * @param isAlive Whether the player entity is considered "alive" or not. This is more trustworthy than checking (health == 0).
      */
-    public void handlePlayerHealth(String playerName, int health, int maxHealth, boolean isAlive) {
+    public void handlePlayerHealth(OtherClientPlayerEntity player, int health, int maxHealth, boolean isAlive) {
         if(partyMembers == null)
             return;
 
         // We don't care about this player's health if we're not in a party with them
-        PartyMember member = getPartyMember(playerName);
-        if(member == null)
+        PartyMember member = getPartyMember(player.getGameProfile().getName());
+        if(member == null) {
+            // Unset glowing flag if set
+            if(player.getFlag(2)) {
+                player.setFlag(2, false);
+                DebugHelper.debugMessage("setting flag 2 to false");
+            }
             return;
+        }
 
-        if(maxHealth > 50) {
-            // Vanilla health in terms of Blockgame should never ever reach anything above 50 typically. That would be 25 hearts.
+        if(maxHealth > 55) {
+            // Vanilla health in terms of Blockgame should never ever reach anything above 55 typically. That would be 27.5 hearts.
             // In case the server gives us an absurd value, we can just cap it down to 20 until it comes to its senses.
             maxHealth = 20;
         }
@@ -334,6 +291,12 @@ public class PartyGameFeature extends GameFeature {
         member.setHealth(health);
         member.setMaxHealth(maxHealth);
         member.setLastUpdateSecond(TimeHelper.getSystemTimeUnix());
+
+        // Set entity glowing flag if unset
+        if(!player.getFlag(2)) {
+            player.setFlag(2, true);
+            DebugHelper.debugMessage("setting flag 2 to true");
+        }
 
         // Death / respawn checks
         if(!isAlive && member.isAlive()) {
@@ -357,17 +320,28 @@ public class PartyGameFeature extends GameFeature {
      * @param message The chat message that was sent.
      */
     public ActionResult handleChatMessage(String message) {
-        for (String triggerStatement : TRIGGER_PHRASES) {
-            boolean shouldCheckStart = triggerStatement.endsWith("#");
-            String triggerString = triggerStatement.replace("#", "");
+        Pattern joinedPattern = Pattern.compile(JOINED_PARTY_MESSAGE_REGEX);
+        Pattern leftPattern = Pattern.compile(LEFT_PARTY_MESSAGE_REGEX);
+        Pattern leftGamePattern = Pattern.compile(LEFT_GAME_MESSAGE_REGEX);
+        Matcher joinedMatcher = joinedPattern.matcher(message);
+        Matcher leftMatcher = leftPattern.matcher(message);
+        Matcher leftGameMatcher = leftGamePattern.matcher(message);
 
-            // If the message we received contains an update trigger, update the ticksSinceLastUpdate to trigger a refresh ASAP.
-            boolean messageContainsTrigger = (shouldCheckStart && message.startsWith(triggerString)) || (!shouldCheckStart && message.endsWith(triggerString));
-            if(messageContainsTrigger) {
-                allowedToQueryServer = true;
-                ticksSinceLastUpdate = PARTY_UPDATE_INTERVAL;
-                return ActionResult.PASS;
+        // Check for chat notifications
+        if(joinedMatcher.matches()) {
+            String playerName = joinedMatcher.group(1);
+            PlayerListEntry ple = getMinecraftClient().getNetworkHandler().getPlayerListEntry(playerName);
+            handlePlayerJoinedParty(ple);
+            return ActionResult.PASS;
+        }
+        if(leftMatcher.matches() || leftGameMatcher.matches()) {
+            String playerName = (leftMatcher.matches() ? leftMatcher : leftGameMatcher).group(1);
+            PartyMember member = getPartyMember(playerName);
+            if(member != null) {
+                handlePlayerExitedParty(member);
             }
+
+            return ActionResult.PASS;
         }
 
         // Check for pings
@@ -403,6 +377,7 @@ public class PartyGameFeature extends GameFeature {
                     getMinecraftClient().world.playSound(clampedPos.x, clampedPos.y, clampedPos.z, SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.PLAYERS, 0.65f, 0.75f, false);
                 }
 
+                PartyPingEvent.EVENT.invoker().partyPingEvent(this);
                 return ActionResult.SUCCESS;
             }
 
@@ -410,30 +385,12 @@ public class PartyGameFeature extends GameFeature {
                 String pmb = args[0].substring(8, args[0].indexOf(":"));
                 PartyMember partyMember = getPartyMember(pmb);
                 partyPings.remove(partyMember);
+                PartyPingEvent.EVENT.invoker().partyPingEvent(this);
                 return ActionResult.SUCCESS;
             }
         }
 
         return ActionResult.PASS;
-    }
-
-    public void handleSentChatMessage(String message) {
-        // If the message that was sent starts with /party, and we're not allowed to query right now,
-        // we want to allow querying at least once and start the query timer from 0. This gives the server
-        // time to send us the party window. I know this is a race condition, however it is one that we likely won't lose.
-        if(message.startsWith("/party") && !isAllowedToQueryServer()) {
-            allowedToQueryServer = true;
-            ticksSinceLastUpdate = 0;
-        }
-    }
-
-    /**
-     * Sends a /party command to the server and begins waiting for a response.
-     */
-    private void requestPartyPayload() {
-        isWaitingForPartyScreenOpen = true;
-        isWaitingForPartyScreenContent = false;
-        getMinecraftClient().player.sendChatMessage("/party");
     }
 
     /**
@@ -508,13 +465,5 @@ public class PartyGameFeature extends GameFeature {
      */
     public boolean isPlayerInParty(AbstractClientPlayerEntity player) {
         return isPlayerInParty(player.getGameProfile().getName());
-    }
-
-    /**
-     * Determines whether we are allowed to query the server.
-     * We should be allowed to query the server always if we're in a party, if not we have no reason to.
-     */
-    private boolean isAllowedToQueryServer() {
-        return partyMembers != null || allowedToQueryServer;
     }
 }

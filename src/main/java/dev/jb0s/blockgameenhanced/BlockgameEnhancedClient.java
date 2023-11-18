@@ -2,6 +2,7 @@ package dev.jb0s.blockgameenhanced;
 
 import dev.jb0s.blockgameenhanced.gamefeature.GameFeature;
 import dev.jb0s.blockgameenhanced.gamefeature.bettergui.BetterGUIGameFeature;
+import dev.jb0s.blockgameenhanced.gamefeature.challenges.ChallengesGameFeature;
 import dev.jb0s.blockgameenhanced.gamefeature.dayphase.DayPhaseGameFeature;
 import dev.jb0s.blockgameenhanced.gamefeature.discordrpc.DiscordRPCGameFeature;
 import dev.jb0s.blockgameenhanced.gamefeature.hotkey.HotkeyGameFeature;
@@ -105,6 +106,7 @@ public class BlockgameEnhancedClient implements ClientModInitializer {
         loadGameFeature(new PartyGameFeature());
         loadGameFeature(new UpdatePrompterGameFeature());
         loadGameFeature(new JukeboxGameFeature());
+        loadGameFeature(new ChallengesGameFeature());
 
         // Tick all game features after client ticks
         ClientTickEvents.END_CLIENT_TICK.register((client) -> {

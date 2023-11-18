@@ -83,6 +83,13 @@
 				"blockgame:mus.zone.arena.battle_horseman",
 				"blockgame:mus.zone.sunken_cells.victory"
 			]
+		},
+		{
+			"id": "mus_challenge_speedrun",
+			"type": "Default",
+			"soundIds": [
+				"blockgame:mus.challenge.speedrun"
+			]
 		}
 	]
 }

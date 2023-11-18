@@ -104,6 +104,13 @@
 			"blockgame:music/egg/hb_terry"
 		]
 	},
+
+	"mus.challenge.speedrun": {
+		"subtitle": "A Hat in Time OST - Collapsing Time Rift",
+		"sounds": [
+			"blockgame:music/challenge/ahit_collapse_ph"
+		]
+	},
 	
 	"mus.gui.combat.death": {
 		"subtitle": "Player dies",
