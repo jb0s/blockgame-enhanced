@@ -276,7 +276,6 @@ public class PartyGameFeature extends GameFeature {
             // Unset glowing flag if set
             if(player.getFlag(2)) {
                 player.setFlag(2, false);
-                DebugHelper.debugMessage("setting flag 2 to false");
             }
             return;
         }
@@ -295,7 +294,6 @@ public class PartyGameFeature extends GameFeature {
         // Set entity glowing flag if unset
         if(!player.getFlag(2)) {
             player.setFlag(2, true);
-            DebugHelper.debugMessage("setting flag 2 to true");
         }
 
         // Death / respawn checks
