@@ -42,10 +42,6 @@ public class MMOItemsGameFeature extends GameFeature {
     private int heartbeatLatency;
 
     @Getter
-    @Setter
-    private int preLoginLatency;
-
-    @Getter
     private boolean isClientCaughtUp;
 
     private final Map<String, MMOItemsCooldownEntry> cooldownEntryMap = Maps.newHashMap();
@@ -113,11 +109,11 @@ public class MMOItemsGameFeature extends GameFeature {
 
         // Eventually we want to stop using the pre-login ping, so once the client is caught up we can stop using that.
         // Additionally, if 3500 ticks have passed, and we're still not caught up, the pre-login ping might have been a fluke. Discard it.
-        if((tick > 3500 && (preLoginLatency - heartbeatLatency > LATENCY_MARGIN_OF_ERROR)) && !isClientCaughtUp) {
+        if((tick > 3500 && (BlockgameEnhancedClient.getPreloginLatency() - heartbeatLatency > LATENCY_MARGIN_OF_ERROR)) && !isClientCaughtUp) {
             isClientCaughtUp = true;
             //catchUpReason = "Pre-login appears to be a fluke";
         }
-        else if(preLoginLatency - heartbeatLatency < LATENCY_MARGIN_OF_ERROR) {
+        else if(BlockgameEnhancedClient.getPreloginLatency() - heartbeatLatency < LATENCY_MARGIN_OF_ERROR) {
             isClientCaughtUp = true;
             //catchUpReason = "Client is reasonable";
         }
@@ -302,8 +298,8 @@ public class MMOItemsGameFeature extends GameFeature {
      */
     public int getLatency() {
         int hb = heartbeatLatency;
-        int pl = preLoginLatency;
-        int dif = preLoginLatency - heartbeatLatency;
+        int pl = BlockgameEnhancedClient.getPreloginLatency();
+        int dif = BlockgameEnhancedClient.getPreloginLatency() - heartbeatLatency;
         return (dif > LATENCY_MARGIN_OF_ERROR && !isClientCaughtUp) ? pl : hb;
     }
 
