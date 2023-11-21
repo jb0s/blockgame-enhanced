@@ -56,6 +56,7 @@ public class ImmersivePickup extends ImmersiveWidget {
         int iy = y + ((getHeight() / 2) - (ITEM_SIZE / 2));
         itemRenderer.renderGuiItemIcon(itemStack, ix, iy);
 
+        textRenderer.drawWithShadow(matrices, getInactivityTicks() + "", tx, ty + ITEM_SIZE, 0xFFFFFF);
         RenderSystem.disableBlend();
     }
 

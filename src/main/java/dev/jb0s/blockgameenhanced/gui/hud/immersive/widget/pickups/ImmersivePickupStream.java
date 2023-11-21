@@ -6,7 +6,6 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -20,20 +19,14 @@ public class ImmersivePickupStream extends ImmersiveWidget {
 
     @Override
     public void render(MatrixStack matrices, int x, int y, float tickDelta) {
-        int i = 0;
-
         if(!pickupHashMap.isEmpty()) {
+            ImmersivePickup[] list = getPickupsSafe();
 
-            for(Iterator<Map.Entry<Text, ImmersivePickup>> it = pickupHashMap.entrySet().iterator(); it.hasNext(); ) {
-                Map.Entry<Text, ImmersivePickup> entry = it.next();
-                int sx = x - entry.getValue().getWidth();
-                int sy = y + ((entry.getValue().getHeight() + 5) * i);
-                entry.getValue().render(matrices, sx, sy, tickDelta);
-                i++;
-
-                if(entry.getValue().getInactivityTicks() >= 120) {
-                    it.remove();
-                }
+            for (int i = 0; i < list.length; i++) {
+                ImmersivePickup entry = list[i];
+                int sx = x - entry.getWidth();
+                int sy = y + ((entry.getHeight() + 5) * i);
+                entry.render(matrices, sx, sy, tickDelta);
             }
         }
     }
@@ -57,8 +50,17 @@ public class ImmersivePickupStream extends ImmersiveWidget {
 
     @Override
     public void tick() {
-        for (Map.Entry<Text, ImmersivePickup> entry : pickupHashMap.entrySet()) {
-            entry.getValue().tick();
+        if(pickupHashMap.isEmpty()) {
+            return;
+        }
+
+        // Clear inactive shit
+        pickupHashMap.entrySet().removeIf(x -> x.getValue().getInactivityTicks() > 120);
+
+        // Tick pickups after
+        ImmersivePickup[] list = getPickupsSafe();
+        for (ImmersivePickup immersivePickup : list) {
+            immersivePickup.tick();
         }
     }
 
@@ -78,5 +80,13 @@ public class ImmersivePickupStream extends ImmersiveWidget {
 
         ImmersivePickup pickup = new ImmersivePickup(getInGameHud(), itemStack.getName(), itemStack, amount);
         pickupHashMap.put(itemStack.getName(), pickup);
+    }
+
+    /**
+     * Gets a clone of the pickup hashmap to avoid multithread madness.
+     * todo: Replace with a better solution that doesn't impact memory. (not like this game isn't garbage memory wise anyways)
+     */
+    private ImmersivePickup[] getPickupsSafe() {
+        return pickupHashMap.values().toArray(new ImmersivePickup[0]);
     }
 }
