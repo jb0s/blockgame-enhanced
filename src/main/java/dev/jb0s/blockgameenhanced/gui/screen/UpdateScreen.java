@@ -45,16 +45,24 @@ public class UpdateScreen extends Screen {
         renderBackground(matrices);
 
         // Render message
-        drawCenteredText(matrices, textRenderer, title, width / 2, 50, 16777215);
-        drawCenteredText(matrices, textRenderer, MESSAGE_TEXT_1, width / 2, 70, 16777215);
-        drawCenteredText(matrices, textRenderer, MESSAGE_TEXT_2, width / 2, 70 + textRenderer.fontHeight + 3, 16777215);
+        drawCenteredText(matrices, textRenderer, title, width / 2, 50, 0xFFFFFF);
+        drawCenteredText(matrices, textRenderer, MESSAGE_TEXT_1, width / 2, 70, 0xFFFFFF);
+        drawCenteredText(matrices, textRenderer, MESSAGE_TEXT_2, width / 2, 70 + textRenderer.fontHeight + 3, 0xFFFFFF);
+        drawCenteredText(matrices, textRenderer, Text.of("NOTE: You will be redirected to Modrinth from now on. Hold shift to use GitHub."), width / 2, 70 + ((textRenderer.fontHeight + 3) * 2) + 7, 0x757575);
 
         super.render(matrices, mouseX, mouseY, delta);
     }
 
     protected void addButtons(int y) {
         addDrawableChild(new ButtonWidget(width / 2 - 155, y, 150, 20, UPDATE_BUTTON_TEXT, (button) -> {
-            Util.getOperatingSystem().open(release.html_url);
+            if(hasShiftDown()) {
+                Util.getOperatingSystem().open(release.html_url);
+            }
+            else {
+                String ver = release.tag_name.substring(1);
+                String url = String.format("https://modrinth.com/mod/blockgame-enhanced/versions/%s", ver);
+                Util.getOperatingSystem().open(url);
+            }
         }));
         addDrawableChild(new ButtonWidget(width / 2 - 155 + 160, y, 150, 20, UPDATE_SNOOZE_TEXT, (button) -> {
             answer();
