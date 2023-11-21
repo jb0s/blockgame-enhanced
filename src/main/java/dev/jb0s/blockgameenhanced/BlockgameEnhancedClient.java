@@ -62,6 +62,7 @@ public class BlockgameEnhancedClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         BlockgameEnhanced.LOGGER.info("Welcome to Blockgame Enhanced");
+        BlockgameEnhanced.LOGGER.info("Run directory: " + MinecraftClient.getInstance().runDirectory.getAbsolutePath());
 
         configManager = new ConfigManager();
         updateManager = new UpdateManager();

@@ -24,6 +24,8 @@ configurations {
 
 dependencies {
     include(implementation('io.github.CDAGaming:DiscordIPC:0.6.1'))
+    include(implementation("com.kohlschutter.junixsocket:junixsocket-common:2.8.3"))
+    include(implementation("com.kohlschutter.junixsocket:junixsocket-native-common:2.8.3"))
 
     // Project Lombok
     compileOnly 'org.projectlombok:lombok:1.18.26'

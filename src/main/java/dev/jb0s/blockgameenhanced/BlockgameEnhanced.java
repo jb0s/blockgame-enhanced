@@ -8,6 +8,7 @@ import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.client.MinecraftClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,7 +57,7 @@ public class BlockgameEnhanced implements ModInitializer {
         // Extract shit if OptiFine
         if(BlockgameEnhanced.isOptifinePresent()) {
             try {
-                String destPath = PathHelper.getMinecraftFolderPath().toString() + "/saves/Empty";
+                String destPath = MinecraftClient.getInstance().runDirectory.getAbsolutePath() + "/saves/Empty";
 
                 // If we have already installed OptiFine Compat, we don't need to do so again
                 if(Files.exists(Path.of(destPath))) {
