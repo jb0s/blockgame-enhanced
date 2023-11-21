@@ -8,7 +8,7 @@ import java.nio.file.Path;
 
 public class PathHelper {
     private static final String BLOCKGAME_FOLDER_NAME = "blockgame";
-    private static final Path GAME_FOLDER_PATH = Path.of(FabricLoader.getInstance().getConfigDir() + "/" + BLOCKGAME_FOLDER_NAME + "/");
+    private static final Path GAME_FOLDER_PATH = Path.of(FabricLoader.getInstance().getConfigDir() + "/" + BLOCKGAME_FOLDER_NAME);
 
     @SneakyThrows
     public static Path getBlockgamePath() {
