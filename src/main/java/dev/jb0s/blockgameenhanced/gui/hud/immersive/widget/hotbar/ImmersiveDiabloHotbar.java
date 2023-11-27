@@ -58,7 +58,7 @@ public class ImmersiveDiabloHotbar extends ImmersiveWidget {
         }
 
         // Gather info
-        boolean hasVehicle = playerEntity.hasVehicle();
+        boolean hasVehicle = playerEntity.hasVehicle() && playerEntity.getVehicle() instanceof LivingEntity;
 
         // Prepare for drawing
         getInGameHud().client.getProfiler().push("immersiveHotbar");
