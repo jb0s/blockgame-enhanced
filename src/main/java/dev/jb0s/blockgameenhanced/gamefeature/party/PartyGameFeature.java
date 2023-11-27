@@ -15,9 +15,11 @@ import dev.jb0s.blockgameenhanced.helper.DebugHelper;
 import dev.jb0s.blockgameenhanced.helper.MathHelper;
 import dev.jb0s.blockgameenhanced.helper.TimeHelper;
 import lombok.Getter;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.toast.SystemToast;
@@ -73,22 +75,7 @@ public class PartyGameFeature extends GameFeature {
         ScreenOpenedEvent.EVENT.register(this::handleScreenOpen);
         ScreenReceivedInventoryEvent.EVENT.register(this::handleInventoryUpdate);
         PingHotkeyPressedEvent.EVENT.register(this::tryPing);
-    }
-
-    @Override
-    public void tick() {
-        // If we've gotten disconnected or are not allowed to query the server,
-        // we should reset our state completely, immediately.
-        if(getMinecraftClient().world == null) {
-            if(partyMembers != null) {
-                // We need to invoke this event to let all other managers know the party disbanded due to a disconnect
-                PartyUpdatedEvent.EVENT.invoker().partyUpdatedEvent(this);
-            }
-
-            currentPayloadSyncId = -1;
-            partyMembers = null;
-            partyPings = null;
-        }
+        ClientPlayConnectionEvents.DISCONNECT.register(this::handleDisconnect);
     }
 
     public void preRenderPings(MatrixStack matrices, Matrix4f projectionMatrix, float tickDelta) {
@@ -98,6 +85,18 @@ public class PartyGameFeature extends GameFeature {
         for(PartyPing ping : partyPings.values()) {
             ping.setScreenSpacePos(MathHelper.worldToScreenSpace(ping.getLocation(), x, projectionMatrix));
         }
+    }
+
+    /**
+     * Handles disconnection to clear all party info.
+     */
+    private void handleDisconnect(ClientPlayNetworkHandler clientPlayNetworkHandler, MinecraftClient client) {
+        currentPayloadSyncId = -1;
+        partyMembers = null;
+        partyPings = null;
+
+        // We need to invoke this event to let all other managers know the party disbanded due to a disconnect
+        PartyUpdatedEvent.EVENT.invoker().partyUpdatedEvent(this);
     }
 
     /**
