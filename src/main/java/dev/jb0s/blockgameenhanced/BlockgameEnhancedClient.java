@@ -7,6 +7,7 @@ import dev.jb0s.blockgameenhanced.gamefeature.dayphase.DayPhaseGameFeature;
 import dev.jb0s.blockgameenhanced.gamefeature.discordrpc.DiscordRPCGameFeature;
 import dev.jb0s.blockgameenhanced.gamefeature.hotkey.HotkeyGameFeature;
 import dev.jb0s.blockgameenhanced.gamefeature.immersivehud.ImmersiveHUDGameFeature;
+import dev.jb0s.blockgameenhanced.gamefeature.joingreeting.JoinGreetingGameFeature;
 import dev.jb0s.blockgameenhanced.gamefeature.jukebox.JukeboxGameFeature;
 import dev.jb0s.blockgameenhanced.gamefeature.mmoitems.MMOItemsGameFeature;
 import dev.jb0s.blockgameenhanced.gamefeature.mmostats.MMOStatsGameFeature;
@@ -88,12 +89,6 @@ public class BlockgameEnhancedClient implements ClientModInitializer {
                     BlockgameEnhanced.LOGGER.info("~~ OPTIFINE COMPAT SERVER IS READY ~~");
                 }).start();
             }
-
-            // We're normally joining a game, send a welcome message in chat.
-            else {
-                client.player.sendMessage(new TranslatableText("hud.blockgame.message.welcome.1"), false);
-                client.player.sendMessage(new TranslatableText("hud.blockgame.message.welcome.2"), false);
-            }
         });
     }
 
@@ -116,6 +111,7 @@ public class BlockgameEnhancedClient implements ClientModInitializer {
         loadGameFeature(new UpdatePrompterGameFeature());
         loadGameFeature(new JukeboxGameFeature());
         loadGameFeature(new ChallengesGameFeature());
+        loadGameFeature(new JoinGreetingGameFeature());
 
         // Tick all game features after client ticks
         ClientTickEvents.END_CLIENT_TICK.register((client) -> {
