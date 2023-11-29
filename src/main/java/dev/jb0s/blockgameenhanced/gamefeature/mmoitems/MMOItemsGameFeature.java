@@ -12,21 +12,22 @@ import dev.jb0s.blockgameenhanced.gamefeature.GameFeature;
 import dev.jb0s.blockgameenhanced.helper.MMOItemHelper;
 import dev.jb0s.blockgameenhanced.helper.NetworkHelper;
 import lombok.Getter;
-import lombok.Setter;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
+import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
 import net.minecraft.client.render.*;
-import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.c2s.play.PlayerInteractItemC2SPacket;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
@@ -36,7 +37,6 @@ import net.minecraft.world.GameMode;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Map;
 
 public class MMOItemsGameFeature extends GameFeature {
@@ -66,11 +66,8 @@ public class MMOItemsGameFeature extends GameFeature {
         ReceiveChatMessageEvent.EVENT.register(this::visualizeCooldown);
         ItemRendererDrawEvent.EVENT.register(this::drawItemCooldownOverlay);
         ItemRendererDrawEvent.EVENT.register(this::drawItemChargeCounter);
-        ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
-            tick = 0;
-            isClientCaughtUp = false;
-            heartbeatLatency = 0;
-        });
+        ClientPlayConnectionEvents.JOIN.register((x, y, z) -> reset());
+        ClientPlayConnectionEvents.DISCONNECT.register((x, y) -> reset());
     }
 
     /**
@@ -142,19 +139,8 @@ public class MMOItemsGameFeature extends GameFeature {
             return;
         }
 
-        // Update cooldown list
-        if(!cooldownEntryMap.isEmpty()) {
-            Iterator<Map.Entry<String, MMOItemsCooldownEntry>> it = cooldownEntryMap.entrySet().iterator();
-
-            while (it.hasNext()) {
-                Map.Entry<String, MMOItemsCooldownEntry> entry = it.next();
-                if (entry.getValue().endTick > tick) {
-                    continue;
-                }
-
-                it.remove();
-            }
-        }
+        // Remove expired cooldowns
+        cooldownEntryMap.entrySet().removeIf(x -> tick > x.getValue().endTick);
 
         // Send any scheduled packets
         if(!scheduledPackets.isEmpty()) {
@@ -163,17 +149,19 @@ public class MMOItemsGameFeature extends GameFeature {
                 return;
             }
 
-            Iterator<ScheduledItemUsePacket> it = scheduledPackets.iterator();
-
-            while (it.hasNext()) {
-                ScheduledItemUsePacket pak = it.next();
-                if (pak.endTick > tick) {
+            ScheduledItemUsePacket[] list = getCooldownPacketsSafe();
+            for(ScheduledItemUsePacket packet : list) {
+                // If it is not time to send this packet yet, skip it
+                if (packet.endTick > tick) {
                     continue;
                 }
 
-                getMinecraftClient().getNetworkHandler().sendPacket(pak.packet);
-                it.remove();
+                // Send the packet to trigger a cooldown message
+                getMinecraftClient().getNetworkHandler().sendPacket(packet.packet);
             }
+
+            // Remove expired packets (the ones we've just sent)
+            scheduledPackets.removeIf(x -> tick > x.endTick);
         }
 
         heartbeatLatency = NetworkHelper.getNetworkLatency(getMinecraftClient().player);
@@ -191,6 +179,11 @@ public class MMOItemsGameFeature extends GameFeature {
 
         // Update latency value
         BlockgameEnhancedClient.setLatency(getLatency());
+
+        // removeme
+        if(BlockgameEnhanced.DEBUG) {
+            getMinecraftClient().player.sendMessage(Text.of("§bNum cooldowns: §e" + cooldownEntryMap.size() + "§7 | §bNum sched paks: §e" + scheduledPackets.size()), true);
+        }
     }
 
     /**
@@ -340,6 +333,18 @@ public class MMOItemsGameFeature extends GameFeature {
         capturedItemUsages.add(event);
     }
 
+    /**
+     * Resets all the values.
+     */
+    private void reset() {
+        tick = 0;
+        isClientCaughtUp = false;
+        heartbeatLatency = 0;
+        cooldownEntryMap.clear();
+        scheduledPackets.clear();
+        capturedItemUsages.clear();
+    }
+
     public ItemUsageEvent getItemUsage() {
         int latency = getLatency();
         return getItemUsage(latency);
@@ -372,6 +377,22 @@ public class MMOItemsGameFeature extends GameFeature {
         int pl = BlockgameEnhancedClient.getPreloginLatency();
         int dif = BlockgameEnhancedClient.getPreloginLatency() - heartbeatLatency;
         return (dif > LATENCY_MARGIN_OF_ERROR && !isClientCaughtUp) ? pl : hb;
+    }
+
+    /**
+     * Gets a clone of the cooldown hashmap to avoid multithread madness.
+     * todo: Replace with a better solution that doesn't impact memory. (not like this game isn't garbage memory wise anyways)
+     */
+    private MMOItemsCooldownEntry[] getCooldownsSafe() {
+        return cooldownEntryMap.values().toArray(new MMOItemsCooldownEntry[0]);
+    }
+
+    /**
+     * Gets a clone of the scheduled packet list to avoid multithread madness.
+     * todo: Replace with a better solution that doesn't impact memory. (not like this game isn't garbage memory wise anyways)
+     */
+    private ScheduledItemUsePacket[] getCooldownPacketsSafe() {
+        return scheduledPackets.toArray(new ScheduledItemUsePacket[0]);
     }
 
     /**
