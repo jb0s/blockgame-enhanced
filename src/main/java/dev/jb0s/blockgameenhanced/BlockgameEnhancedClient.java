@@ -62,7 +62,7 @@ public class BlockgameEnhancedClient implements ClientModInitializer {
     private static int latency;
 
     @Getter
-    private List<String> disabledGameFeatures;
+    private List<String> userDisabledGameFeatureNames;
 
     @Override
     public void onInitializeClient() {
@@ -104,11 +104,11 @@ public class BlockgameEnhancedClient implements ClientModInitializer {
     private void parseUserDisabledGameFeatures() {
         String x = System.getProperty("nullgf");
         if(x == null) {
-            disabledGameFeatures = new ArrayList<>();
+            userDisabledGameFeatureNames = new ArrayList<>();
             return;
         }
 
-        disabledGameFeatures = Arrays.stream(x.toLowerCase().split(",")).toList();
+        userDisabledGameFeatureNames = Arrays.stream(x.toLowerCase().split(",")).toList();
     }
 
     /**
@@ -152,7 +152,7 @@ public class BlockgameEnhancedClient implements ClientModInitializer {
      */
     private void loadGameFeature(GameFeature gameFeature) {
         String name = gameFeature.getClass().getSimpleName().replace("GameFeature", "").toLowerCase();
-        boolean userDisabled = getDisabledGameFeatures().contains(name);
+        boolean userDisabled = getUserDisabledGameFeatureNames().contains(name);
 
         if(!gameFeature.isEnabled() || userDisabled) {
             BlockgameEnhanced.LOGGER.info("Skipping load of {} because it's disabled", gameFeature.getClass().getSimpleName().replace("GameFeature", " game feature"));
