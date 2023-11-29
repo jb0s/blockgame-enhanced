@@ -266,8 +266,12 @@ public class PartyGameFeature extends GameFeature {
      * @param isAlive Whether the player entity is considered "alive" or not. This is more trustworthy than checking (health == 0).
      */
     public void handlePlayerHealth(PlayerEntity player, int health, int maxHealth, boolean isAlive) {
-        if(partyMembers == null)
-            return;
+        if(partyMembers == null) {
+            // Unset glowing flag if set
+            if(player.getFlag(2)) {
+                player.setFlag(2, false);
+            }
+        }
 
         // We don't care about this player's health if we're not in a party with them
         PartyMember member = getPartyMember(player.getGameProfile().getName());
