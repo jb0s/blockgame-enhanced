@@ -12,14 +12,13 @@ import dev.jb0s.blockgameenhanced.gamefeature.GameFeature;
 import dev.jb0s.blockgameenhanced.helper.MMOItemHelper;
 import dev.jb0s.blockgameenhanced.helper.NetworkHelper;
 import lombok.Getter;
+import lombok.Setter;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
-import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
@@ -51,6 +50,10 @@ public class MMOItemsGameFeature extends GameFeature {
     @Getter
     private boolean isClientCaughtUp;
 
+    @Getter
+    @Setter
+    private MMOItemsCooldownEntry globalCooldown;
+
     private final Gson gson = new Gson();
     private final Map<String, MMOItemsCooldownEntry> cooldownEntryMap = Maps.newHashMap();
     private final ArrayList<ScheduledItemUsePacket> scheduledPackets = new ArrayList<>();
@@ -68,6 +71,7 @@ public class MMOItemsGameFeature extends GameFeature {
         ItemRendererDrawEvent.EVENT.register(this::drawItemChargeCounter);
         ClientPlayConnectionEvents.JOIN.register((x, y, z) -> reset());
         ClientPlayConnectionEvents.DISCONNECT.register((x, y) -> reset());
+        globalCooldown = new MMOItemsCooldownEntry(0, 0);
     }
 
     /**
@@ -114,14 +118,17 @@ public class MMOItemsGameFeature extends GameFeature {
             MMOItemsAbility[] itemAbilities = gson.fromJson(tag, MMOItemsAbility[].class);
             if(itemAbilities != null && itemAbilities.length > 0) {
                 float cooldownProgressForThisStack = getCooldownProgress(itemAbilities[0].Id, MinecraftClient.getInstance().getTickDelta());
-                if (cooldownProgressForThisStack > 0.0f) {
+                float globalCooldownProgress = getCooldownProgress(getGlobalCooldown(), MinecraftClient.getInstance().getTickDelta());
+                float cd = cooldownProgressForThisStack == 0.0f ? globalCooldownProgress : cooldownProgressForThisStack;
+
+                if (cd > 0.0f) {
                     RenderSystem.disableDepthTest();
                     RenderSystem.disableTexture();
                     RenderSystem.enableBlend();
                     RenderSystem.defaultBlendFunc();
                     Tessellator tessellator2 = Tessellator.getInstance();
                     BufferBuilder bufferBuilder2 = tessellator2.getBuffer();
-                    renderGuiQuad(bufferBuilder2, x, y + MathHelper.floor(16.0f * (1.0f - cooldownProgressForThisStack)), 16, MathHelper.ceil(16.0f * cooldownProgressForThisStack), 255, 255, 255, 127);
+                    renderGuiQuad(bufferBuilder2, x, y + MathHelper.floor(16.0f * (1.0f - cd)), 16, MathHelper.ceil(16.0f * cd), 255, 255, 255, 127);
                     RenderSystem.enableTexture();
                     RenderSystem.enableDepthTest();
                 }
@@ -278,6 +285,7 @@ public class MMOItemsGameFeature extends GameFeature {
         String abil = MMOItemHelper.getMMOAbility(stack);
         if(abil != null) {
             setCooldown(abil, ticks);
+            setGlobalCooldown(new MMOItemsCooldownEntry(tick, tick + 20)); // gcd 1.0s
         }
 
         return ActionResult.SUCCESS;
@@ -300,6 +308,20 @@ public class MMOItemsGameFeature extends GameFeature {
      */
     public float getCooldownProgress(String ability, float partialTicks) {
         MMOItemsCooldownEntry entry = cooldownEntryMap.get(ability);
+        if(entry != null) {
+            return getCooldownProgress(entry, partialTicks);
+        }
+
+        return 0.0f;
+    }
+
+    /**
+     * Range 0-1 determining the percentage of completion of a cooldown.
+     * @param entry Ability cooldown entry.
+     * @param partialTicks Value to make up for a small imprecision mid-tick, in most cases this will be deltaSeconds.
+     * @return Float ranging 0-1.
+     */
+    public float getCooldownProgress(MMOItemsCooldownEntry entry, float partialTicks) {
         if(entry != null) {
             float f = entry.endTick - entry.startTick;
             float g = (float) entry.endTick - ((float)tick + partialTicks);
