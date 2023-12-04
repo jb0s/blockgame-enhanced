@@ -60,7 +60,7 @@ public class UpdateScreen extends Screen {
             }
             else {
                 String ver = release.tag_name.substring(1);
-                String url = String.format("https://modrinth.com/mod/blockgame-enhanced/versions/%s", ver);
+                String url = String.format("https://modrinth.com/mod/blockgame-enhanced/version/%s", ver);
                 Util.getOperatingSystem().open(url);
             }
         }));

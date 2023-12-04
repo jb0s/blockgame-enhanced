@@ -285,7 +285,12 @@ public class MMOItemsGameFeature extends GameFeature {
         String abil = MMOItemHelper.getMMOAbility(stack);
         if(abil != null) {
             setCooldown(abil, ticks);
-            setGlobalCooldown(new MMOItemsCooldownEntry(tick, tick + 20)); // gcd 1.0s
+
+            // how did I forget to not make it spam GCD
+            /*float threshold = ((float) BlockgameEnhancedClient.getLatency() / 1000);
+            if(getCooldownProgress(getGlobalCooldown(), 0.0f) < threshold) {
+                setGlobalCooldown(new MMOItemsCooldownEntry(tick, tick + 20)); // gcd 1.0s
+            }*/
         }
 
         return ActionResult.SUCCESS;
