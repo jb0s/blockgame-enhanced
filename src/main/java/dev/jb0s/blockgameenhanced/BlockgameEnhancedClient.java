@@ -26,6 +26,9 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -63,6 +66,13 @@ public class BlockgameEnhancedClient implements ClientModInitializer {
 
     @Getter
     private List<String> userDisabledGameFeatureNames;
+
+    @Getter
+    @Setter
+    private static int errors;
+
+    @Getter
+    private static final int maxErrorsBeforeCrash = 5;
 
     @Override
     public void onInitializeClient() {
@@ -138,7 +148,27 @@ public class BlockgameEnhancedClient implements ClientModInitializer {
 
             for (GameFeature gameFeature : getLoadedGameFeatures()) {
                 client.getProfiler().push(gameFeature.getClass().getSimpleName());
-                gameFeature.tick();
+
+                // Try to tick and don't crash if it fails
+                try {
+                    gameFeature.tick();
+                }
+                catch (Exception e) {
+                    // Crash if there's been too many errors
+                    if(errors > maxErrorsBeforeCrash) {
+                        throw e;
+                    }
+
+                    ClientPlayerEntity player = client.player;
+                    if(player != null) {
+                        player.sendMessage(Text.of("§4§l=== PLEASE REPORT THIS AS A BUG ==="), false);
+                        player.sendMessage(Text.of(String.format("§cAn error occurred in %s!", gameFeature.getClass().getSimpleName())), false);
+                        player.sendMessage(Text.of(e.getClass().getName() + ": §7" + e.getMessage()), false);
+                        player.sendMessage(Text.of("§4§l================================="), false);
+                        errors++;
+                    }
+                }
+
                 client.getProfiler().pop();
             }
 
@@ -159,8 +189,15 @@ public class BlockgameEnhancedClient implements ClientModInitializer {
             return;
         }
 
-        BlockgameEnhanced.LOGGER.info("Loading {}", gameFeature.getClass().getSimpleName().replace("GameFeature", " game feature"));
-        gameFeature.init(MinecraftClient.getInstance(), this);
-        loadedGameFeatures.add(gameFeature);
+        String featureName = gameFeature.getClass().getSimpleName().replace("GameFeature", " game feature");
+        BlockgameEnhanced.LOGGER.info("Loading {}", featureName);
+
+        try {
+            gameFeature.init(MinecraftClient.getInstance(), this);
+            loadedGameFeatures.add(gameFeature);
+        }
+        catch (Exception e) {
+            BlockgameEnhanced.LOGGER.error("Failed to load {} game feature: {}", featureName, e.getMessage());
+        }
     }
 }
