@@ -3,6 +3,7 @@ package dev.jb0s.blockgameenhanced.mixin.gui.screen;
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
 import dev.jb0s.blockgameenhanced.gamefeature.mmovendor.MMOVendor;
+import dev.jb0s.blockgameenhanced.gui.widgets.FlexibleButtonWidget;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.GenericContainerScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
@@ -59,8 +60,8 @@ public class MixinGenericContainerScreen extends HandledScreen<GenericContainerS
         int btnHeight = 12;
 
         int x = originX + 34;
-        int y = originY - (backgroundHeight / 2) + 3;
-        addDrawableChild(new ButtonWidget(x, y, btnWidth, btnHeight, LOOT_ALL_BUTTON, (button) -> {
+        int y = originY - (backgroundHeight / 2) + 4;
+        addDrawableChild(new FlexibleButtonWidget(x, y, btnWidth, btnHeight, LOOT_ALL_BUTTON, (button) -> {
             MinecraftClient mc = MinecraftClient.getInstance();
             ClientPlayerEntity p = mc.player;
 
