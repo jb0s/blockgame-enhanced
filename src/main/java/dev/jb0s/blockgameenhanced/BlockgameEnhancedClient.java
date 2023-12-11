@@ -1,75 +1,51 @@
 package dev.jb0s.blockgameenhanced;
 
+import dev.jb0s.blockgameenhanced.gamefeature.GameFeature;
+import dev.jb0s.blockgameenhanced.gamefeature.bettergui.BetterGUIGameFeature;
+import dev.jb0s.blockgameenhanced.gamefeature.challenges.ChallengesGameFeature;
+import dev.jb0s.blockgameenhanced.gamefeature.dayphase.DayPhaseGameFeature;
+import dev.jb0s.blockgameenhanced.gamefeature.discordrpc.DiscordRPCGameFeature;
+import dev.jb0s.blockgameenhanced.gamefeature.hotkey.HotkeyGameFeature;
+import dev.jb0s.blockgameenhanced.gamefeature.immersivehud.ImmersiveHUDGameFeature;
+import dev.jb0s.blockgameenhanced.gamefeature.joingreeting.JoinGreetingGameFeature;
+import dev.jb0s.blockgameenhanced.gamefeature.jukebox.JukeboxGameFeature;
+import dev.jb0s.blockgameenhanced.gamefeature.mmoitems.MMOItemsGameFeature;
+import dev.jb0s.blockgameenhanced.gamefeature.mmostats.MMOStatsGameFeature;
+import dev.jb0s.blockgameenhanced.gamefeature.party.PartyGameFeature;
+import dev.jb0s.blockgameenhanced.gamefeature.titlescreen.TitleScreenGameFeature;
+import dev.jb0s.blockgameenhanced.gamefeature.updateprompter.UpdatePrompterGameFeature;
+import dev.jb0s.blockgameenhanced.gamefeature.zone.ZoneGameFeature;
+import dev.jb0s.blockgameenhanced.gamefeature.zoneboss.ZoneBossGameFeature;
 import dev.jb0s.blockgameenhanced.gui.screen.title.TitleScreen;
-import dev.jb0s.blockgameenhanced.manager.Manager;
-import dev.jb0s.blockgameenhanced.manager.adventure.AdventureZoneManager;
-import dev.jb0s.blockgameenhanced.manager.bossbattle.BossBattleManager;
-import dev.jb0s.blockgameenhanced.manager.config.ConfigManager;
-import dev.jb0s.blockgameenhanced.manager.dayphase.DayPhaseManager;
-import dev.jb0s.blockgameenhanced.manager.deposit.DepositManager;
-import dev.jb0s.blockgameenhanced.manager.discordrpc.DiscordRichPresenceManager;
-import dev.jb0s.blockgameenhanced.manager.hotkey.HotkeyManager;
-import dev.jb0s.blockgameenhanced.manager.latency.LatencyManager;
-import dev.jb0s.blockgameenhanced.manager.mmocore.MMOCoreManager;
-import dev.jb0s.blockgameenhanced.manager.mmoitems.MMOItemsManager;
-import dev.jb0s.blockgameenhanced.manager.music.MusicManager;
-import dev.jb0s.blockgameenhanced.manager.party.PartyManager;
-import dev.jb0s.blockgameenhanced.manager.update.GitHubRelease;
-import dev.jb0s.blockgameenhanced.manager.update.UpdateManager;
+import dev.jb0s.blockgameenhanced.config.ConfigManager;
+import dev.jb0s.blockgameenhanced.update.GitHubRelease;
+import dev.jb0s.blockgameenhanced.update.UpdateManager;
 import lombok.Getter;
 import lombok.Setter;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class BlockgameEnhancedClient implements ClientModInitializer {
     @Getter
-    private static ArrayList<Manager> allManagers = new ArrayList<>();
-
-    @Getter
-    private static AdventureZoneManager adventureZoneManager;
-
-    @Getter
-    private static BossBattleManager bossBattleManager;
-
-    @Getter
-    private static MusicManager musicManager;
-
-    @Getter
-    private static DayPhaseManager dayPhaseManager;
-
-    @Getter
-    private static PartyManager partyManager;
-
-    @Getter
-    private static HotkeyManager hotkeyManager;
+    private static final ArrayList<GameFeature> loadedGameFeatures = new ArrayList<>();
 
     @Getter
     private static ConfigManager configManager;
 
     @Getter
-    private static DiscordRichPresenceManager discordRichPresenceManager;
-
-    @Getter
     private static UpdateManager updateManager;
 
     @Getter
-    private static DepositManager depositManager;
-
-    @Getter
-    private static MMOItemsManager mmoItemsManager;
-
-    @Getter
-    private static LatencyManager latencyManager;
-
-    @Getter
-    private static MMOCoreManager mmoCoreManager;
-
-    @Getter
+    @Setter
     private static GitHubRelease availableUpdate;
 
     @Getter
@@ -80,9 +56,39 @@ public class BlockgameEnhancedClient implements ClientModInitializer {
     @Setter
     private static boolean isCompatibilityServerReady;
 
+    @Getter
+    @Setter
+    private static int preloginLatency;
+
+    @Getter
+    @Setter
+    private static int latency;
+
+    @Getter
+    private List<String> userDisabledGameFeatureNames;
+
+    @Getter
+    @Setter
+    private static int errors;
+
+    @Getter
+    private static final int maxErrorsBeforeCrash = 5;
+
     @Override
     public void onInitializeClient() {
+        BlockgameEnhanced.LOGGER.info("Welcome to Blockgame Enhanced");
+        BlockgameEnhanced.LOGGER.info("Run directory: " + MinecraftClient.getInstance().runDirectory.getAbsolutePath());
+        BlockgameEnhanced.LOGGER.info("Debug Mode: " + BlockgameEnhanced.DEBUG);
+
+        configManager = new ConfigManager();
+        updateManager = new UpdateManager();
+
+        // Load all game features
+        parseUserDisabledGameFeatures();
+        loadGameFeatures();
+
         // Greet the player when they join the server
+        // todo: move this
         ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
 
             // Custom routines for finishing the initialization of an OptiFine Compat server
@@ -99,49 +105,99 @@ public class BlockgameEnhancedClient implements ClientModInitializer {
                     BlockgameEnhanced.LOGGER.info("~~ OPTIFINE COMPAT SERVER IS READY ~~");
                 }).start();
             }
-
-            // We're normally joining a game, send a welcome message in chat.
-            else {
-                client.player.sendMessage(new TranslatableText("hud.blockgame.message.welcome.1"), false);
-                client.player.sendMessage(new TranslatableText("hud.blockgame.message.welcome.2"), false);
-            }
         });
+    }
 
-        // Bind Managers
-        musicManager = new MusicManager();
-        bossBattleManager = new BossBattleManager();
-        dayPhaseManager = new DayPhaseManager();
-        adventureZoneManager = new AdventureZoneManager();
-        partyManager = new PartyManager();
-        hotkeyManager = new HotkeyManager();
-        configManager = new ConfigManager();
-        discordRichPresenceManager = new DiscordRichPresenceManager();
-        updateManager = new UpdateManager();
-        depositManager = new DepositManager();
-        mmoItemsManager = new MMOItemsManager();
-        latencyManager = new LatencyManager();
-        mmoCoreManager = new MMOCoreManager();
-
-        // Check for updates.
-        // If you're looking for the actual "There's an update" GUI prompt, it's in MixinTitleScreen.java.
-        if(BlockgameEnhanced.getConfig().getAccessibilityConfig().enableUpdateChecker) {
-            availableUpdate = updateManager.checkForUpdates();
-            if(getAvailableUpdate() != null) {
-                BlockgameEnhanced.LOGGER.info("New update available: " + getAvailableUpdate().tag_name);
-            }
-            else {
-                BlockgameEnhanced.LOGGER.info("Mod is up-to-date");
-            }
-        }
-        else {
-            BlockgameEnhanced.LOGGER.info("Update checking is disabled by user");
+    /**
+     * Extracts list of disabled game features from commandline.
+     */
+    private void parseUserDisabledGameFeatures() {
+        String x = System.getProperty("nullgf");
+        if(x == null) {
+            userDisabledGameFeatureNames = new ArrayList<>();
+            return;
         }
 
-        // Tick all managers after client ticks
+        userDisabledGameFeatureNames = Arrays.stream(x.toLowerCase().split(",")).toList();
+    }
+
+    /**
+     * Loads all game features.
+     */
+    private void loadGameFeatures() {
+        BlockgameEnhanced.LOGGER.info("Loading game features");
+        loadGameFeature(new ImmersiveHUDGameFeature());
+        loadGameFeature(new TitleScreenGameFeature());
+        loadGameFeature(new ZoneGameFeature());
+        loadGameFeature(new ZoneBossGameFeature());
+        loadGameFeature(new DayPhaseGameFeature());
+        loadGameFeature(new BetterGUIGameFeature());
+        loadGameFeature(new DiscordRPCGameFeature());
+        loadGameFeature(new HotkeyGameFeature());
+        loadGameFeature(new MMOStatsGameFeature());
+        loadGameFeature(new MMOItemsGameFeature());
+        loadGameFeature(new PartyGameFeature());
+        loadGameFeature(new UpdatePrompterGameFeature());
+        loadGameFeature(new JukeboxGameFeature());
+        loadGameFeature(new ChallengesGameFeature());
+        loadGameFeature(new JoinGreetingGameFeature());
+
+        // Tick all game features after client ticks
         ClientTickEvents.END_CLIENT_TICK.register((client) -> {
-            for (Manager manager : getAllManagers()) {
-                manager.tick(client);
+            client.getProfiler().push("tickGameFeatures");
+
+            for (GameFeature gameFeature : getLoadedGameFeatures()) {
+                client.getProfiler().push(gameFeature.getClass().getSimpleName());
+
+                // Try to tick and don't crash if it fails
+                try {
+                    gameFeature.tick();
+                }
+                catch (Exception e) {
+                    // Crash if there's been too many errors
+                    if(errors > maxErrorsBeforeCrash) {
+                        throw e;
+                    }
+
+                    ClientPlayerEntity player = client.player;
+                    if(player != null) {
+                        player.sendMessage(Text.of("§4§l=== PLEASE REPORT THIS AS A BUG ==="), false);
+                        player.sendMessage(Text.of(String.format("§cAn error occurred in %s!", gameFeature.getClass().getSimpleName())), false);
+                        player.sendMessage(Text.of(e.getClass().getName() + ": §7" + e.getMessage()), false);
+                        player.sendMessage(Text.of("§4§l================================="), false);
+                        errors++;
+                    }
+                }
+
+                client.getProfiler().pop();
             }
+
+            client.getProfiler().pop();
         });
+    }
+
+    /**
+     * Loads a specific game feature.
+     * @param gameFeature Instance of the game feature to load
+     */
+    private void loadGameFeature(GameFeature gameFeature) {
+        String name = gameFeature.getClass().getSimpleName().replace("GameFeature", "").toLowerCase();
+        boolean userDisabled = getUserDisabledGameFeatureNames().contains(name);
+
+        if(!gameFeature.isEnabled() || userDisabled) {
+            BlockgameEnhanced.LOGGER.info("Skipping load of {} because it's disabled", gameFeature.getClass().getSimpleName().replace("GameFeature", " game feature"));
+            return;
+        }
+
+        String featureName = gameFeature.getClass().getSimpleName().replace("GameFeature", " game feature");
+        BlockgameEnhanced.LOGGER.info("Loading {}", featureName);
+
+        try {
+            gameFeature.init(MinecraftClient.getInstance(), this);
+            loadedGameFeatures.add(gameFeature);
+        }
+        catch (Exception e) {
+            BlockgameEnhanced.LOGGER.error("Failed to load {} game feature: {}", featureName, e.getMessage());
+        }
     }
 }

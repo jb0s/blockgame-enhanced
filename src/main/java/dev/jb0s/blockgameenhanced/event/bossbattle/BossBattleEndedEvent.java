@@ -1,15 +1,16 @@
 package dev.jb0s.blockgameenhanced.event.bossbattle;
 
-import dev.jb0s.blockgameenhanced.manager.adventure.AdventureZoneBoss;
+import dev.jb0s.blockgameenhanced.gamefeature.zone.ZoneBoss;
+import dev.jb0s.blockgameenhanced.gamefeature.zoneboss.ZoneBossBattleState;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 
 public interface BossBattleEndedEvent {
-    Event<BossBattleEndedEvent> EVENT = EventFactory.createArrayBacked(BossBattleEndedEvent.class, (listeners) -> (boss) -> {
+    Event<BossBattleEndedEvent> EVENT = EventFactory.createArrayBacked(BossBattleEndedEvent.class, (listeners) -> (boss, state) -> {
         for (BossBattleEndedEvent listener : listeners) {
-            listener.bossBattleEnded(boss);
+            listener.bossBattleEnded(boss, state);
         }
     });
 
-    void bossBattleEnded(AdventureZoneBoss boss);
+    void bossBattleEnded(ZoneBoss boss, ZoneBossBattleState state);
 }

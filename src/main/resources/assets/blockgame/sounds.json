@@ -104,6 +104,10 @@
 			"blockgame:music/egg/hb_terry"
 		]
 	},
+
+	"mus.challenge.speedrun": {
+		"sounds": []
+	},
 	
 	"mus.gui.combat.death": {
 		"subtitle": "Player dies",

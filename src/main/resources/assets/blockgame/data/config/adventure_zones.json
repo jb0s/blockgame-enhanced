@@ -1,5 +1,5 @@
 {
-	"adventureZones": [
+	"zones": [
 		{
 			"id": "ORIGIN_CITY_PLAZA",
 			"world": "midgard",

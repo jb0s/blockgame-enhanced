@@ -2,12 +2,13 @@ package dev.jb0s.blockgameenhanced;
 
 import dev.jb0s.blockgameenhanced.helper.PathHelper;
 import dev.jb0s.blockgameenhanced.helper.ResourceHelper;
-import dev.jb0s.blockgameenhanced.manager.config.modules.ModConfig;
+import dev.jb0s.blockgameenhanced.config.modules.ModConfig;
 import lombok.Getter;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.client.MinecraftClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,7 +18,7 @@ import java.nio.file.Path;
 
 public class BlockgameEnhanced implements ModInitializer {
 
-    public static final Logger LOGGER = LoggerFactory.getLogger("blockgameenhanced");
+    public static final Logger LOGGER = LoggerFactory.getLogger("BlockgameEnhanced");
     public static final boolean DEBUG = System.getenv("bge-debug") != null;
 
     @Getter
@@ -56,7 +57,7 @@ public class BlockgameEnhanced implements ModInitializer {
         // Extract shit if OptiFine
         if(BlockgameEnhanced.isOptifinePresent()) {
             try {
-                String destPath = PathHelper.getMinecraftFolderPath().toString() + "/saves/Empty";
+                String destPath = MinecraftClient.getInstance().runDirectory.getAbsolutePath() + "/saves/Empty";
 
                 // If we have already installed OptiFine Compat, we don't need to do so again
                 if(Files.exists(Path.of(destPath))) {

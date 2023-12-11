@@ -1,6 +1,6 @@
 package dev.jb0s.blockgameenhanced.event.dayphase;
 
-import dev.jb0s.blockgameenhanced.manager.dayphase.DayPhase;
+import dev.jb0s.blockgameenhanced.gamefeature.dayphase.DayPhase;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 

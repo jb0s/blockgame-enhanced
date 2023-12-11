@@ -5,10 +5,10 @@ import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
 import dev.jb0s.blockgameenhanced.BlockgameEnhancedClient;
+import dev.jb0s.blockgameenhanced.event.client.ClientInitEvent;
+import dev.jb0s.blockgameenhanced.event.client.ClientScreenChanged;
 import dev.jb0s.blockgameenhanced.event.world.WorldUpdatedEvent;
-import dev.jb0s.blockgameenhanced.gui.hud.immersive.ImmersiveIngameHud;
 import dev.jb0s.blockgameenhanced.gui.screen.title.TitleScreen;
-import dev.jb0s.blockgameenhanced.manager.config.modules.IngameHudConfig;
 import lombok.SneakyThrows;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.RunArgs;
@@ -55,8 +55,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.Proxy;
 import java.net.SocketAddress;
 import java.util.Queue;
@@ -103,6 +101,9 @@ public abstract class MixinMinecraftClient {
 
     @Inject(method = "setScreen", at = @At("RETURN"))
     public void setScreen(Screen screen, CallbackInfo ci) {
+        MinecraftClient thisMinecraft = (MinecraftClient) (Object) this;
+        ClientScreenChanged.EVENT.invoker().onScreenChanged(thisMinecraft, screen);
+
         if(screen == null && BlockgameEnhancedClient.isRunningCompatibilityServer()) {
             setScreen(new TitleScreen());
         }
@@ -116,22 +117,10 @@ public abstract class MixinMinecraftClient {
     @Inject(method = "<init>", at = @At("RETURN"))
     public void init(RunArgs args, CallbackInfo ci) {
         MinecraftClient thisMinecraft = (MinecraftClient) (Object) this;
+        ClientInitEvent.EVENT.invoker().onClientInit(thisMinecraft, args);
 
         if(BlockgameEnhanced.isOptifinePresent()) {
             startDummyServer("Empty", SaveLoader.DataPackSettingsSupplier::loadFromWorld, SaveLoader.SavePropertiesSupplier::loadFromWorld);
-        }
-
-        // Debug stuff
-        if(BlockgameEnhanced.DEBUG) {
-            Class<?> implClass = Class.forName("dev.jb0s.blockgameenhanced.debug.ImGuiImpl");
-            Method method = implClass.getMethod("create", long.class);
-            method.invoke(null, thisMinecraft.getWindow().getHandle());
-        }
-
-        // Apply Custom HUD
-        IngameHudConfig ingameHudConfig = BlockgameEnhanced.getConfig().getIngameHudConfig();
-        if(ingameHudConfig.enableCustomHud) {
-            inGameHud = new ImmersiveIngameHud(thisMinecraft);
         }
     }
 
@@ -156,6 +145,20 @@ public abstract class MixinMinecraftClient {
         }
         else if(BlockgameEnhanced.isOptifinePresent()) {
             startDummyServer("Empty", SaveLoader.DataPackSettingsSupplier::loadFromWorld, SaveLoader.SavePropertiesSupplier::loadFromWorld);
+        }
+    }
+
+    @Inject(method = "stop", at = @At("HEAD"))
+    public void stop(CallbackInfo ci) {
+        if(BlockgameEnhancedClient.isRunningCompatibilityServer() && server != null) {
+            server.stop(false);
+        }
+    }
+
+    @Inject(method = "close", at = @At("HEAD"))
+    public void close(CallbackInfo ci) {
+        if(BlockgameEnhancedClient.isRunningCompatibilityServer() && server != null) {
+            server.close();
         }
     }
 

@@ -3,10 +3,10 @@ package dev.jb0s.blockgameenhanced.gui.hud.immersive.widget.hotbar;
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
 import dev.jb0s.blockgameenhanced.BlockgameEnhancedClient;
+import dev.jb0s.blockgameenhanced.event.gamefeature.mmostats.MMOStatsUpdatedEvent;
+import dev.jb0s.blockgameenhanced.gamefeature.mmostats.MMOStatsGameFeature;
 import dev.jb0s.blockgameenhanced.gui.hud.immersive.widget.ImmersiveWidget;
-import dev.jb0s.blockgameenhanced.manager.config.modules.IngameHudConfig;
-import dev.jb0s.blockgameenhanced.manager.latency.LatencyManager;
-import dev.jb0s.blockgameenhanced.manager.mmocore.MMOCoreManager;
+import dev.jb0s.blockgameenhanced.config.modules.IngameHudConfig;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.hud.InGameHud;
@@ -22,8 +22,22 @@ import net.minecraft.util.Identifier;
 public class ImmersiveDiabloHotbar extends ImmersiveWidget {
     private static final Identifier WIDGETS_TEXTURE = new Identifier("blockgame", "textures/gui/hud/widgets.png");
 
+    private int health;
+    private int maxHealth;
+    private int hunger;
+    private float hydration;
+
     public ImmersiveDiabloHotbar(InGameHud inGameHud) {
         super(inGameHud);
+
+        MMOStatsUpdatedEvent.EVENT.register(this::mmoStatsUpdated);
+    }
+
+    private void mmoStatsUpdated(MMOStatsGameFeature gameFeature) {
+        health = gameFeature.getHealth();
+        maxHealth = gameFeature.getMaxHealth();
+        hunger = gameFeature.getHunger();
+        hydration = gameFeature.getHydration();
     }
 
     @Override
@@ -44,7 +58,7 @@ public class ImmersiveDiabloHotbar extends ImmersiveWidget {
         }
 
         // Gather info
-        boolean hasVehicle = playerEntity.hasVehicle();
+        boolean hasVehicle = playerEntity.hasVehicle() && playerEntity.getVehicle() instanceof LivingEntity;
 
         // Prepare for drawing
         getInGameHud().client.getProfiler().push("immersiveHotbar");
@@ -116,8 +130,7 @@ public class ImmersiveDiabloHotbar extends ImmersiveWidget {
         getInGameHud().client.getProfiler().push("healthMeter");
 
         // calculate shite
-        MMOCoreManager mmoCoreManager = BlockgameEnhancedClient.getMmoCoreManager();
-        float healthPercent = (float) mmoCoreManager.getHealth() / mmoCoreManager.getMaxHealth();
+        float healthPercent = (float) health / maxHealth;
 
         // If there is an actionbar message, we are not receiving MMO data. Use vanilla data instead to avoid hitches in HUD
         if(getInGameHud().overlayMessage != null && getInGameHud().overlayRemaining > 0) {
@@ -143,10 +156,10 @@ public class ImmersiveDiabloHotbar extends ImmersiveWidget {
         IngameHudConfig ighConfig = BlockgameEnhanced.getConfig().getIngameHudConfig();
         if(!ighConfig.showAdvancedStats) {
             TextRenderer textRenderer = getInGameHud().getTextRenderer();
-            String healthVal = String.valueOf(mmoCoreManager.getHealth());
+            String healthVal = String.valueOf(health);
 
             if(getInGameHud().overlayMessage != null && getInGameHud().overlayRemaining > 0) {
-                float calc = mmoCoreManager.getMaxHealth() * healthPercent;
+                float calc = maxHealth * healthPercent;
                 healthVal = String.valueOf((int) calc);
             }
 
@@ -215,8 +228,7 @@ public class ImmersiveDiabloHotbar extends ImmersiveWidget {
         getInGameHud().client.getProfiler().push("hungerMeter");
 
         // calculate shite
-        MMOCoreManager mmoCoreManager = BlockgameEnhancedClient.getMmoCoreManager();
-        float hungerPercent = (float) mmoCoreManager.getHunger() / 20;
+        float hungerPercent = (float) hunger / 20;
 
         // If there is an actionbar message, we are not receiving MMO data. Use vanilla data instead to avoid hitches in HUD
         if(getInGameHud().overlayMessage != null && getInGameHud().overlayRemaining > 0) {
@@ -268,8 +280,7 @@ public class ImmersiveDiabloHotbar extends ImmersiveWidget {
         getInGameHud().client.getProfiler().push("hydrationMeter");
 
         // calculate shite
-        MMOCoreManager mmoCoreManager = BlockgameEnhancedClient.getMmoCoreManager();
-        float hydratePercent = mmoCoreManager.getHydration() / 20.f;
+        float hydratePercent = hydration / 20.f;
         int gaugeHeight = (int) (32.f * hydratePercent);
         int yOffset = 32 - gaugeHeight;
 
@@ -278,7 +289,7 @@ public class ImmersiveDiabloHotbar extends ImmersiveWidget {
         IngameHudConfig ighConfig = BlockgameEnhanced.getConfig().getIngameHudConfig();
         if(!ighConfig.showAdvancedStats && hydratePercent > 0.0f) {
             TextRenderer textRenderer = getInGameHud().getTextRenderer();
-            String hydrateVal = String.valueOf((int) mmoCoreManager.getHydration());
+            String hydrateVal = String.valueOf((int) hydration);
 
             RenderSystem.enableBlend();
             int centerX = x + 7;
@@ -328,8 +339,7 @@ public class ImmersiveDiabloHotbar extends ImmersiveWidget {
     private void drawLatencyMeter(MatrixStack matrices, int x, int y) {
         getInGameHud().client.getProfiler().push("latencyMeter");
 
-        LatencyManager latencyManager = BlockgameEnhancedClient.getLatencyManager();
-        int latency = latencyManager.getLatency();
+        int latency = BlockgameEnhancedClient.getLatency();
         int severity = 0;
 
         if(latency > 100) severity = 1;

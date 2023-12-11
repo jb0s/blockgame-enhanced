@@ -1,7 +1,7 @@
 package dev.jb0s.blockgameenhanced.gui.hud.immersive.widget.experience;
 
 import dev.jb0s.blockgameenhanced.gui.hud.immersive.widget.ImmersiveWidget;
-import dev.jb0s.blockgameenhanced.manager.mmocore.profession.MMOProfession;
+import dev.jb0s.blockgameenhanced.gamefeature.mmostats.MMOProfession;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.util.math.MatrixStack;
 
@@ -22,9 +22,7 @@ public class ImmersiveExpPopupContainer extends ImmersiveWidget {
         int i = 0;
 
         if(!popupHashMap.isEmpty()) {
-            Iterator<Map.Entry<MMOProfession, ImmersiveExpPopup>> it = popupHashMap.entrySet().iterator();
-
-            while (it.hasNext()) {
+            for(Iterator<Map.Entry<MMOProfession, ImmersiveExpPopup>> it = popupHashMap.entrySet().iterator(); it.hasNext(); ) {
                 Map.Entry<MMOProfession, ImmersiveExpPopup> entry = it.next();
                 int sx = x - (entry.getValue().getWidth() / 2);
                 int sy = y - ((entry.getValue().getHeight() + 10) * i);

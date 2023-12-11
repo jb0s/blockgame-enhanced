@@ -2,7 +2,7 @@ package dev.jb0s.blockgameenhanced.gui.hud.immersive.widget.experience;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.jb0s.blockgameenhanced.gui.hud.immersive.widget.ImmersiveWidget;
-import dev.jb0s.blockgameenhanced.manager.mmocore.profession.MMOProfession;
+import dev.jb0s.blockgameenhanced.gamefeature.mmostats.MMOProfession;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.client.font.TextRenderer;

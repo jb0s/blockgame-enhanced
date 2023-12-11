@@ -1,18 +1,22 @@
 package dev.jb0s.blockgameenhanced.mixin.network;
 
-import dev.jb0s.blockgameenhanced.BlockgameEnhancedClient;
+import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
 import dev.jb0s.blockgameenhanced.event.chat.CommandSuggestionsEvent;
 import dev.jb0s.blockgameenhanced.event.chat.ReceiveChatMessageEvent;
 import dev.jb0s.blockgameenhanced.event.network.ServerPingEvent;
 import dev.jb0s.blockgameenhanced.event.screen.ScreenOpenedEvent;
 import dev.jb0s.blockgameenhanced.event.screen.ScreenReceivedInventoryEvent;
-import dev.jb0s.blockgameenhanced.manager.party.PartyManager;
+import dev.jb0s.blockgameenhanced.gui.hud.immersive.ImmersiveIngameHud;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
+import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.entity.ItemEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.packet.c2s.play.CloseHandledScreenC2SPacket;
 import net.minecraft.network.packet.s2c.play.*;
 import net.minecraft.util.ActionResult;
+import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -24,18 +28,33 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MixinClientPlayNetworkHandler {
     @Shadow @Final private MinecraftClient client;
 
+    @Inject(method = "onItemPickupAnimation", at = @At("HEAD"))
+    public void onItemPickupAnimation(ItemPickupAnimationS2CPacket packet, CallbackInfo ci) {
+        MinecraftClient minecraft = MinecraftClient.getInstance();
+        ClientPlayerEntity cpe = minecraft.player;
+        World world = minecraft.world;
+        if(cpe == null || world == null) return;
+
+        if(packet.getCollectorEntityId() != cpe.getId()) {
+            return;
+        }
+
+        if(minecraft.inGameHud instanceof ImmersiveIngameHud immersiveIngameHud) {
+            boolean enablePickupStream = BlockgameEnhanced.getConfig().getIngameHudConfig().enablePickupStream;
+            if(world.getEntityById(packet.getEntityId()) instanceof ItemEntity itemEntity && enablePickupStream) {
+                ItemStack stack = itemEntity.getStack().copy();
+                immersiveIngameHud.getImmersivePickupStream().addPickup(stack, packet.getStackAmount());
+            }
+        }
+    }
+
     @Inject(method = "onInventory", at = @At("HEAD"), cancellable = true)
     public void onInventory(InventoryS2CPacket packet, CallbackInfo ci) {
         ClientPlayNetworkHandler thisHandler = (ClientPlayNetworkHandler) (Object) this;
         NetworkThreadUtils.forceMainThread(packet, thisHandler, client);
 
-        ScreenReceivedInventoryEvent.EVENT.invoker().screenReceivedInventory(packet);
-
-        // todo: move this to an event
-        PartyManager pm = BlockgameEnhancedClient.getPartyManager();
-        boolean pmAcceptedThisPacket = pm.handleInventoryUpdate(packet);
-        boolean shouldBeDiscardedForPm = pm.isWaitingForPartyScreenOpen() || (pm.isWaitingForPartyScreenContent() && pm.getCurrentPayloadSyncId() != packet.getSyncId());
-        if(pmAcceptedThisPacket || shouldBeDiscardedForPm) {
+        ActionResult result = ScreenReceivedInventoryEvent.EVENT.invoker().screenReceivedInventory(packet);
+        if(result != ActionResult.PASS) {
             ci.cancel();
         }
     }
@@ -45,13 +64,8 @@ public class MixinClientPlayNetworkHandler {
         ClientPlayNetworkHandler thisHandler = (ClientPlayNetworkHandler) (Object) this;
         NetworkThreadUtils.forceMainThread(packet, thisHandler, client);
 
-        ScreenOpenedEvent.EVENT.invoker().screenOpened(packet);
-
-        // todo: move this to the new event
-        PartyManager pm = BlockgameEnhancedClient.getPartyManager();
-        boolean pmAcceptedThisPacket = pm.handleScreenOpen(packet);
-        boolean shouldBeDiscardedForPm = (pm.isWaitingForPartyScreenOpen() || pm.isWaitingForPartyScreenContent()) && pm.getCurrentPayloadSyncId() != packet.getSyncId();
-        if(pmAcceptedThisPacket || shouldBeDiscardedForPm) {
+        ActionResult result = ScreenOpenedEvent.EVENT.invoker().screenOpened(packet);
+        if(result != ActionResult.PASS) {
             // Send a packet to the server saying we have closed the window, although we never opened it
             CloseHandledScreenC2SPacket pak = new CloseHandledScreenC2SPacket(packet.getSyncId());
             thisHandler.sendPacket(pak);
