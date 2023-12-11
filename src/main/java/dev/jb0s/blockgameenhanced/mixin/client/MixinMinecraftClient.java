@@ -18,14 +18,13 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.network.ClientLoginNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.debug.DebugRenderer;
-import net.minecraft.client.session.Session;
 import net.minecraft.client.toast.SystemToast;
+import net.minecraft.client.util.Session;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkState;
 import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
 import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
-import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.resource.*;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.QueueingWorldGenerationProgressListener;
@@ -40,6 +39,7 @@ import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.SaveProperties;
 import net.minecraft.world.World;
 import net.minecraft.world.level.storage.LevelStorage;
@@ -55,17 +55,19 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.Proxy;
 import java.net.SocketAddress;
 import java.util.Queue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 
 @Mixin(MinecraftClient.class)
 public abstract class MixinMinecraftClient {
     @Shadow public abstract LevelStorage getLevelStorage();
-    //@Shadow public abstract SaveLoader createSaveLoader(ResourcePackManager dataPackManager, boolean safeMode, SaveLoader.DataPackSettingsSupplier dataPackSettingsSupplier, SaveLoader.SavePropertiesSupplier savePropertiesSupplier) throws InterruptedException, ExecutionException;
+    @Shadow public abstract SaveLoader createSaveLoader(ResourcePackManager dataPackManager, boolean safeMode, SaveLoader.DataPackSettingsSupplier dataPackSettingsSupplier, SaveLoader.SavePropertiesSupplier savePropertiesSupplier) throws InterruptedException, ExecutionException;
     @Shadow public abstract void disconnect();
     @Shadow public abstract Session getSession();
     @Shadow public abstract void setScreen(@Nullable Screen screen);
@@ -84,7 +86,7 @@ public abstract class MixinMinecraftClient {
     @Mutable @Shadow @Final public InGameHud inGameHud;
     @Mutable
     @Shadow @Final public DebugRenderer debugRenderer;
-    private static final MusicSound MUSIC_SILENCE = new MusicSound(RegistryEntry.of(SoundEvent.of(new Identifier("blockgame", "silence"))), 999999, 999999, false);
+    private static final MusicSound MUSIC_SILENCE = new MusicSound(new SoundEvent(new Identifier("blockgame", "silence")), 999999, 999999, false);
 
     @Inject(method = "getMusicType", at = @At("RETURN"), cancellable = true)
     public void getMusicType(CallbackInfoReturnable<MusicSound> cir) {
@@ -116,7 +118,7 @@ public abstract class MixinMinecraftClient {
         MinecraftClient thisMinecraft = (MinecraftClient) (Object) this;
 
         if(BlockgameEnhanced.isOptifinePresent()) {
-            //startDummyServer("Empty", SaveLoader.DataPackSettingsSupplier::loadFromWorld, SaveLoader.SavePropertiesSupplier::loadFromWorld);
+            startDummyServer("Empty", SaveLoader.DataPackSettingsSupplier::loadFromWorld, SaveLoader.SavePropertiesSupplier::loadFromWorld);
         }
 
         // Debug stuff
@@ -153,11 +155,11 @@ public abstract class MixinMinecraftClient {
             BlockgameEnhancedClient.setCompatibilityServerReady(false);
         }
         else if(BlockgameEnhanced.isOptifinePresent()) {
-            //startDummyServer("Empty", SaveLoader.DataPackSettingsSupplier::loadFromWorld, SaveLoader.SavePropertiesSupplier::loadFromWorld);
+            startDummyServer("Empty", SaveLoader.DataPackSettingsSupplier::loadFromWorld, SaveLoader.SavePropertiesSupplier::loadFromWorld);
         }
     }
 
-    /*private void startDummyServer(String worldName, Function<LevelStorage.Session, SaveLoader.DataPackSettingsSupplier> dataPackSettingsSupplierGetter, Function<LevelStorage.Session, SaveLoader.SavePropertiesSupplier> savePropertiesSupplierGetter) {
+    private void startDummyServer(String worldName, Function<LevelStorage.Session, SaveLoader.DataPackSettingsSupplier> dataPackSettingsSupplierGetter, Function<LevelStorage.Session, SaveLoader.SavePropertiesSupplier> savePropertiesSupplierGetter) {
         MinecraftClient thisMinecraft = (MinecraftClient) (Object) this;
         SaveLoader saveLoader;
         LevelStorage.Session session;
@@ -232,5 +234,5 @@ public abstract class MixinMinecraftClient {
         clientConnection.send(new HandshakeC2SPacket(socketAddress.toString(), 0, NetworkState.LOGIN));
         clientConnection.send(new LoginHelloC2SPacket(getSession().getProfile()));
         integratedServerConnection = clientConnection;
-    }*/
+    }
 }

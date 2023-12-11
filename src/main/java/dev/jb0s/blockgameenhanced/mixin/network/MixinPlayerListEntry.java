@@ -17,7 +17,7 @@ public abstract class MixinPlayerListEntry {
 
     @Shadow public abstract GameProfile getProfile();
 
-    /*@Inject(method = "getCapeTexture", at = @At("RETURN"), cancellable = true)
+    @Inject(method = "getCapeTexture", at = @At("RETURN"), cancellable = true)
     public void getCapeTexture(CallbackInfoReturnable<Identifier> cir) {
         String username = getProfile().getName();
         switch (username) {
@@ -25,5 +25,5 @@ public abstract class MixinPlayerListEntry {
             case "PirateSoftware" -> cir.setReturnValue(PIRATESOFTWARE_CAPE);
             case "Notker" -> cir.setReturnValue(NOTKER_CAPE);
         }
-    }*/
+    }
 }

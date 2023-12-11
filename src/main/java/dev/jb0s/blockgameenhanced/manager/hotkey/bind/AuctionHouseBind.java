@@ -9,7 +9,7 @@ public class AuctionHouseBind {
             return ActionResult.FAIL;
         }
 
-        client.getNetworkHandler().sendChatCommand("ah");
+        client.player.sendChatMessage("/ah");
         return ActionResult.SUCCESS;
     }
 }

@@ -22,7 +22,7 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 
 import java.util.ArrayList;
 
@@ -102,8 +102,8 @@ public class BlockgameEnhancedClient implements ClientModInitializer {
 
             // We're normally joining a game, send a welcome message in chat.
             else {
-                client.player.sendMessage(Text.translatable("hud.blockgame.message.welcome.1"), false);
-                client.player.sendMessage(Text.translatable("hud.blockgame.message.welcome.2"), false);
+                client.player.sendMessage(new TranslatableText("hud.blockgame.message.welcome.1"), false);
+                client.player.sendMessage(new TranslatableText("hud.blockgame.message.welcome.2"), false);
             }
         });
 

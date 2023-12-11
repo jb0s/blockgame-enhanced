@@ -1,31 +1,30 @@
 package dev.jb0s.blockgameenhanced.gui.screen;
 
-import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.network.packet.c2s.play.RequestCommandCompletionsC2SPacket;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class WarpScreen extends Screen {
-    private final Text SUBHEADER = Text.translatable("menu.blockgame.warp.subheader");
-    private final Text BUTTON_TOWN = Text.translatable("menu.blockgame.warp.button.town");
-    private final Text BUTTON_YGGDRASIL = Text.translatable("menu.blockgame.warp.button.yggdrasil");
-    private final Text BUTTON_ORIGIN = Text.translatable("menu.blockgame.warp.button.origin");
-    private final Text BUTTON_CANCEL = Text.translatable("menu.blockgame.warp.button.cancel");
-    private final Text BUTTON_KROGNAR = Text.translatable("menu.blockgame.warp.button.krognar");
-    private final Text BUTTON_SUNKEN = Text.translatable("menu.blockgame.warp.button.sunken");
-    private final Text BUTTON_MYRKHEIM = Text.translatable("menu.blockgame.warp.button.myrkheim");
-    private final Text BUTTON_ROTTENMAW = Text.translatable("menu.blockgame.warp.button.rotten_maw");
-    private final Text BUTTON_NEITH = Text.translatable("menu.blockgame.warp.button.neith");
-    private final Text BUTTON_ARENA = Text.translatable("menu.blockgame.warp.button.arena");
+    private final TranslatableText SUBHEADER = new TranslatableText("menu.blockgame.warp.subheader");
+    private final TranslatableText BUTTON_TOWN = new TranslatableText("menu.blockgame.warp.button.town");
+    private final TranslatableText BUTTON_YGGDRASIL = new TranslatableText("menu.blockgame.warp.button.yggdrasil");
+    private final TranslatableText BUTTON_ORIGIN = new TranslatableText("menu.blockgame.warp.button.origin");
+    private final TranslatableText BUTTON_CANCEL = new TranslatableText("menu.blockgame.warp.button.cancel");
+    private final TranslatableText BUTTON_KROGNAR = new TranslatableText("menu.blockgame.warp.button.krognar");
+    private final TranslatableText BUTTON_SUNKEN = new TranslatableText("menu.blockgame.warp.button.sunken");
+    private final TranslatableText BUTTON_MYRKHEIM = new TranslatableText("menu.blockgame.warp.button.myrkheim");
+    private final TranslatableText BUTTON_ROTTENMAW = new TranslatableText("menu.blockgame.warp.button.rotten_maw");
+    private final TranslatableText BUTTON_NEITH = new TranslatableText("menu.blockgame.warp.button.neith");
+    private final TranslatableText BUTTON_ARENA = new TranslatableText("menu.blockgame.warp.button.arena");
 
-    private final LinkedHashMap<Text, String> WARP_OPTIONS = new LinkedHashMap<>() {{
+    private final LinkedHashMap<TranslatableText, String> WARP_OPTIONS = new LinkedHashMap<>() {{
         put(BUTTON_TOWN, "/t spawn");
         put(BUTTON_YGGDRASIL, "/warp Yggdrasil");
         put(BUTTON_ORIGIN, "/warp Origin");
@@ -38,7 +37,7 @@ public class WarpScreen extends Screen {
     }};
 
     public WarpScreen() {
-        super(Text.translatable("menu.blockgame.warp.header"));
+        super(new TranslatableText("menu.blockgame.warp.header"));
     }
 
     @Override
@@ -60,7 +59,7 @@ public class WarpScreen extends Screen {
 
         // Add warp options
         int i = 0;
-        for (Map.Entry<Text, String> set : WARP_OPTIONS.entrySet()) {
+        for (Map.Entry<TranslatableText, String> set : WARP_OPTIONS.entrySet()) {
             Text btnText = set.getKey();
 
             int xOrigin = width / 2 - 100;
@@ -68,41 +67,41 @@ public class WarpScreen extends Screen {
             int xPos = xOrigin + (buttonSpacingX * columnIndex);
             int yPos = listStartingY + (buttonSpacingY * (i % columnSizeY));
 
-            addDrawableChild(ButtonWidget.builder(btnText, (button) -> {
+            addDrawableChild(new ButtonWidget(xPos - globalXOffset, yPos, buttonWidth, buttonHeight, btnText, (button) -> {
                 close();
                 client.mouse.lockCursor();
 
-                ClientPlayNetworkHandler nw = client.getNetworkHandler();
-                if(nw != null) {
-                    nw.sendChatMessage(set.getValue());
+                ClientPlayerEntity p = client.player;
+                if(p != null) {
+                    p.sendChatMessage(set.getValue());
                 }
-            }).position(xPos - globalXOffset, yPos).size(buttonWidth, buttonHeight).build());
+            }));
 
             i++;
         }
 
         // Cancel Button
         int y = height / 10;
-        addDrawableChild(ButtonWidget.builder(BUTTON_CANCEL, (button) -> {
+        addDrawableChild(new ButtonWidget(width / 2 - 100, height - y - 20, 200, 20, BUTTON_CANCEL, (button) -> {
             close();
             client.mouse.lockCursor();
-        }).position(width / 2 - 100, height - y - 20).size(200, 20).build());
+        }));
     }
 
     @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        this.renderBackground(context, mouseX, mouseY, delta);
+    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        this.renderBackground(matrices);
 
         int y = height / 10;
-        drawTextCentered(context, title, y, 0xFAFAFA);
-        drawTextCentered(context, SUBHEADER, y + 11, 0x5E5E5E);
+        drawTextCentered(matrices, title, y, 0xFAFAFA);
+        drawTextCentered(matrices, SUBHEADER, y + 11, 0x5E5E5E);
 
-        super.render(context, mouseX, mouseY, delta);
+        super.render(matrices, mouseX, mouseY, delta);
     }
 
-    private void drawTextCentered(DrawContext context, Text text, int y, int color) {
+    private void drawTextCentered(MatrixStack matrices, Text text, int y, int color) {
         int textWidth = textRenderer.getWidth(text);
         int x = (width / 2) - (textWidth / 2);
-        context.drawText(textRenderer, text, x, y, color, false);
+        textRenderer.draw(matrices, text, x, y, color);
     }
 }

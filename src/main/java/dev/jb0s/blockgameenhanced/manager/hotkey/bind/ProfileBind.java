@@ -9,7 +9,7 @@ public class ProfileBind {
             return ActionResult.FAIL;
         }
 
-        client.getNetworkHandler().sendChatCommand("profile");
+        client.player.sendChatMessage("/profile");
         return ActionResult.SUCCESS;
     }
 }

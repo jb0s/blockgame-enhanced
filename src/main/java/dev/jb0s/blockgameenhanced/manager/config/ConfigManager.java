@@ -46,7 +46,7 @@ public class ConfigManager extends Manager {
 
         try {
             DataInput input = new DataInputStream(new FileInputStream(INVENTORY_SNAPSHOT_PATH.toFile()));
-            return NbtList.TYPE.read(input, new NbtTagSizeTracker(9000000, 40));
+            return NbtList.TYPE.read(input, 40, new NbtTagSizeTracker(9000000));
         }
         catch (Exception e) {
             BlockgameEnhanced.LOGGER.warn("Failed to load inventory snapshot!");

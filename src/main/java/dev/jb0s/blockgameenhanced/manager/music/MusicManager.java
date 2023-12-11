@@ -137,7 +137,7 @@ public class MusicManager extends Manager {
             muted = false;
 
             if(isPlaying()) {
-                soundInstance = new MusicSoundInstance(SoundEvent.of(currentMusic.getSoundId()), SoundCategory.MUSIC, 1f, 1f, client.player);
+                soundInstance = new MusicSoundInstance(new SoundEvent(currentMusic.getSoundId()), SoundCategory.MUSIC, 1f, 1f, client.player);
                 soundManager.play(soundInstance);
             }
         }
@@ -204,7 +204,7 @@ public class MusicManager extends Manager {
             currentMusic = mus;
             desiredMusic = mus;
 
-            soundInstance = new MusicSoundInstance(SoundEvent.of(mus.getSoundId()), SoundCategory.MUSIC, 1f, 1f, playerEntity);
+            soundInstance = new MusicSoundInstance(new SoundEvent(mus.getSoundId()), SoundCategory.MUSIC, 1f, 1f, playerEntity);
             soundManager.play(soundInstance, delay);
             playing = true;
             return;

@@ -5,11 +5,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 
-import java.util.Random;
-
 public class MusicSoundInstance extends EntityTrackingSoundInstance {
     public MusicSoundInstance(SoundEvent sound, SoundCategory category, float volume, float pitch, Entity entity) {
-        super(sound, category, volume, pitch, entity, new Random().nextInt());
+        super(sound, category, volume, pitch, entity);
         this.repeat = true;
     }
 

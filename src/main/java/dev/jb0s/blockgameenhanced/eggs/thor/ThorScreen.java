@@ -2,7 +2,7 @@ package dev.jb0s.blockgameenhanced.eggs.thor;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.sound.SoundInstance;
@@ -33,7 +33,7 @@ public class ThorScreen extends Screen {
     public void init() {
         // Stop any music or shit like that
         previousMusicVolume = client.options.getSoundVolume(SoundCategory.MUSIC);
-        //client.options.setSoundVolume(SoundCategory.MUSIC, .0f);
+        client.options.setSoundVolume(SoundCategory.MUSIC, .0f);
 
         // Play cave noise
         caveNoiseInstance = PositionedSoundInstance.master(SoundEvents.AMBIENT_CAVE, 1.f);
@@ -47,20 +47,21 @@ public class ThorScreen extends Screen {
         // Automatically exit the screen after a moment
         if(timer > 50) {
             client.getSoundManager().stop(caveNoiseInstance);
-            //client.options.setSoundVolume(SoundCategory.MUSIC, previousMusicVolume);
+            client.options.setSoundVolume(SoundCategory.MUSIC, previousMusicVolume);
             client.setScreen(this.parent);
         }
     }
 
     @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         RenderSystem.enableBlend();
 
         // Draw dark backdrop. Don't ask. This is the only way that worked on OptiFine & others.
         int w = width * 5;
         int h = height * 5;
         RenderSystem.setShaderColor(0.f, 0.f, 0.f, 1.f);
-        context.drawTexture(THOR, width / 2 - (w / 2), height / 2 - (h / 2), 0, 0, w, h, w, h);
+        RenderSystem.setShaderTexture(0, THOR);
+        DrawableHelper.drawTexture(matrices, width / 2 - (w / 2), height / 2 - (h / 2), 0, 0, w, h, w, h);
 
         // Draw Thor
         int thorWidth = 579 / 5;
@@ -68,10 +69,11 @@ public class ThorScreen extends Screen {
 
         float alpha = MathHelper.clamp(timer, 0, 20 * 3.5f) / (20 * 3.5f);
         RenderSystem.setShaderColor(alpha, alpha, alpha, alpha);
-        context.drawTexture(THOR, (width / 2) - (thorWidth / 2), (height / 2) - (thorHeight / 2), 0, 0, thorWidth, thorHeight, thorWidth, thorHeight);
+        RenderSystem.setShaderTexture(0, THOR);
+        DrawableHelper.drawTexture(matrices, (width / 2) - (thorWidth / 2), (height / 2) - (thorHeight / 2), 0, 0, thorWidth, thorHeight, thorWidth, thorHeight);
 
         RenderSystem.disableBlend();
-        super.render(context, mouseX, mouseY, delta);
+        super.render(matrices, mouseX, mouseY, delta);
     }
 
     @Override

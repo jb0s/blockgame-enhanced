@@ -17,7 +17,7 @@ public class MixinEntityRenderDispatcher {
 
     @Inject(method = "getRenderer", at = @At("RETURN"), cancellable = true)
     public <T extends Entity> void onGetRenderer(T pEntity, CallbackInfoReturnable<EntityRenderer<? super T>> cir) {
-        /*if (!(pEntity instanceof FakePlayer))
+        if (!(pEntity instanceof FakePlayer))
             return;
 
         String s = ((AbstractClientPlayerEntity) pEntity).getModel();
@@ -28,7 +28,7 @@ public class MixinEntityRenderDispatcher {
         else if (s.equals("slim"))
             playerrenderer = MenuPlayerRenderers.fakePlayerRendererSlim;
 
-        cir.setReturnValue((EntityRenderer<? super T>) playerrenderer);*/
+        cir.setReturnValue((EntityRenderer<? super T>) playerrenderer);
     }
 
     @Inject(method = "getSquaredDistanceToCamera(Lnet/minecraft/entity/Entity;)D", at = @At("HEAD"), cancellable = true)

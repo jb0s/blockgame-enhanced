@@ -1,6 +1,5 @@
 package dev.jb0s.blockgameenhanced.manager.music;
 
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -8,7 +7,7 @@ import net.minecraft.util.math.BlockPos;
 
 public class PositionedMusicSoundInstance extends PositionedSoundInstance {
     public PositionedMusicSoundInstance(SoundEvent sound, SoundCategory category, float volume, float pitch, BlockPos blockPos) {
-        super(sound, category, volume, pitch, MinecraftClient.getInstance().player.getRandom(), blockPos);
+        super(sound, category, volume, pitch, blockPos);
         this.repeat = true;
     }
 

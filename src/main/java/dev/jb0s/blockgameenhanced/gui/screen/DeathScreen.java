@@ -5,11 +5,12 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import dev.jb0s.blockgameenhanced.BlockgameEnhancedClient;
 import dev.jb0s.blockgameenhanced.manager.music.MusicManager;
 import dev.jb0s.blockgameenhanced.manager.music.types.Music;
-import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.sound.SoundManager;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -22,7 +23,7 @@ public class DeathScreen extends Screen {
     private static final int BLACK = ColorHelper.Argb.getArgb(255, 0, 0, 0);
     private static final int FADEOUT_THRESHOLD = 20;
     private static final int RESPAWN_THRESHOLD = 50;
-    private static final SoundEvent DEATH_SOUND = SoundEvent.of(new Identifier("blockgame", "mus.gui.combat.death"));
+    private static final SoundEvent DEATH_SOUND = new SoundEvent(new Identifier("blockgame", "mus.gui.combat.death"));
 
     // Managers
     private static MusicManager musicManager;
@@ -56,15 +57,15 @@ public class DeathScreen extends Screen {
 
         // Play death sound
         soundManager.stopAll();
-        soundManager.play(PositionedSoundInstance.master(DEATH_SOUND, 1f));
+        soundManager.play(new PositionedSoundInstance(DEATH_SOUND, SoundCategory.MASTER, 1f, 1f, playerPos));
     }
 
     @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         // Draw a solid black overlay while we wait for the player to respawn - read the paragraph in init() for more info.
         if(isWaitingForPlayer) {
-            context.fill(0, 0, width, height, BLACK);
-            super.render(context, mouseX, mouseY, delta);
+            fill(matrices, 0, 0, width, height, BLACK);
+            super.render(matrices, mouseX, mouseY, delta);
             return;
         }
 
@@ -73,12 +74,12 @@ public class DeathScreen extends Screen {
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
         RenderSystem.setShaderColor(1f, 1f, 1f, 1f - alpha);
-        context.fill(0, 0, width, height, RED);
+        fill(matrices, 0, 0, width, height, RED);
         RenderSystem.setShaderColor(.0f, .0f, .0f, alpha);
-        context.fill(0, 0, width, height, BLACK);
+        fill(matrices, 0, 0, width, height, BLACK);
         RenderSystem.disableBlend();
 
-        super.render(context, mouseX, mouseY, delta);
+        super.render(matrices, mouseX, mouseY, delta);
     }
 
     @Override

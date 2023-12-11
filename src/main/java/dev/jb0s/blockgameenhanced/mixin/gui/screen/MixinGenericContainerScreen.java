@@ -1,17 +1,20 @@
 package dev.jb0s.blockgameenhanced.mixin.gui.screen;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.GenericContainerScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.GenericContainerScreenHandler;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -22,7 +25,7 @@ public class MixinGenericContainerScreen extends HandledScreen<GenericContainerS
     @Shadow @Final private int rows;
 
     private static final Identifier TEXTURE = new Identifier("textures/gui/container/generic_54.png");
-    private static final Text LOOT_ALL_BUTTON = Text.translatable("menu.blockgame.container.plunder");
+    private static final TranslatableText LOOT_ALL_BUTTON = new TranslatableText("menu.blockgame.container.plunder");
 
     public MixinGenericContainerScreen(GenericContainerScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
@@ -51,28 +54,31 @@ public class MixinGenericContainerScreen extends HandledScreen<GenericContainerS
 
         int x = originX + 34;
         int y = originY - (backgroundHeight / 2) + 3;
-        addDrawableChild(ButtonWidget.builder(LOOT_ALL_BUTTON, (button) -> {
+        addDrawableChild(new ButtonWidget(x, y, btnWidth, btnHeight, LOOT_ALL_BUTTON, (button) -> {
             MinecraftClient mc = MinecraftClient.getInstance();
             ClientPlayerEntity p = mc.player;
 
             for(int i = 0; i < 9 * rows; i++) {
                 mc.interactionManager.clickSlot(handler.syncId, i, 0, SlotActionType.QUICK_MOVE, p);
             }
-        }).position(x, y).size(btnWidth, btnHeight).build());
+        }));
     }
 
     /**
      * Reimplementation from GenericContainerScreen
-     * @param context n/a
+     * @param matrices n/a
      * @param delta n/a
      * @param mouseX n/a
      * @param mouseY n/a
      */
     @Override
-    public void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
+    public void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.setShaderTexture(0, TEXTURE);
         int i = (this.width - this.backgroundWidth) / 2;
         int j = (this.height - this.backgroundHeight) / 2;
-        context.drawTexture(TEXTURE, i, j, 0, 0, this.backgroundWidth, this.rows * 18 + 17);
-        context.drawTexture(TEXTURE, i, j + this.rows * 18 + 17, 0, 126, this.backgroundWidth, 96);
+        this.drawTexture(matrices, i, j, 0, 0, this.backgroundWidth, this.rows * 18 + 17);
+        this.drawTexture(matrices, i, j + this.rows * 18 + 17, 0, 126, this.backgroundWidth, 96);
     }
 }

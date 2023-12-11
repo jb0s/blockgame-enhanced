@@ -9,7 +9,7 @@ public class StatsBind {
             return ActionResult.FAIL;
         }
 
-        client.getNetworkHandler().sendChatCommand("stats");
+        client.player.sendChatMessage("/stats");
         return ActionResult.SUCCESS;
     }
 }
