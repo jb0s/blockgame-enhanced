@@ -2,12 +2,10 @@ package dev.jb0s.blockgameenhanced;
 
 import dev.jb0s.blockgameenhanced.gamefeature.GameFeature;
 import dev.jb0s.blockgameenhanced.gamefeature.bettergui.BetterGUIGameFeature;
-import dev.jb0s.blockgameenhanced.gamefeature.challenges.ChallengesGameFeature;
 import dev.jb0s.blockgameenhanced.gamefeature.dayphase.DayPhaseGameFeature;
 import dev.jb0s.blockgameenhanced.gamefeature.discordrpc.DiscordRPCGameFeature;
 import dev.jb0s.blockgameenhanced.gamefeature.hotkey.HotkeyGameFeature;
 import dev.jb0s.blockgameenhanced.gamefeature.immersivehud.ImmersiveHUDGameFeature;
-import dev.jb0s.blockgameenhanced.gamefeature.joingreeting.JoinGreetingGameFeature;
 import dev.jb0s.blockgameenhanced.gamefeature.jukebox.JukeboxGameFeature;
 import dev.jb0s.blockgameenhanced.gamefeature.latency.LatencyGameFeature;
 import dev.jb0s.blockgameenhanced.gamefeature.mmoitems.MMOItemsGameFeature;
@@ -111,8 +109,6 @@ public class BlockgameEnhancedClient implements ClientModInitializer {
         loadGameFeature(new PartyGameFeature());
         loadGameFeature(new UpdatePrompterGameFeature());
         loadGameFeature(new JukeboxGameFeature());
-        loadGameFeature(new ChallengesGameFeature());
-        loadGameFeature(new JoinGreetingGameFeature());
         loadGameFeature(new LatencyGameFeature());
         loadGameFeature(new RecipeTrackerGameFeature());
         loadGameFeature(new OptiFineCompatGameFeature());

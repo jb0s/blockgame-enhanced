@@ -64,10 +64,6 @@
 	"hud.blockgame.toast.party.disbanded.description": "Every player has left, the party has been disbanded.",
 	"hud.blockgame.party.outofrange": "OUT OF RANGE",
 
-	"comment.7": "~~ Join Greeting ~~",
-	"hud.blockgame.message.welcome.1": "§9Welcome! Thank you for using my mod. §c❤",
-	"hud.blockgame.message.welcome.2": "§e⚠ If you run into any issues, please submit an issue on the GitHub repository.",
-
 	"comment.8": "~~ Options Menu ~~",
 	"text.autoconfig.blockgameenhanced.title": "Blockgame Options",
 	"text.autoconfig.blockgameenhanced.option.partyHudConfig": "Party HUD",
