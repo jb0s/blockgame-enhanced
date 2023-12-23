@@ -8,6 +8,8 @@ import dev.jb0s.blockgameenhanced.BlockgameEnhancedClient;
 import dev.jb0s.blockgameenhanced.event.client.ClientDisconnectionEvents;
 import dev.jb0s.blockgameenhanced.event.client.ClientLifetimeEvents;
 import dev.jb0s.blockgameenhanced.event.client.ClientScreenChanged;
+import dev.jb0s.blockgameenhanced.event.server.ServerPrepareStartRegionEvent;
+import dev.jb0s.blockgameenhanced.event.splash.SplashRenderEvent;
 import dev.jb0s.blockgameenhanced.gamefeature.GameFeature;
 import dev.jb0s.blockgameenhanced.gui.screen.title.TitleScreen;
 import lombok.Getter;
@@ -18,9 +20,11 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.RunArgs;
 import net.minecraft.client.gui.WorldGenerationProgressTracker;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.SplashOverlay;
 import net.minecraft.client.network.ClientLoginNetworkHandler;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.toast.SystemToast;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkState;
 import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
@@ -29,8 +33,11 @@ import net.minecraft.resource.*;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.QueueingWorldGenerationProgressListener;
 import net.minecraft.server.SaveLoader;
+import net.minecraft.server.WorldGenerationProgressListener;
 import net.minecraft.server.integrated.IntegratedServer;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.UserCache;
+import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
@@ -57,6 +64,10 @@ public class OptiFineCompatGameFeature extends GameFeature {
     @Setter
     private static boolean isCompatibilityServerReady;
 
+    @Getter
+    @Setter
+    private boolean hasDelayedStartupFinishingBefore;
+
     @Override
     public void init(MinecraftClient minecraftClient, BlockgameEnhancedClient blockgameClient) {
         super.init(minecraftClient, blockgameClient);
@@ -69,6 +80,39 @@ public class OptiFineCompatGameFeature extends GameFeature {
         ClientScreenChanged.EVENT.register(this::handleScreenChanged);
         ClientDisconnectionEvents.PRE_DISCONNECT.register(this::handleClientPreDisconnect);
         ClientDisconnectionEvents.POST_DISCONNECT.register(this::handleClientPostDisconnect);
+        ServerPrepareStartRegionEvent.EVENT.register(this::handleServerPrepareStartRegion);
+        SplashRenderEvent.EVENT.register(this::handleSplashRender);
+    }
+
+    /**
+     * Prevents MOJANG STUDIOS splash from disappearing until we've finished our own initialization
+     */
+    private ActionResult handleSplashRender(SplashOverlay splashOverlay, MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        boolean isDoingServerOnStartup = isRunningCompatibilityServer() && !isCompatibilityServerReady();
+
+        // Don't let the startup finish if we personally are not done yet
+        if(isDoingServerOnStartup) {
+            setHasDelayedStartupFinishingBefore(true);
+            return ActionResult.CONSUME;
+        }
+        else if(hasDelayedStartupFinishingBefore) {
+            splashOverlay.reloadCompleteTime = Util.getMeasuringTimeMs();
+            return ActionResult.PASS;
+        }
+
+        return ActionResult.PASS;
+    }
+
+    /**
+     * Cuts down load time by approximately 7s when running OptiFine compatibility server
+     */
+    private ActionResult handleServerPrepareStartRegion(MinecraftServer minecraftServer, WorldGenerationProgressListener progressListener) {
+        if(isRunningCompatibilityServer()) {
+            minecraftServer.updateMobSpawnOptions();
+            return ActionResult.CONSUME;
+        }
+
+        return ActionResult.PASS;
     }
 
     /**
