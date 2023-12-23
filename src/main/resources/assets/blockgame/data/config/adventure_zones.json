@@ -507,8 +507,11 @@
 				[-73, -46],
 				[-73, -45]
 			]
-		},
+		}
+	],
 
+	"unfinished_zones.comment": "The zones below are just a work-in-progress. They don't get loaded into memory.",
+	"unfinished_zones": [
 		{
 			"id": "MAW_ENTRANCE",
 			"world": "rotten_maw",
