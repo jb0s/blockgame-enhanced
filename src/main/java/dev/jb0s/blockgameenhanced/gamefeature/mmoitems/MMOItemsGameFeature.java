@@ -9,6 +9,7 @@ import dev.jb0s.blockgameenhanced.event.chat.ReceiveChatMessageEvent;
 import dev.jb0s.blockgameenhanced.event.gamefeature.mmoitems.ItemUsageEvent;
 import dev.jb0s.blockgameenhanced.event.renderer.item.ItemRendererDrawEvent;
 import dev.jb0s.blockgameenhanced.gamefeature.GameFeature;
+import dev.jb0s.blockgameenhanced.helper.DebugHelper;
 import dev.jb0s.blockgameenhanced.helper.MMOItemHelper;
 import lombok.Getter;
 import lombok.Setter;
@@ -246,6 +247,9 @@ public class MMOItemsGameFeature extends GameFeature {
         String sec = spl[1].replace("s", "").trim();
         float fSec = Float.parseFloat(sec);
         int ticks = (int)(fSec * 20);
+
+        // Add latency to cooldown length
+        ticks += (BlockgameEnhancedClient.getLatency() / 1000) * 20;
 
         // Get MMOAbility and set a cooldown for it
         String abil = MMOItemHelper.getMMOAbility(stack);
