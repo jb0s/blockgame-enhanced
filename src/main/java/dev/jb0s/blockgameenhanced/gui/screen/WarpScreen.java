@@ -24,6 +24,8 @@ public class WarpScreen extends Screen {
     private final TranslatableText BUTTON_NEITH = new TranslatableText("menu.blockgame.warp.button.neith");
     private final TranslatableText BUTTON_ARENA = new TranslatableText("menu.blockgame.warp.button.arena");
 
+    private final TranslatableText BUTTON_BAZAAR = new TranslatableText("menu.blockgame.warp.button.bazaar");
+
     private final LinkedHashMap<TranslatableText, String> WARP_OPTIONS = new LinkedHashMap<>() {{
         put(BUTTON_TOWN, "/t spawn");
         put(BUTTON_YGGDRASIL, "/warp Yggdrasil");
@@ -34,6 +36,7 @@ public class WarpScreen extends Screen {
         put(BUTTON_ROTTENMAW, "/warp Rotten_Maw");
         put(BUTTON_NEITH, "/warp Neith");
         put(BUTTON_ARENA, "/warp Arena");
+        put(BUTTON_BAZAAR, "/warp Bazaar");
     }};
 
     public WarpScreen() {
@@ -45,7 +48,7 @@ public class WarpScreen extends Screen {
         RequestCommandCompletionsC2SPacket pak = new RequestCommandCompletionsC2SPacket(this.hashCode(), "warp ");
         client.getNetworkHandler().sendPacket(pak);
 
-        int buttonWidth = 200;
+        int buttonWidth = 175;
         int buttonHeight = 20;
         int columnSizeY = 5;
 
@@ -53,7 +56,7 @@ public class WarpScreen extends Screen {
         int buttonSpacingY = buttonHeight + 4;
 
         int totalOptions = WARP_OPTIONS.size();
-        int totalColumn = totalOptions / columnSizeY;
+        int totalColumn = totalOptions / (columnSizeY + 1);
         int globalXOffset = (buttonSpacingX * totalColumn) / 2;
         int listStartingY = (height / 2) - ((buttonSpacingY * 5) / 2);
 
@@ -62,7 +65,7 @@ public class WarpScreen extends Screen {
         for (Map.Entry<TranslatableText, String> set : WARP_OPTIONS.entrySet()) {
             Text btnText = set.getKey();
 
-            int xOrigin = width / 2 - 100;
+            int xOrigin = (width / 2) - (buttonWidth / 2);
             int columnIndex = i / columnSizeY;
             int xPos = xOrigin + (buttonSpacingX * columnIndex);
             int yPos = listStartingY + (buttonSpacingY * (i % columnSizeY));
