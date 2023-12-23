@@ -2,7 +2,7 @@ package dev.jb0s.blockgameenhanced.gamefeature.immersivehud;
 
 import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
 import dev.jb0s.blockgameenhanced.BlockgameEnhancedClient;
-import dev.jb0s.blockgameenhanced.event.client.ClientInitEvent;
+import dev.jb0s.blockgameenhanced.event.client.ClientLifetimeEvents;
 import dev.jb0s.blockgameenhanced.gamefeature.GameFeature;
 import dev.jb0s.blockgameenhanced.gui.hud.immersive.ImmersiveIngameHud;
 import net.minecraft.client.MinecraftClient;
@@ -13,7 +13,7 @@ public class ImmersiveHUDGameFeature extends GameFeature {
     @Override
     public void init(MinecraftClient minecraftClient, BlockgameEnhancedClient blockgameClient) {
         super.init(minecraftClient, blockgameClient);
-        ClientInitEvent.EVENT.register(this::onClientInit);
+        ClientLifetimeEvents.INIT.register(this::onClientInit);
     }
 
     /**

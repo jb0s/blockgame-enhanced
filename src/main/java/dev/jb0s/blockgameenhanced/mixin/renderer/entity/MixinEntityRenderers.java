@@ -14,7 +14,6 @@ import java.util.Map;
 
 @Mixin(EntityRenderers.class)
 public class MixinEntityRenderers {
-
     @Inject(method = "reloadPlayerRenderers", at = @At("HEAD"))
     private static void onCreatePlayerRenderers(EntityRendererFactory.Context p_174052_, CallbackInfoReturnable<Map<String, EntityRenderer<? extends PlayerEntity>>> cir) {
         MenuPlayerRenderers.createPlayerRenderers(p_174052_);

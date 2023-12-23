@@ -17,7 +17,7 @@ public class MixinSplashOverlay {
 
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/resource/ResourceReload;isComplete()Z"), cancellable = true)
     public void renderCancelling(MatrixStack matrices, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-        boolean isDoingServerOnStartup = BlockgameEnhancedClient.isRunningCompatibilityServer() && !BlockgameEnhancedClient.isCompatibilityServerReady();
+        /*boolean isDoingServerOnStartup = BlockgameEnhancedClient.isRunningCompatibilityServer() && !BlockgameEnhancedClient.isCompatibilityServerReady();
 
         // Don't let the startup finish if we personally are not done yet
         if(isDoingServerOnStartup) {
@@ -26,6 +26,6 @@ public class MixinSplashOverlay {
         }
         else if(hasDelayedStartupFinishingBefore) {
             reloadCompleteTime = Util.getMeasuringTimeMs();
-        }
+        }*/
     }
 }

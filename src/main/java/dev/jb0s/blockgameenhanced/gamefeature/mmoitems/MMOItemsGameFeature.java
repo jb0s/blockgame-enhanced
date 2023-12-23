@@ -10,7 +10,6 @@ import dev.jb0s.blockgameenhanced.event.gamefeature.mmoitems.ItemUsageEvent;
 import dev.jb0s.blockgameenhanced.event.renderer.item.ItemRendererDrawEvent;
 import dev.jb0s.blockgameenhanced.gamefeature.GameFeature;
 import dev.jb0s.blockgameenhanced.helper.MMOItemHelper;
-import dev.jb0s.blockgameenhanced.helper.NetworkHelper;
 import lombok.Getter;
 import lombok.Setter;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
@@ -26,7 +25,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.c2s.play.PlayerInteractItemC2SPacket;
-import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
@@ -39,17 +37,6 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public class MMOItemsGameFeature extends GameFeature {
-    /**
-     * Allowable margin of error (both directions) to match an event from the timeline.
-     */
-    private static final int LATENCY_MARGIN_OF_ERROR = 15;
-
-    @Getter
-    private int heartbeatLatency;
-
-    @Getter
-    private boolean isClientCaughtUp;
-
     @Getter
     @Setter
     private MMOItemsCooldownEntry globalCooldown;
@@ -169,27 +156,6 @@ public class MMOItemsGameFeature extends GameFeature {
 
             // Remove expired packets (the ones we've just sent)
             scheduledPackets.removeIf(x -> tick > x.endTick);
-        }
-
-        heartbeatLatency = NetworkHelper.getNetworkLatency(getMinecraftClient().player);
-
-        // Eventually we want to stop using the pre-login ping, so once the client is caught up we can stop using that.
-        // Additionally, if 3500 ticks have passed, and we're still not caught up, the pre-login ping might have been a fluke. Discard it.
-        if((tick > 3500 && (BlockgameEnhancedClient.getPreloginLatency() - heartbeatLatency > LATENCY_MARGIN_OF_ERROR)) && !isClientCaughtUp) {
-            isClientCaughtUp = true;
-            //catchUpReason = "Pre-login appears to be a fluke";
-        }
-        else if(BlockgameEnhancedClient.getPreloginLatency() - heartbeatLatency < LATENCY_MARGIN_OF_ERROR) {
-            isClientCaughtUp = true;
-            //catchUpReason = "Client is reasonable";
-        }
-
-        // Update latency value
-        BlockgameEnhancedClient.setLatency(getLatency());
-
-        // removeme
-        if(BlockgameEnhanced.DEBUG) {
-            getMinecraftClient().player.sendMessage(Text.of("§bNum cooldowns: §e" + cooldownEntryMap.size() + "§7 | §bNum sched paks: §e" + scheduledPackets.size()), true);
         }
     }
 
@@ -365,16 +331,13 @@ public class MMOItemsGameFeature extends GameFeature {
      */
     private void reset() {
         tick = 0;
-        isClientCaughtUp = false;
-        heartbeatLatency = 0;
         cooldownEntryMap.clear();
         scheduledPackets.clear();
         capturedItemUsages.clear();
     }
 
     public ItemUsageEvent getItemUsage() {
-        int latency = getLatency();
-        return getItemUsage(latency);
+        return getItemUsage(BlockgameEnhancedClient.getLatency());
     }
 
     public ItemUsageEvent getItemUsage(int latency) {
@@ -393,17 +356,6 @@ public class MMOItemsGameFeature extends GameFeature {
         }
 
         return winning;
-    }
-
-    /**
-     * Calculates a reliable latency value.
-     * @return Pre-login or Heartbeat latency depending on which is more accurate at the time.
-     */
-    public int getLatency() {
-        int hb = heartbeatLatency;
-        int pl = BlockgameEnhancedClient.getPreloginLatency();
-        int dif = BlockgameEnhancedClient.getPreloginLatency() - heartbeatLatency;
-        return (dif > LATENCY_MARGIN_OF_ERROR && !isClientCaughtUp) ? pl : hb;
     }
 
     /**
