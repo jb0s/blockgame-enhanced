@@ -53,6 +53,7 @@ public class PartyGameFeature extends GameFeature {
     private static final String JOINED_PARTY_MESSAGE_REGEX = "(.*) joined your party!";
     private static final String LEFT_PARTY_MESSAGE_REGEX = "(.*) has left the party.";
     private static final String LEFT_GAME_MESSAGE_REGEX = "(.*) left the game";
+    private static final String YOU_LEFT_PARTY_MESSAGE_REGEX = "You left (.*) party.";
 
     @Getter
     private ArrayList<PartyMember> partyMembers;
@@ -262,6 +263,30 @@ public class PartyGameFeature extends GameFeature {
         }
     }
 
+    private void handleSelfLeftParty(String partyName) {
+        if(partyMembers == null) {
+            return;
+        }
+
+        if(partyMembers.size() == 1) {
+            // we were the last player → party disbanded
+            Text toastTitle = new TranslatableText("hud.blockgame.toast.party.disbanded.title");
+            Text toastDescription = new TranslatableText("hud.blockgame.toast.party.disbanded.description");
+            getMinecraftClient().getToastManager().add(new SystemToast(SystemToast.Type.PERIODIC_NOTIFICATION, toastTitle, toastDescription));
+        }
+        else {
+            Text toastTitle = new TranslatableText("hud.blockgame.toast.party.selfLeft.title");
+            Text toastDescription = new TranslatableText("hud.blockgame.toast.party.selfLeft.description", partyName);
+            getMinecraftClient().getToastManager().add(new SystemToast(SystemToast.Type.PERIODIC_NOTIFICATION, toastTitle, toastDescription));
+        }
+
+        partyMembers = null;
+        partyPings = null;
+
+        // Invoke party updated event
+        PartyUpdatedEvent.EVENT.invoker().partyUpdatedEvent(this);
+    }
+
     /**
      * Handle an incoming HP update from a player entity in the world.
      * Every ticking player entity sends this data to us, we only care about our party members though.
@@ -329,9 +354,11 @@ public class PartyGameFeature extends GameFeature {
         Pattern joinedPattern = Pattern.compile(JOINED_PARTY_MESSAGE_REGEX);
         Pattern leftPattern = Pattern.compile(LEFT_PARTY_MESSAGE_REGEX);
         Pattern leftGamePattern = Pattern.compile(LEFT_GAME_MESSAGE_REGEX);
+        Pattern youLeftPattern = Pattern.compile(YOU_LEFT_PARTY_MESSAGE_REGEX);
         Matcher joinedMatcher = joinedPattern.matcher(message);
         Matcher leftMatcher = leftPattern.matcher(message);
         Matcher leftGameMatcher = leftGamePattern.matcher(message);
+        Matcher youLeftMatcher = youLeftPattern.matcher(message);
 
         // Check for chat notifications
         if(joinedMatcher.matches()) {
@@ -346,6 +373,12 @@ public class PartyGameFeature extends GameFeature {
             if(member != null) {
                 handlePlayerExitedParty(member);
             }
+
+            return ActionResult.PASS;
+        }
+        if(youLeftMatcher.matches()) {
+            String leaderName = youLeftMatcher.group(1);
+            handleSelfLeftParty(leaderName);
 
             return ActionResult.PASS;
         }
