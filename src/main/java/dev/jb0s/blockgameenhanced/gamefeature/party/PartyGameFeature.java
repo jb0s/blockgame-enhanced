@@ -184,6 +184,11 @@ public class PartyGameFeature extends GameFeature {
                 if(hasLeftGame || hasLeftParty) {
                     handlePlayerExitedParty(member);
                     i--; // Shift index back to account for the removal just now.
+
+                    // handlePlayerExitedParty can make this null, causing NPE on the next iteration
+                    if(partyMembers == null) {
+                        break;
+                    }
                 }
             }
         }
