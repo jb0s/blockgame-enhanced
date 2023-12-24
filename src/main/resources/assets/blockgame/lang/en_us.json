@@ -44,6 +44,8 @@
 	"hud.blockgame.toast.party.joined.description": "%s has joined the party!",
 	"hud.blockgame.toast.party.left.title": "Player left party",
 	"hud.blockgame.toast.party.left.description": "%s has left the party.",
+	"hud.blockgame.toast.party.selfLeft.title": "You left party",
+	"hud.blockgame.toast.party.selfLeft.description": "You have left %s party.",
 	"hud.blockgame.toast.party.disbanded.title": "Party disbanded",
 	"hud.blockgame.toast.party.disbanded.description": "Every player has left, the party has been disbanded.",
 	"hud.blockgame.party.outofrange": "OUT OF RANGE",
