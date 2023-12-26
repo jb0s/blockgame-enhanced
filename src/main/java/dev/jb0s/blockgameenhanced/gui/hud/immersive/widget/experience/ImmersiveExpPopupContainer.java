@@ -18,32 +18,29 @@ public class ImmersiveExpPopupContainer extends ImmersiveWidget {
     }
 
     @Override
-    public void render(MatrixStack matrices, int x, int y, float tickDelta) {
+    public synchronized void render(MatrixStack matrices, int x, int y, float tickDelta) {
         int i = 0;
 
         if(!popupHashMap.isEmpty()) {
-            for(Iterator<Map.Entry<MMOProfession, ImmersiveExpPopup>> it = popupHashMap.entrySet().iterator(); it.hasNext(); ) {
-                Map.Entry<MMOProfession, ImmersiveExpPopup> entry = it.next();
+            for(Map.Entry<MMOProfession, ImmersiveExpPopup> entry : popupHashMap.entrySet()) {
                 int sx = x - (entry.getValue().getWidth() / 2);
                 int sy = y - ((entry.getValue().getHeight() + 10) * i);
                 entry.getValue().render(matrices, sx, sy, tickDelta);
                 i++;
-
-                if(entry.getValue().getInactivityTicks() >= 120) {
-                    it.remove();
-                }
             }
+
+            popupHashMap.values().removeIf((popup) -> popup.getInactivityTicks() >= 120);
         }
     }
 
     @Override
-    public void tick() {
+    public synchronized void tick() {
         for (Map.Entry<MMOProfession, ImmersiveExpPopup> entry : popupHashMap.entrySet()) {
             entry.getValue().tick();
         }
     }
 
-    public void showExpPopup(MMOProfession profession, float percent, float gained) {
+    public synchronized void showExpPopup(MMOProfession profession, float percent, float gained) {
         if(popupHashMap.containsKey(profession)) {
             popupHashMap.get(profession).setPercentage(percent);
             popupHashMap.get(profession).setInactivityTicks(0);
