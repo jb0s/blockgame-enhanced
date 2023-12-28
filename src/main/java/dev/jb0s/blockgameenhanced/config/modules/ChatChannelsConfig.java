@@ -26,6 +26,6 @@ public class ChatChannelsConfig implements ConfigData {
         enable = true;
         showPartyMessageInChat = true;
         closeChatAfterMessage = true;
-        compactButton = false;
+        compactButton = true;
     }
 }
