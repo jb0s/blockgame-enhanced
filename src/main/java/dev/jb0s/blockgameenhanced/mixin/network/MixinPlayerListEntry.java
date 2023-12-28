@@ -15,6 +15,7 @@ public abstract class MixinPlayerListEntry {
     private static final Identifier PIRATESOFTWARE_CAPE = new Identifier("blockgame", "textures/cape/thorcape.png");
     private static final Identifier NOTKER_CAPE = new Identifier("blockgame", "textures/cape/notkercape.png");
     private static final Identifier SOPHIE_CAPE = new Identifier("blockgame", "textures/cape/phicape.png");
+    private static final Identifier KLH_IO_CAPE = new Identifier("blockgame", "textures/cape/klh_iocape.png");
 
     @Shadow public abstract GameProfile getProfile();
 
@@ -27,6 +28,7 @@ public abstract class MixinPlayerListEntry {
             case "PirateSoftware" -> cir.setReturnValue(PIRATESOFTWARE_CAPE);
             case "Notker" -> cir.setReturnValue(NOTKER_CAPE);
             case "PhiPhantastx" -> cir.setReturnValue(SOPHIE_CAPE);
+            case "klh_io" -> cir.setReturnValue(KLH_IO_CAPE);
         }
     }
 }
