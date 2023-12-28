@@ -5,10 +5,11 @@
   "name": "Blockgame Enhanced",
   "description": "Fixes a lot of client-side issues and adds a ton of quality-of-life features for the Blockgame server.\nBlockgame Enhanced is unaffiliated with Blockgame or Pirate Software.\nThe Blockgame Enhanced mod uses music from Heartbound, which was paid for and licensed from Pirate Software for non-commercial use.\nPlay Blockgame at: mc.blockgame.info",
   "authors": [
-    "Jake (aka notIrma)"
+    "notIrma"
   ],
   "contributors": [
-    "Notker"
+    "Notker",
+    "klh_io"
   ],
   "contact": {
     "repo": "https://github.com/jb0s/blockgame-enhanced",
