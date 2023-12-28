@@ -127,7 +127,7 @@ public class MMOItemsGameFeature extends GameFeature {
     }
 
     @Override
-    public void tick() {
+    public synchronized void tick() {
         ++tick;
 
         if(getMinecraftClient().player == null) {
@@ -192,7 +192,7 @@ public class MMOItemsGameFeature extends GameFeature {
      * @param hand The hand that contains the item the Player Entity is trying to use.
      * @return Always returns PASS, whether the routine was successful or not.
      */
-    public TypedActionResult<ItemStack> repeatItemUseForCooldownMessage(PlayerEntity playerEntity, World world, Hand hand) {
+    public synchronized TypedActionResult<ItemStack> repeatItemUseForCooldownMessage(PlayerEntity playerEntity, World world, Hand hand) {
         MinecraftClient client = MinecraftClient.getInstance();
         ClientPlayerInteractionManager interactionManager = client.interactionManager;
         ItemStack stack = playerEntity.getStackInHand(hand);
@@ -222,7 +222,7 @@ public class MMOItemsGameFeature extends GameFeature {
      * @param message The received message in String format.
      * @return Always returns PASS, whether the routine was successful or not.
      */
-    public ActionResult visualizeCooldown(MinecraftClient client, String message) {
+    public synchronized ActionResult visualizeCooldown(MinecraftClient client, String message) {
         boolean moduleEnabled = BlockgameEnhanced.getConfig().getIngameHudConfig().showCooldownsInHotbar;
         if(!moduleEnabled) return ActionResult.PASS;
 
@@ -333,18 +333,18 @@ public class MMOItemsGameFeature extends GameFeature {
     /**
      * Resets all the values.
      */
-    private void reset() {
+    private synchronized void reset() {
         tick = 0;
         cooldownEntryMap.clear();
         scheduledPackets.clear();
         capturedItemUsages.clear();
     }
 
-    public ItemUsageEvent getItemUsage() {
+    public synchronized ItemUsageEvent getItemUsage() {
         return getItemUsage(BlockgameEnhancedClient.getLatency());
     }
 
-    public ItemUsageEvent getItemUsage(int latency) {
+    public synchronized ItemUsageEvent getItemUsage(int latency) {
         long targetLatency = System.currentTimeMillis() - latency;
 
         ItemUsageEvent winning = null;
@@ -366,7 +366,7 @@ public class MMOItemsGameFeature extends GameFeature {
      * Gets a clone of the cooldown hashmap to avoid multithread madness.
      * todo: Replace with a better solution that doesn't impact memory. (not like this game isn't garbage memory wise anyways)
      */
-    private MMOItemsCooldownEntry[] getCooldownsSafe() {
+    private synchronized MMOItemsCooldownEntry[] getCooldownsSafe() {
         return cooldownEntryMap.values().toArray(new MMOItemsCooldownEntry[0]);
     }
 
@@ -374,7 +374,7 @@ public class MMOItemsGameFeature extends GameFeature {
      * Gets a clone of the scheduled packet list to avoid multithread madness.
      * todo: Replace with a better solution that doesn't impact memory. (not like this game isn't garbage memory wise anyways)
      */
-    private ScheduledItemUsePacket[] getCooldownPacketsSafe() {
+    private synchronized ScheduledItemUsePacket[] getCooldownPacketsSafe() {
         return scheduledPackets.toArray(new ScheduledItemUsePacket[0]);
     }
 
