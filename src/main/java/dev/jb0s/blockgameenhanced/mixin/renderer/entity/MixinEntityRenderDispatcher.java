@@ -23,7 +23,7 @@ public class MixinEntityRenderDispatcher {
             return;
         }
 
-        String s = ((AbstractClientPlayerEntity) pEntity).getModel();
+        String s = ((AbstractClientPlayerEntity) pEntity).getSkinTextures().model().getName();
         PlayerEntityRenderer playerrenderer = null;
 
         if (s.equals("default"))

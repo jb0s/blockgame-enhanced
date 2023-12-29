@@ -35,7 +35,7 @@ public class MixinItemEntity {
         boolean enableItemLabels = BlockgameEnhanced.getConfig().getAccessibilityConfig().enableItemLabels;
 
         if(enableItemLabels) {
-            Text entityName = Text.of(MOD_ASSIGNED_LABEL_SIGNATURE + stack.getCount() + "x ").shallowCopy().append(stack.getName());
+            Text entityName = Text.of(MOD_ASSIGNED_LABEL_SIGNATURE + stack.getCount() + "x ").copyContentOnly().append(stack.getName());
             itemEntity.setCustomNameVisible(true);
             itemEntity.setCustomName(entityName);
         }

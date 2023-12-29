@@ -1,6 +1,5 @@
 package dev.jb0s.blockgameenhanced.mixin.entity;
 
-import dev.jb0s.blockgameenhanced.event.chat.SendChatMessageEvent;
 import dev.jb0s.blockgameenhanced.event.entity.player.PlayerTickEvent;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -16,11 +15,5 @@ public abstract class MixinClientPlayerEntity {
     public void tick(CallbackInfo ci) {
         ClientPlayerEntity thisPlayer = (ClientPlayerEntity) (Object) this;
         PlayerTickEvent.EVENT.invoker().playerTick(MinecraftClient.getInstance(), thisPlayer);
-    }
-
-    @Inject(method = "sendChatMessage", at = @At("HEAD"))
-    public void sendChatMessage(String message, CallbackInfo ci) {
-        ClientPlayerEntity thisPlayer = (ClientPlayerEntity) (Object) this;
-        SendChatMessageEvent.EVENT.invoker().sendChatMessage(thisPlayer, message);
     }
 }

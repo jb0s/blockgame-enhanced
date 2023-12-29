@@ -13,18 +13,18 @@ import dev.jb0s.blockgameenhanced.gamefeature.party.PartyPing;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.*;
+import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 @Environment(value = EnvType.CLIENT)
-public class PartyHud extends DrawableHelper {
+public class PartyHud {
     private static float timer;
     private static final Identifier VIGNETTE_TEXTURE = new Identifier("blockgame", "textures/gui/hud/vignette.png");
     private static final Identifier HEALTHBARS_TEXTURE = new Identifier("blockgame", "textures/gui/hud/healthbars.png");
@@ -43,7 +43,7 @@ public class PartyHud extends DrawableHelper {
     private static ArrayList<PartyMember> partyMembers;
     private static HashMap<PartyMember, PartyPing> partyPings;
 
-    public static void render(MatrixStack matrices, float tickDelta) {
+    public static void render(DrawContext context, float tickDelta) {
         timer += tickDelta;
         if(client == null) {
             client = MinecraftClient.getInstance();
@@ -64,9 +64,9 @@ public class PartyHud extends DrawableHelper {
         }
 
         // Don't draw if the F3 menu is visible to prevent drawing on top of it
-        if(client.options.debugEnabled) {
+        /*if(client.options.debugEnabled) {
             return;
-        }
+        }*/
 
         int indexOffset = 0;
         for (int i = 0; i < partyMembers.size(); i++) {
@@ -79,12 +79,12 @@ public class PartyHud extends DrawableHelper {
                 continue;
             }
 
-            renderPartyMember(matrices, partyMembers.get(i), i + indexOffset);
+            renderPartyMember(context, partyMembers.get(i), i + indexOffset);
         }
 
         if(partyPings != null) {
             for (PartyPing ping : partyPings.values()) {
-                renderPartyPing(matrices, ping);
+                renderPartyPing(context, ping);
             }
         }
     }
@@ -97,7 +97,7 @@ public class PartyHud extends DrawableHelper {
         partyMembers = partyGameFeature.getPartyMembers();
     }
 
-    private static void renderPartyMember(MatrixStack matrices, PartyMember member, int index) {
+    private static void renderPartyMember(DrawContext context, PartyMember member, int index) {
         if(client.world == null)
             return;
 
@@ -112,26 +112,26 @@ public class PartyHud extends DrawableHelper {
         boolean isBedrockPlayer = member.getPlayerName().startsWith(".");
         RenderSystem.setShaderTexture(0, isBedrockPlayer ? BACKGROUND_TEXTURE_BEDROCK : BACKGROUND_TEXTURE);
         RenderSystem.setShaderColor(0.4f, 0.4f, 0.4f, 1f);
-        DrawableHelper.drawTexture(matrices, x, yIncrement, 0, 0, 0, MEMBER_CARD_WIDTH, MEMBER_CARD_HEIGHT, MEMBER_CARD_BACKGROUND_SIZE, MEMBER_CARD_BACKGROUND_SIZE);
+        context.drawTexture(isBedrockPlayer ? BACKGROUND_TEXTURE_BEDROCK : BACKGROUND_TEXTURE, x, yIncrement, 0, 0, 0, MEMBER_CARD_WIDTH, MEMBER_CARD_HEIGHT, MEMBER_CARD_BACKGROUND_SIZE, MEMBER_CARD_BACKGROUND_SIZE);
 
         // Draw Vignette
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
         RenderSystem.setShaderTexture(0, VIGNETTE_TEXTURE);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, .4f);
-        DrawableHelper.drawTexture(matrices, x, yIncrement, 0, 0, 0, MEMBER_CARD_WIDTH, MEMBER_CARD_HEIGHT, MEMBER_CARD_WIDTH, MEMBER_CARD_HEIGHT);
+        context.drawTexture(VIGNETTE_TEXTURE, x, yIncrement, 0, 0, 0, MEMBER_CARD_WIDTH, MEMBER_CARD_HEIGHT, MEMBER_CARD_WIDTH, MEMBER_CARD_HEIGHT);
         RenderSystem.disableBlend();
 
         // Player Head
         RenderSystem.enableBlend();
-        RenderSystem.setShaderTexture(0, member.getPlayer().getSkinTexture());
+        RenderSystem.setShaderTexture(0, member.getPlayer().getSkinTextures().texture());
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1f);
-        DrawableHelper.drawTexture(matrices, contentX, contentY, headSize, headSize, 8.0f, 8.0f, 8, 8, 64, 64);
-        DrawableHelper.drawTexture(matrices, contentX, contentY, headSize, headSize, 40.0f, 8.0f, 8, 8, 64, 64);
+        context.drawTexture(member.getPlayer().getSkinTextures().texture(), contentX, contentY, headSize, headSize, 8.0f, 8.0f, 8, 8, 64, 64);
+        context.drawTexture(member.getPlayer().getSkinTextures().texture(), contentX, contentY, headSize, headSize, 40.0f, 8.0f, 8, 8, 64, 64);
         RenderSystem.disableBlend();
 
         // Draw Name
-        DrawableHelper.drawTextWithShadow(matrices, client.textRenderer, Text.of(member.getPlayerName()), contentX + headSize + 5, contentY, 0xFFFFFF);
+        context.drawTextWithShadow(client.textRenderer, Text.of(member.getPlayerName()), contentX + headSize + 5, contentY, 0xFFFFFF);
 
         // Health bar Atlas Dimensions
         int textureWidth = 192;
@@ -141,16 +141,16 @@ public class PartyHud extends DrawableHelper {
         float calculatedPercentage = (float)member.getHealth() / (float)member.getMaxHealth();
         RenderSystem.setShaderTexture(0, HEALTHBARS_TEXTURE);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1f);
-        DrawableHelper.drawTexture(matrices, contentX + headSize + 5, contentY + client.textRenderer.fontHeight, 9, 9, 0, 0, 18, 18, textureWidth, textureHeight);
-        DrawableHelper.drawTexture(matrices, contentX + headSize + 16, contentY + client.textRenderer.fontHeight + 1, textureWidth / 2, 7, 0, 32, textureWidth, 14, textureWidth, textureHeight);
-        DrawableHelper.drawTexture(matrices, contentX + headSize + 16, contentY + client.textRenderer.fontHeight + 1, (int) ((textureWidth / 2) * calculatedPercentage), 7, 0, 18, (int) (textureWidth * calculatedPercentage), 14, textureWidth, textureHeight);
+        context.drawTexture(HEALTHBARS_TEXTURE, contentX + headSize + 5, contentY + client.textRenderer.fontHeight, 9, 9, 0, 0, 18, 18, textureWidth, textureHeight);
+        context.drawTexture(HEALTHBARS_TEXTURE, contentX + headSize + 16, contentY + client.textRenderer.fontHeight + 1, textureWidth / 2, 7, 0, 32, textureWidth, 14, textureWidth, textureHeight);
+        context.drawTexture(HEALTHBARS_TEXTURE, contentX + headSize + 16, contentY + client.textRenderer.fontHeight + 1, (int) ((textureWidth / 2) * calculatedPercentage), 7, 0, 18, (int) (textureWidth * calculatedPercentage), 14, textureWidth, textureHeight);
 
         // Dead / Out Of Range Blackout
         boolean isOutOfRange = TimeHelper.getSystemTimeUnix() - member.getLastUpdateSecond() > OUT_OF_RANGE_THRESHOLD;
         boolean blackOut = isOutOfRange || !member.isAlive();
         if(blackOut) {
             RenderSystem.enableBlend();
-            DrawableHelper.fill(matrices, x, yIncrement, x + MEMBER_CARD_WIDTH, yIncrement + MEMBER_CARD_HEIGHT, 135 << 24);
+            context.fill(x, yIncrement, x + MEMBER_CARD_WIDTH, yIncrement + MEMBER_CARD_HEIGHT, 135 << 24);
 
             if(isOutOfRange && member.isAlive()) {
                 Text oorText = Text.of("OUT OF RANGE");
@@ -161,14 +161,14 @@ public class PartyHud extends DrawableHelper {
                     textColor = 0xC4C4C4;
                 }
 
-                DrawableHelper.drawTextWithShadow(matrices, client.textRenderer, Text.of("OUT OF RANGE"), centerX, centerY, textColor);
+                context.drawTextWithShadow(client.textRenderer, Text.of("OUT OF RANGE"), centerX, centerY, textColor);
             }
 
             RenderSystem.disableBlend();
         }
     }
 
-    private static void renderPartyPing(MatrixStack matrices, PartyPing ping) {
+    private static void renderPartyPing(DrawContext context, PartyPing ping) {
         MinecraftClient minecraft = MinecraftClient.getInstance();
         ClientPlayerEntity cpe = minecraft.player;
 
@@ -182,16 +182,16 @@ public class PartyHud extends DrawableHelper {
         }
 
         // Calculate where and how big the ping has to be displayed
-        Vector4f pos = ping.getScreenSpacePos();
+        Vector3f pos = ping.getScreenSpacePos();
         Vec3d cameraPosVec = MinecraftClient.getInstance().player.getCameraPosVec(0.0f);
         float distanceToPing = (float) cameraPosVec.distanceTo(ping.getLocation());
         float uiScale = (float) MinecraftClient.getInstance().getWindow().getScaleFactor();
         float uiScaleAdjustment = uiScale * 2f / 5f;
         float size = getDistanceScale(distanceToPing) * 2.5f / uiScale * uiScaleAdjustment;
 
-        matrices.push();
-        matrices.translate((pos.getX() / uiScale), (pos.getY() / uiScale), 0);
-        matrices.scale(size, size, 1f);
+        context.getMatrices().push();
+        context.getMatrices().translate((pos.x() / uiScale), (pos.y() / uiScale), 0);
+        context.getMatrices().scale(size, size, 1f);
 
         // Calculate ping label text and size
         String labelText = String.format("%s - %dm", ping.getPartyMember().getPlayerName(), (int) distanceToPing);
@@ -199,29 +199,29 @@ public class PartyHud extends DrawableHelper {
         var labelOffset = labelSize.multiply(-0.5f).add(new Vec2f(0f, labelSize.y * -1.5f));
 
         // Draw player head
-        matrices.push();
-        matrices.translate(labelOffset.x + ((labelOffset.y / 2) + 3), labelOffset.y, 0);
+        context.getMatrices().push();
+        context.getMatrices().translate(labelOffset.x + ((labelOffset.y / 2) + 3), labelOffset.y, 0);
         RenderSystem.enableBlend();
-        RenderSystem.setShaderTexture(0, ping.getPartyMember().getPlayer().getSkinTexture());
+        RenderSystem.setShaderTexture(0, ping.getPartyMember().getPlayer().getSkinTextures().texture());
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1f);
-        DrawableHelper.drawTexture(matrices, -2, -2, (int)labelSize.y + 2, (int)labelSize.y + 2, 8.0f, 8.0f, 8, 8, 64, 64);
-        DrawableHelper.drawTexture(matrices, -2, -2, (int)labelSize.y + 2, (int)labelSize.y + 2, 40.0f, 8.0f, 8, 8, 64, 64);
+        context.drawTexture(ping.getPartyMember().getPlayer().getSkinTextures().texture(), -2, -2, (int)labelSize.y + 2, (int)labelSize.y + 2, 8.0f, 8.0f, 8, 8, 64, 64);
+        context.drawTexture(ping.getPartyMember().getPlayer().getSkinTextures().texture(), -2, -2, (int)labelSize.y + 2, (int)labelSize.y + 2, 40.0f, 8.0f, 8, 8, 64, 64);
         RenderSystem.disableBlend();
-        matrices.pop();
+        context.getMatrices().pop();
 
         // Draw text
-        matrices.push();
-        matrices.translate(labelOffset.x - ((labelOffset.y / 2) + 3), labelOffset.y, 0);
-        DrawableHelper.fill(matrices, -2, -2, (int)labelSize.x + 1, (int)labelSize.y, 0x77000000);
-        MinecraftClient.getInstance().textRenderer.draw(matrices, labelText, 0f, 0f, 0xFFFFFFFF);
-        matrices.pop();
+        context.getMatrices().push();
+        context.getMatrices().translate(labelOffset.x - ((labelOffset.y / 2) + 3), labelOffset.y, 0);
+        context.fill(-2, -2, (int)labelSize.x + 1, (int)labelSize.y, 0x77000000);
+        context.drawText(MinecraftClient.getInstance().textRenderer, labelText, 0, 0, 0xFFFFFFFF, false);
+        context.getMatrices().pop();
 
         // Draw angled square at origin
-        MathHelper.rotateZ(matrices, (float)(Math.PI / 4f));
-        matrices.translate(-2.5, -2.5, 0);
-        DrawableHelper.fill(matrices, 0, 0, 5, 5, ping.isHovered() ? 0xFFFF0000 : 0xFFFFFFFF);
+        MathHelper.rotateZ(context.getMatrices(), (float)(Math.PI / 4f));
+        context.getMatrices().translate(-2.5, -2.5, 0);
+        context.fill(0, 0, 5, 5, ping.isHovered() ? 0xFFFF0000 : 0xFFFFFFFF);
 
-        matrices.pop();
+        context.getMatrices().pop();
     }
 
     private static float getDistanceScale(float distance) {

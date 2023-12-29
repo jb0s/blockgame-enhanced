@@ -2,6 +2,7 @@ package dev.jb0s.blockgameenhanced.gui.hud.immersive.widget.effect;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.jb0s.blockgameenhanced.gui.hud.immersive.widget.ImmersiveWidget;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
@@ -16,7 +17,7 @@ public class ImmersiveDrownVignette extends ImmersiveWidget {
     }
 
     @Override
-    public void render(MatrixStack matrices, int x, int y, float tickDelta) {
+    public void render(DrawContext context, int x, int y, float tickDelta) {
         LivingEntity player = getInGameHud().getCameraPlayer();
         if(player == null) return;
 
@@ -26,7 +27,7 @@ public class ImmersiveDrownVignette extends ImmersiveWidget {
         float alpha = (sumHealth + sumAir) * (1f - airPercent);
 
         RenderSystem.enableBlend();
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.setShaderTexture(0, TEXTURE);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, alpha);
 

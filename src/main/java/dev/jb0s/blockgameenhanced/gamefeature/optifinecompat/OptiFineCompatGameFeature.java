@@ -18,6 +18,7 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.RunArgs;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.WorldGenerationProgressTracker;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.SplashOverlay;
@@ -87,7 +88,7 @@ public class OptiFineCompatGameFeature extends GameFeature {
     /**
      * Prevents MOJANG STUDIOS splash from disappearing until we've finished our own initialization
      */
-    private ActionResult handleSplashRender(SplashOverlay splashOverlay, MatrixStack matrices, int mouseX, int mouseY, float delta) {
+    private ActionResult handleSplashRender(SplashOverlay splashOverlay, DrawContext context, int mouseX, int mouseY, float delta) {
         boolean isDoingServerOnStartup = isRunningCompatibilityServer() && !isCompatibilityServerReady();
 
         // Don't let the startup finish if we personally are not done yet

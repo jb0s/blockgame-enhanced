@@ -11,10 +11,9 @@ import dev.jb0s.blockgameenhanced.gui.widgets.FlexibleButtonWidget;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.spongepowered.asm.mixin.Mixin;
@@ -45,10 +44,10 @@ public class MixinChatScreen {
     @Unique
     void addButton() {
         ChatScreen target = (ChatScreen) (Object) this;
-        chatField.x = CONFIG.compactButton ? 16 : 56;
-        chatField.setWidth(target.width - chatField.x);
+        chatField.setX(CONFIG.compactButton ? 16 : 56);
+        chatField.setWidth(target.width - chatField.getX());
 
-        toggleButton = new FlexibleButtonWidget(2, chatField.y - 2, CONFIG.compactButton ? 12 : 52, 12, new LiteralText(""), (button) -> {
+        toggleButton = new FlexibleButtonWidget(2, chatField.getY() - 2, CONFIG.compactButton ? 12 : 52, 12, Text.literal(""), (button) -> {
             ChatChannelToggledEvent.EVENT.invoker().chatChannelToggled(ChatChannelToggledEvent.Direction.NEXT);
         });
         toggleButton.setRightClickAction((button) -> {
@@ -60,7 +59,7 @@ public class MixinChatScreen {
     @Unique
     void removeButton() {
         ChatScreen target = (ChatScreen) (Object) this;
-        chatField.x = 4;
+        chatField.setX(4);
         chatField.setWidth(target.width - 4);
         target.remove(toggleButton);
         toggleButton = null;
@@ -90,7 +89,7 @@ public class MixinChatScreen {
     private void setButtonMessage(boolean strikethrough) {
         Text newMessage = selectedChannel.formattedName;
         if (CONFIG.compactButton) {
-            newMessage = new LiteralText(selectedChannel.formattedName.asTruncatedString(1))
+            newMessage = Text.literal(selectedChannel.formattedName.asTruncatedString(1))
                     .setStyle(selectedChannel.formattedName.getStyle());
         }
 
@@ -105,12 +104,12 @@ public class MixinChatScreen {
             method = "render",
             at = @At("TAIL")
     )
-    private void render(MatrixStack matrices, int mouseX, int mouseY, float delta, CallbackInfo ci) {
+    private void render(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
         if (toggleButton == null) {
             return;
         }
 
-        toggleButton.render(matrices, mouseX, mouseY, delta);
+        toggleButton.render(context, mouseX, mouseY, delta);
     }
 
     @Inject(
@@ -153,9 +152,9 @@ public class MixinChatScreen {
         ChatScreen target = (ChatScreen) (Object) this;
         // important to ignore anything starting with a slash, otherwise the command will be sent to the channel
         if (selectedChannel != null && !selectedChannel.canSwitch && !isCommand) {
-            target.sendMessage(String.format("%s%s", selectedChannel.command, string));
+            target.sendMessage(String.format("%s%s", selectedChannel.command, string), false);
         } else {
-            target.sendMessage(string);
+            target.sendMessage(string, false);
         }
 
         if (CONFIG.closeChatAfterMessage) {

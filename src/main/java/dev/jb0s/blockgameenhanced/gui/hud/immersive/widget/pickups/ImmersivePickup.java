@@ -5,7 +5,7 @@ import dev.jb0s.blockgameenhanced.gui.hud.immersive.widget.ImmersiveWidget;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
@@ -41,20 +41,20 @@ public class ImmersivePickup extends ImmersiveWidget {
     }
 
     @Override
-    public void render(MatrixStack matrices, int x, int y, float tickDelta) {
+    public void render(DrawContext context, int x, int y, float tickDelta) {
         TextRenderer textRenderer = getInGameHud().getTextRenderer();
         ItemRenderer itemRenderer = getInGameHud().client.getItemRenderer();
 
         RenderSystem.enableBlend();
-        DrawableHelper.fill(matrices, x, y, x + getWidth(), y + getHeight(), 135 << 24);
+        context.fill(x, y, x + getWidth(), y + getHeight(), 135 << 24);
 
         int tx = x + PADDING;
         int ty = y + ((getHeight() / 2) - (textRenderer.fontHeight / 2));
-        textRenderer.drawWithShadow(matrices, getText(), tx, ty, 0xFFFFFF);
+        context.drawText(textRenderer, getText(), tx, ty, 0xFFFFFF, false);
 
         int ix = x + PADDING + getInGameHud().getTextRenderer().getWidth(getText()) + SPACING;
         int iy = y + ((getHeight() / 2) - (ITEM_SIZE / 2));
-        itemRenderer.renderGuiItemIcon(itemStack, ix, iy);
+        // todo itemRenderer.renderGuiItemIcon(itemStack, ix, iy);
 
         RenderSystem.disableBlend();
     }

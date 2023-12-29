@@ -9,6 +9,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.RunArgs;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.sound.MusicSound;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
@@ -21,7 +22,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(MinecraftClient.class)
 public abstract class MixinMinecraftClient {
-    private static final MusicSound MUSIC_SILENCE = new MusicSound(new SoundEvent(new Identifier("blockgame", "silence")), 999999, 999999, false);
+    private static final MusicSound MUSIC_SILENCE = new MusicSound(RegistryEntry.of(SoundEvent.of(new Identifier("blockgame", "silence"))), 999999, 999999, false);
 
     /**
      * todo move this to JukeboxGameFeature

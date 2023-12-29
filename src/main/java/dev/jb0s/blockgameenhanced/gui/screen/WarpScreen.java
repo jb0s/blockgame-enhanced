@@ -1,32 +1,33 @@
 package dev.jb0s.blockgameenhanced.gui.screen;
 
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.network.packet.c2s.play.RequestCommandCompletionsC2SPacket;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.MutableText;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class WarpScreen extends Screen {
-    private final TranslatableText SUBHEADER = new TranslatableText("menu.blockgame.warp.subheader");
-    private final TranslatableText BUTTON_TOWN = new TranslatableText("menu.blockgame.warp.button.town");
-    private final TranslatableText BUTTON_YGGDRASIL = new TranslatableText("menu.blockgame.warp.button.yggdrasil");
-    private final TranslatableText BUTTON_ORIGIN = new TranslatableText("menu.blockgame.warp.button.origin");
-    private final TranslatableText BUTTON_CANCEL = new TranslatableText("menu.blockgame.warp.button.cancel");
-    private final TranslatableText BUTTON_KROGNAR = new TranslatableText("menu.blockgame.warp.button.krognar");
-    private final TranslatableText BUTTON_SUNKEN = new TranslatableText("menu.blockgame.warp.button.sunken");
-    private final TranslatableText BUTTON_MYRKHEIM = new TranslatableText("menu.blockgame.warp.button.myrkheim");
-    private final TranslatableText BUTTON_ROTTENMAW = new TranslatableText("menu.blockgame.warp.button.rotten_maw");
-    private final TranslatableText BUTTON_NEITH = new TranslatableText("menu.blockgame.warp.button.neith");
-    private final TranslatableText BUTTON_ARENA = new TranslatableText("menu.blockgame.warp.button.arena");
+    private final MutableText SUBHEADER = Text.translatable("menu.blockgame.warp.subheader");
+    private final MutableText BUTTON_TOWN = Text.translatable("menu.blockgame.warp.button.town");
+    private final MutableText BUTTON_YGGDRASIL = Text.translatable("menu.blockgame.warp.button.yggdrasil");
+    private final MutableText BUTTON_ORIGIN = Text.translatable("menu.blockgame.warp.button.origin");
+    private final MutableText BUTTON_CANCEL = Text.translatable("menu.blockgame.warp.button.cancel");
+    private final MutableText BUTTON_KROGNAR = Text.translatable("menu.blockgame.warp.button.krognar");
+    private final MutableText BUTTON_SUNKEN = Text.translatable("menu.blockgame.warp.button.sunken");
+    private final MutableText BUTTON_MYRKHEIM = Text.translatable("menu.blockgame.warp.button.myrkheim");
+    private final MutableText BUTTON_ROTTENMAW = Text.translatable("menu.blockgame.warp.button.rotten_maw");
+    private final MutableText BUTTON_NEITH = Text.translatable("menu.blockgame.warp.button.neith");
+    private final MutableText BUTTON_ARENA = Text.translatable("menu.blockgame.warp.button.arena");
 
-    private final TranslatableText BUTTON_BAZAAR = new TranslatableText("menu.blockgame.warp.button.bazaar");
+    private final MutableText BUTTON_BAZAAR = Text.translatable("menu.blockgame.warp.button.bazaar");
 
-    private final LinkedHashMap<TranslatableText, String> WARP_OPTIONS = new LinkedHashMap<>() {{
+    private final LinkedHashMap<MutableText, String> WARP_OPTIONS = new LinkedHashMap<>() {{
         put(BUTTON_TOWN, "/t spawn");
         put(BUTTON_YGGDRASIL, "/warp Yggdrasil");
         put(BUTTON_ORIGIN, "/warp Origin");
@@ -40,7 +41,7 @@ public class WarpScreen extends Screen {
     }};
 
     public WarpScreen() {
-        super(new TranslatableText("menu.blockgame.warp.header"));
+        super(Text.translatable("menu.blockgame.warp.header"));
     }
 
     @Override
@@ -62,7 +63,7 @@ public class WarpScreen extends Screen {
 
         // Add warp options
         int i = 0;
-        for (Map.Entry<TranslatableText, String> set : WARP_OPTIONS.entrySet()) {
+        for (Map.Entry<MutableText, String> set : WARP_OPTIONS.entrySet()) {
             Text btnText = set.getKey();
 
             int xOrigin = (width / 2) - (buttonWidth / 2);
@@ -70,41 +71,41 @@ public class WarpScreen extends Screen {
             int xPos = xOrigin + (buttonSpacingX * columnIndex);
             int yPos = listStartingY + (buttonSpacingY * (i % columnSizeY));
 
-            addDrawableChild(new ButtonWidget(xPos - globalXOffset, yPos, buttonWidth, buttonHeight, btnText, (button) -> {
+            addDrawableChild(ButtonWidget.builder(btnText, (button) -> {
                 close();
                 client.mouse.lockCursor();
 
-                ClientPlayerEntity p = client.player;
-                if(p != null) {
-                    p.sendChatMessage(set.getValue());
+                ClientPlayNetworkHandler nwh = client.getNetworkHandler();
+                if(nwh != null) {
+                    nwh.sendChatMessage(set.getValue());
                 }
-            }));
+            }).dimensions(xPos - globalXOffset, yPos, buttonWidth, buttonHeight).build());
 
             i++;
         }
 
         // Cancel Button
         int y = height / 10;
-        addDrawableChild(new ButtonWidget(width / 2 - 100, height - y - 20, 200, 20, BUTTON_CANCEL, (button) -> {
+        addDrawableChild(ButtonWidget.builder(BUTTON_CANCEL, (button) -> {
             close();
             client.mouse.lockCursor();
-        }));
+        }).dimensions(width / 2 - 100, height - y - 20, 200, 20).build());
     }
 
     @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        this.renderBackground(matrices);
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        this.renderBackground(context, mouseX, mouseY, delta);
 
         int y = height / 10;
-        drawTextCentered(matrices, title, y, 0xFAFAFA);
-        drawTextCentered(matrices, SUBHEADER, y + 11, 0x5E5E5E);
+        drawTextCentered(context, title, y, 0xFAFAFA);
+        drawTextCentered(context, SUBHEADER, y + 11, 0x5E5E5E);
 
-        super.render(matrices, mouseX, mouseY, delta);
+        super.render(context, mouseX, mouseY, delta);
     }
 
-    private void drawTextCentered(MatrixStack matrices, Text text, int y, int color) {
+    private void drawTextCentered(DrawContext context, Text text, int y, int color) {
         int textWidth = textRenderer.getWidth(text);
         int x = (width / 2) - (textWidth / 2);
-        textRenderer.draw(matrices, text, x, y, color);
+        context.drawText(MinecraftClient.getInstance().textRenderer, text, x, y, color, false);
     }
 }

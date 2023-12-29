@@ -10,5 +10,5 @@ public interface ServerPingEvent {
         }
     });
 
-    void serverPing(int id);
+    void serverPing(long id);
 }

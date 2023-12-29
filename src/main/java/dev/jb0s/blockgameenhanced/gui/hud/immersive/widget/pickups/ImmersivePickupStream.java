@@ -1,6 +1,7 @@
 package dev.jb0s.blockgameenhanced.gui.hud.immersive.widget.pickups;
 
 import dev.jb0s.blockgameenhanced.gui.hud.immersive.widget.ImmersiveWidget;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
@@ -18,7 +19,7 @@ public class ImmersivePickupStream extends ImmersiveWidget {
     }
 
     @Override
-    public synchronized void render(MatrixStack matrices, int x, int y, float tickDelta) {
+    public synchronized void render(DrawContext context, int x, int y, float tickDelta) {
         if(!pickupHashMap.isEmpty()) {
             ImmersivePickup[] list = getPickupsSafe();
 
@@ -26,7 +27,7 @@ public class ImmersivePickupStream extends ImmersiveWidget {
                 ImmersivePickup entry = list[i];
                 int sx = x - entry.getWidth();
                 int sy = y + ((entry.getHeight() + 5) * i);
-                entry.render(matrices, sx, sy, tickDelta);
+                entry.render(context, sx, sy, tickDelta);
             }
         }
     }

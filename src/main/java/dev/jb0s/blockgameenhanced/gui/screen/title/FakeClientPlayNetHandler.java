@@ -7,6 +7,6 @@ import net.minecraft.network.NetworkSide;
 
 public class FakeClientPlayNetHandler extends ClientPlayNetworkHandler {
     public FakeClientPlayNetHandler() {
-        super(MinecraftClient.getInstance(), MinecraftClient.getInstance().currentScreen, new ClientConnection(NetworkSide.CLIENTBOUND), MinecraftClient.getInstance().getSession().getProfile(), null);
+        super(MinecraftClient.getInstance(),new ClientConnection(NetworkSide.CLIENTBOUND), null);
     }
 }

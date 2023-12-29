@@ -8,19 +8,17 @@ import dev.jb0s.blockgameenhanced.eggs.ThorScreen;
 import dev.jb0s.blockgameenhanced.config.ConfigManager;
 import lombok.SneakyThrows;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.*;
-import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.gui.screen.option.OptionsScreen;
 import net.minecraft.client.gui.screen.world.SelectWorldScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.PressableTextWidget;
 import net.minecraft.client.network.*;
-import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.toast.SystemToast;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.TranslatableTextContent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import org.lwjgl.glfw.GLFW;
@@ -31,13 +29,13 @@ public class TitleScreen extends Screen {
 
     private static final Identifier BLOCKGAME_LOGO_TEXTURE = new Identifier("blockgame", "textures/gui/title/blockgame.png");
     private static final Identifier BACKGROUND_TEXTURE = new Identifier("blockgame", "textures/gui/title/titlescreen.png");
-    private final TranslatableText BUTTON_PLAY = new TranslatableText("menu.blockgame.title.play");
-    private final TranslatableText BUTTON_WEBSITE = new TranslatableText("menu.blockgame.title.website");
-    private final TranslatableText BUTTON_WIKI = new TranslatableText("menu.blockgame.title.wiki");
-    private final TranslatableText WATERMARK = new TranslatableText("menu.blockgame.title.watermark", FabricLoader.getInstance().getModContainer("blockgameenhanced").get().getMetadata().getVersion().getFriendlyString());
-    private final TranslatableText SERVER_STATUS_ONLINE_EMPTY = new TranslatableText("menu.blockgame.status.online.empty");
-    private final TranslatableText SERVER_STATUS_ONLINE_NOTEMPTY = new TranslatableText("menu.blockgame.status.online");
-    private final TranslatableText SERVER_STATUS_OFFLINE = new TranslatableText("menu.blockgame.status.offline");
+    private final MutableText BUTTON_PLAY = Text.translatable("menu.blockgame.title.play");
+    private final MutableText BUTTON_WEBSITE = Text.translatable("menu.blockgame.title.website");
+    private final MutableText BUTTON_WIKI = Text.translatable("menu.blockgame.title.wiki");
+    private final MutableText WATERMARK = Text.translatable("menu.blockgame.title.watermark", FabricLoader.getInstance().getModContainer("blockgameenhanced").get().getMetadata().getVersion().getFriendlyString());
+    private final MutableText SERVER_STATUS_ONLINE_EMPTY = Text.translatable("menu.blockgame.status.online.empty");
+    private final MutableText SERVER_STATUS_ONLINE_NOTEMPTY = Text.translatable("menu.blockgame.status.online");
+    private final MutableText SERVER_STATUS_OFFLINE = Text.translatable("menu.blockgame.status.offline");
 
     private MultiplayerServerListPinger pinger;
     private FakePlayer fakePlayer;
@@ -64,7 +62,7 @@ public class TitleScreen extends Screen {
 
         // Initialize server pinger & server info
         pinger = new MultiplayerServerListPinger();
-        serverInfo = new ServerInfo("Blockgame", "mc.blockgame.info", false);
+        serverInfo = new ServerInfo("Blockgame", "mc.blockgame.info", ServerInfo.ServerType.OTHER);
 
         // Start pinging server
         Thread pingThread = new Thread(() -> {
@@ -81,8 +79,8 @@ public class TitleScreen extends Screen {
         pingThread.start();
 
         // Initialize player
-        fakePlayer = new FakePlayer();
-        fakePlayer.getInventory().readNbt(configManager.getInventorySnapshot());
+        //fakePlayer = new FakePlayer();
+        //fakePlayer.getInventory().readNbt(configManager.getInventorySnapshot());
 
         // Initialize ui
         initButtons();
@@ -92,19 +90,19 @@ public class TitleScreen extends Screen {
     }
 
     @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        renderBackground(matrices);
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        renderBackground(context, mouseX, mouseY, delta);
         renderPlayer(mouseX, mouseY);
-        renderLogo(matrices, width, 1, 30);
+        renderLogo(context, width, 1, 30);
 
-        super.render(matrices, mouseX, mouseY, delta);
+        super.render(context, mouseX, mouseY, delta);
 
         // Render this after super, because super renders the buttons
-        renderServerStatus(matrices);
+        renderServerStatus(context);
     }
 
     @Override
-    public void renderBackground(MatrixStack matrices) {
+    public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
         int sw = width;
         int sh = height;
         if(sh >= sw) {
@@ -121,7 +119,7 @@ public class TitleScreen extends Screen {
 
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.setShaderTexture(0, BACKGROUND_TEXTURE);
-        DrawableHelper.drawTexture(matrices, 0, 0, -500, 0, 0, sw, sh, sw, sh);
+        context.drawTexture(BACKGROUND_TEXTURE, 0, 0, -500, 0, 0, sw, sh, sw, sh);
     }
 
     @Override
@@ -151,12 +149,12 @@ public class TitleScreen extends Screen {
 
     /**
      * Renders the logo on the main menu.
-     * @param matrices The MatrixStack to render on.
+     * @param context Current DrawContext.
      * @param screenWidth The width of the screen.
      * @param alpha The alpha to render the logo at.
      * @param y2 The Y coordinate to render the logo at.
      */
-    public void renderLogo(MatrixStack matrices, int screenWidth, float alpha, int y2) {
+    public void renderLogo(DrawContext context, int screenWidth, float alpha, int y2) {
         RenderSystem.enableBlend();;
         RenderSystem.setShaderTexture(0, BLOCKGAME_LOGO_TEXTURE);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, alpha);
@@ -164,7 +162,7 @@ public class TitleScreen extends Screen {
         int textureWidth = (int)(232 / 1.3f);
         int textureHeight = (int)(66 / 1.3f);
         int i = (screenWidth / 4) - textureWidth / 2;
-        DrawableHelper.drawTexture(matrices, i, y2, 0, 0, 0, textureWidth, textureHeight, textureWidth, textureHeight);
+        context.drawTexture(BLOCKGAME_LOGO_TEXTURE, i, y2, 0, 0, 0, textureWidth, textureHeight, textureWidth, textureHeight);
 
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.disableBlend();
@@ -180,7 +178,7 @@ public class TitleScreen extends Screen {
             int size = height / 5;
             int x = (int)(width * 0.75);
             int y = (int)(height * 0.75) + (int)(size * 0.25);
-            InventoryScreen.drawEntity(x, y, size, -mouseX + x, -mouseY + y - size * 2 + size / 2f, fakePlayer);
+            // todo InventoryScreen.drawEntity(x, y, size, -mouseX + x, -mouseY + y - size * 2 + size / 2f, fakePlayer);
         }
         catch(Exception e) {
             // cry, weep, shit pants and cum
@@ -190,21 +188,21 @@ public class TitleScreen extends Screen {
 
     /**
      * Renders the Blockgame server's status on the title screen.
-     * @param matrices The MatrixStack to render on.
+     * @param context Current DrawContext.
      */
-    private void renderServerStatus(MatrixStack matrices) {
+    private void renderServerStatus(DrawContext context) {
         try {
-            boolean playerCountEmpty = serverInfo.playerCountLabel == null || serverInfo.playerCountLabel.asString().isEmpty();
+            boolean playerCountEmpty = serverInfo.playerCountLabel == null || serverInfo.playerCountLabel.getString().isEmpty();
 
             if(!playerCountEmpty) {
                 // Draw summarizing text ("There are X players online" or "There are currently no players online.")
-                TranslatableText key = serverInfo.playerListSummary != null ? new TranslatableText(SERVER_STATUS_ONLINE_NOTEMPTY.getKey(), serverInfo.playerListSummary.size()) : SERVER_STATUS_ONLINE_EMPTY;
-                DrawableHelper.drawTextWithShadow(matrices, client.textRenderer, key, (width / 2) + 4, 7, Integer.MAX_VALUE);
+                MutableText key = serverInfo.playerListSummary != null ? Text.translatable(((TranslatableTextContent) SERVER_STATUS_ONLINE_NOTEMPTY.getContent()).getKey(), serverInfo.playerListSummary.size()) : SERVER_STATUS_ONLINE_EMPTY;
+                context.drawText(client.textRenderer, key, (width / 2) + 4, 7, Integer.MAX_VALUE, true);
 
                 // Draw player list
                 if(serverInfo.playerListSummary != null) {
                     for (int i = 0; i < serverInfo.playerListSummary.size(); i++) {
-                        DrawableHelper.drawTextWithShadow(matrices, client.textRenderer, serverInfo.playerListSummary.get(i), (width / 2) + 4, 21 + (12 * i), Integer.MAX_VALUE);
+                        context.drawText(client.textRenderer, serverInfo.playerListSummary.get(i), (width / 2) + 4, 21 + (12 * i), Integer.MAX_VALUE, true);
                     }
                 }
 
@@ -212,24 +210,24 @@ public class TitleScreen extends Screen {
                 BlockgameEnhancedClient.setPreLoginLatency((int) serverInfo.ping);
             }
             else if(serverInfo.label != null) {
-                DrawableHelper.drawTextWithShadow(matrices, client.textRenderer, serverInfo.label, (width / 2) + 4, 7, Integer.MAX_VALUE);
+                context.drawText(client.textRenderer, serverInfo.label, (width / 2) + 4, 7, Integer.MAX_VALUE, true);
             }
         }
         catch (Exception e) {
-            DrawableHelper.drawTextWithShadow(matrices, client.textRenderer, SERVER_STATUS_OFFLINE, (width / 2) + 4, 7, Integer.MAX_VALUE);
+            context.drawText(client.textRenderer, SERVER_STATUS_OFFLINE, (width / 2) + 4, 7, Integer.MAX_VALUE, true);
             throw e;
         }
 
         // I have no idea how Mojang does anything, their UI code sucks balls
         // This draws the server ping icon on the Play button by the way
-        int l = (height / 2) - 7;
+        /*int l = (height / 2) - 7;
         int x = width / 4 - 75 + 132;
         int y = l + 5;
         int pi = serverInfo.online ? serverInfo.ping < 0L ? 5 : (serverInfo.ping < 50L ? 0 : (serverInfo.ping < 100L ? 1 : (serverInfo.ping < 175L ? 2 : (serverInfo.ping < 300L ? 3 : 4)))) : 5;
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.setShaderTexture(0, DrawableHelper.GUI_ICONS_TEXTURE);
-        DrawableHelper.drawTexture(matrices, x, y, 0, 176 + pi * 8, 10, 8, 256, 256);
+        context.drawTexture(matrices, x, y, 0, 176 + pi * 8, 10, 8, 256, 256);*/
     }
 
     /**
@@ -240,19 +238,19 @@ public class TitleScreen extends Screen {
         int l = (height / 2) - 7;
 
         // Add Website Button
-        addDrawableChild(new ButtonWidget(width / 4 - 75, l + 24, 74, 20, BUTTON_WEBSITE, (button) -> Util.getOperatingSystem().open("https://blockgame.info")));
+        addDrawableChild(ButtonWidget.builder(BUTTON_WEBSITE, (button) -> Util.getOperatingSystem().open("https://blockgame.info")).dimensions(width / 4 - 75, l + 24, 74, 20).build());
 
         // Add Wiki Button
-        addDrawableChild(new ButtonWidget(width / 4 + 1, l + 24, 74, 20, BUTTON_WIKI, (button) -> Util.getOperatingSystem().open("https://blockgame.piratesoftware.wiki")));
+        addDrawableChild(ButtonWidget.builder(BUTTON_WIKI, (button) -> Util.getOperatingSystem().open("https://blockgame.piratesoftware.wiki")).dimensions(width / 4 + 1, l + 24, 74, 20).build());
 
         // Add Play Button
-        addDrawableChild(new ButtonWidget(width / 4 - 75, l, 150, 20, BUTTON_PLAY, (button) -> ConnectScreen.connect(this, this.client, ServerAddress.parse("mc.blockgame.info"), new ServerInfo("BlockGame", "mc.blockgame.info", false))));
+        addDrawableChild(ButtonWidget.builder(BUTTON_PLAY, (button) -> ConnectScreen.connect(this, this.client, ServerAddress.parse("mc.blockgame.info"), new ServerInfo("BlockGame", "mc.blockgame.info", ServerInfo.ServerType.OTHER), true)).dimensions(width / 4 - 75, l, 150, 20).build());
 
         int bottomRowYOffset = 0;
         if(BlockgameEnhanced.isModmenuPresent()) {
             bottomRowYOffset = 24;
 
-            addDrawableChild(new ButtonWidget(width / 4 - 75, l + 48, 150, 20, Text.of("Mods"), (button) -> {
+            addDrawableChild(ButtonWidget.builder(Text.of("Mods"), (button) -> {
                 // Detect if ModMenu mod is present
                 try
                 {
@@ -267,19 +265,19 @@ public class TitleScreen extends Screen {
                     client.getToastManager().add(new SystemToast(SystemToast.Type.PACK_LOAD_FAILURE, Text.of("Error"), Text.of(e.getMessage())));
                     client.setScreen(new ThorScreen(this));
                 }
-            }));
+            }).dimensions(width / 4 - 75, l + 48, 150, 20).build());
         }
 
         // Add Options Button
-        addDrawableChild(new ButtonWidget(width / 4 - 75, l + 48 + bottomRowYOffset, 74, 20, new TranslatableText("menu.options"), (button) -> {
+        addDrawableChild(ButtonWidget.builder(Text.translatable("menu.options"), (button) -> {
             assert client != null;
             client.setScreen(new OptionsScreen(this, client.options));
-        }));
+        }).dimensions(width / 4 - 75, l + 48 + bottomRowYOffset, 74, 20).build());
 
         // Add Quit Game Button
-        addDrawableChild(new ButtonWidget(width / 4 + 1, l + 48 + bottomRowYOffset, 74, 20, new TranslatableText("menu.quit"), (button) -> {
+        addDrawableChild(ButtonWidget.builder(Text.translatable("menu.quit"), (button) -> {
             client.scheduleStop();
-        }));
+        }).dimensions(width / 4 + 1, l + 48 + bottomRowYOffset, 74, 20).build());
     }
 
     /**
@@ -287,7 +285,7 @@ public class TitleScreen extends Screen {
      */
     private void initDebug() {
         int l = (height / 2) - 7;
-        addDrawableChild(new ButtonWidget(12, 12, 50, 20, Text.of("auth"), (button) -> {
+        addDrawableChild(ButtonWidget.builder(Text.of("auth"), (button) -> {
             try
             {
                 Class<?> modsScreenClass = Class.forName("me.axieum.mcmod.authme.impl.gui.MicrosoftAuthScreen");
@@ -301,10 +299,10 @@ public class TitleScreen extends Screen {
                 client.getToastManager().add(new SystemToast(SystemToast.Type.PACK_LOAD_FAILURE, Text.of("Error"), Text.of(e.getMessage())));
                 client.setScreen(new ThorScreen(this));
             }
-        }));
-        addDrawableChild(new ButtonWidget(64, 12, 50, 20, Text.of("testworld"), (button) -> {
+        }).dimensions(12, 12, 50, 20).build());
+        addDrawableChild(ButtonWidget.builder(Text.of("testworld"), (button) -> {
             client.setScreen(new SelectWorldScreen(this));
-        }));
+        }).dimensions(64, 12, 50, 20).build());
     }
 
     /**
