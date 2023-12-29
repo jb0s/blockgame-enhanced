@@ -9,7 +9,7 @@ import lombok.Getter;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.KnowledgeBookItem;
-import net.minecraft.item.SkullItem;
+import net.minecraft.item.PlayerHeadItem;
 import net.minecraft.network.packet.s2c.play.InventoryS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenScreenS2CPacket;
 import net.minecraft.util.ActionResult;
@@ -52,7 +52,7 @@ public class RecipeTrackerGameFeature extends GameFeature {
         }
 
         List<ItemStack> inv = packet.getContents();
-        boolean hasBackButton = inv.get(RECIPE_PREVIEW_BACK_BUTTON_INDEX).getItem() instanceof SkullItem;
+        boolean hasBackButton = inv.get(RECIPE_PREVIEW_BACK_BUTTON_INDEX).getItem() instanceof PlayerHeadItem;
         boolean hasCraftButton = inv.get(RECIPE_PREVIEW_CRAFT_BUTTON_INDEX).getItem() instanceof KnowledgeBookItem;
         boolean isScreenValid = hasBackButton && hasCraftButton;
 
