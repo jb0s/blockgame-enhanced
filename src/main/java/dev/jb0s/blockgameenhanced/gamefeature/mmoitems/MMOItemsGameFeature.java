@@ -19,9 +19,9 @@ import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
 import net.minecraft.client.render.*;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -65,7 +65,7 @@ public class MMOItemsGameFeature extends GameFeature {
     /**
      * Draws charge count for items with charges
      */
-    private ActionResult drawItemChargeCounter(TextRenderer textRenderer, ItemStack itemStack, int x, int y, String countLabel) {
+    private ActionResult drawItemChargeCounter(DrawContext context, TextRenderer textRenderer, ItemStack itemStack, int x, int y, String countLabel) {
         NbtCompound nbt = itemStack.getOrCreateNbt();
 
         if(BlockgameEnhanced.isNotkerMmoPresent()) {
@@ -73,21 +73,18 @@ public class MMOItemsGameFeature extends GameFeature {
             return ActionResult.PASS;
         }
 
-        MatrixStack matrixStack = new MatrixStack();
         if(nbt.getInt("MMOITEMS_MAX_CONSUME") != 0 && itemStack.getCount() == 1) {
             String chargeCountString = countLabel == null ? String.valueOf(nbt.getInt("MMOITEMS_MAX_CONSUME")) : countLabel;
             VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
 
-            matrixStack.translate(0.0, 0.0, (MinecraftClient.getInstance().inGameHud.getZOffset() + 300.0f));
-
             // Shitty outline (Notch did it first!)
-            textRenderer.draw(chargeCountString, (float)(x + 19 - 2 - textRenderer.getWidth(chargeCountString)) + 1, (float)(y + 6 + 3), 0x000000, false, matrixStack.peek().getPositionMatrix(), immediate, false, 0, LightmapTextureManager.MAX_LIGHT_COORDINATE);
-            textRenderer.draw(chargeCountString, (float)(x + 19 - 2 - textRenderer.getWidth(chargeCountString)) - 1, (float)(y + 6 + 3), 0x000000, false, matrixStack.peek().getPositionMatrix(), immediate, false, 0, LightmapTextureManager.MAX_LIGHT_COORDINATE);
-            textRenderer.draw(chargeCountString, (float)(x + 19 - 2 - textRenderer.getWidth(chargeCountString)), (float)(y + 6 + 3) + 1, 0x000000, false, matrixStack.peek().getPositionMatrix(), immediate, false, 0, LightmapTextureManager.MAX_LIGHT_COORDINATE);
-            textRenderer.draw(chargeCountString, (float)(x + 19 - 2 - textRenderer.getWidth(chargeCountString)), (float)(y + 6 + 3) - 1, 0x000000, false, matrixStack.peek().getPositionMatrix(), immediate, false, 0, LightmapTextureManager.MAX_LIGHT_COORDINATE);
+            context.drawText(textRenderer, chargeCountString, (x + 19 - 2 - textRenderer.getWidth(chargeCountString)) + 1, (y + 6 + 3), 0x000000, false);
+            context.drawText(textRenderer, chargeCountString, (x + 19 - 2 - textRenderer.getWidth(chargeCountString)) - 1, (y + 6 + 3), 0x000000, false);
+            context.drawText(textRenderer, chargeCountString, (x + 19 - 2 - textRenderer.getWidth(chargeCountString)), (y + 6 + 3) + 1, 0x000000, false);
+            context.drawText(textRenderer, chargeCountString, (x + 19 - 2 - textRenderer.getWidth(chargeCountString)), (y + 6 + 3) - 1, 0x000000, false);
 
-            matrixStack.translate(0.0, 0.0, 0.001f);
-            textRenderer.draw(chargeCountString, (float)(x + 19 - 2 - textRenderer.getWidth(chargeCountString)), (float)(y + 6 + 3), 0x7EFC20, false, matrixStack.peek().getPositionMatrix(), immediate, false, 0, LightmapTextureManager.MAX_LIGHT_COORDINATE);
+            // Draw actual text
+            context.drawText(textRenderer, chargeCountString, (x + 19 - 2 - textRenderer.getWidth(chargeCountString)), (y + 6 + 3), 0x7EFC20, false);
 
             immediate.draw();
             return ActionResult.SUCCESS;
@@ -99,7 +96,7 @@ public class MMOItemsGameFeature extends GameFeature {
     /**
      * Draw cooldown for items
      */
-    private ActionResult drawItemCooldownOverlay(TextRenderer textRenderer, ItemStack itemStack, int x, int y, String countLabel) {
+    private ActionResult drawItemCooldownOverlay(DrawContext context, TextRenderer textRenderer, ItemStack itemStack, int x, int y, String countLabel) {
         NbtCompound nbt = itemStack.getOrCreateNbt();
         String tag = nbt.getString("MMOITEMS_ABILITY");
         if(tag != null) {
@@ -111,13 +108,11 @@ public class MMOItemsGameFeature extends GameFeature {
 
                 if (cd > 0.0f) {
                     RenderSystem.disableDepthTest();
-                    RenderSystem.disableTexture();
                     RenderSystem.enableBlend();
                     RenderSystem.defaultBlendFunc();
                     Tessellator tessellator2 = Tessellator.getInstance();
                     BufferBuilder bufferBuilder2 = tessellator2.getBuffer();
                     renderGuiQuad(bufferBuilder2, x, y + MathHelper.floor(16.0f * (1.0f - cd)), 16, MathHelper.ceil(16.0f * cd), 255, 255, 255, 127);
-                    RenderSystem.enableTexture();
                     RenderSystem.enableDepthTest();
                 }
             }
@@ -210,7 +205,7 @@ public class MMOItemsGameFeature extends GameFeature {
         }
 
         // This item has an ability, resend the right click packet to trigger a cooldown message from the server, which we then use for the hotbar
-        scheduledPackets.add(new ScheduledItemUsePacket(new PlayerInteractItemC2SPacket(hand), tick, tick + 2));
+        scheduledPackets.add(new ScheduledItemUsePacket(new PlayerInteractItemC2SPacket(hand, tick), tick, tick + 2));
         captureItemUsage(stack);
 
         return TypedActionResult.pass(stack);
@@ -382,14 +377,14 @@ public class MMOItemsGameFeature extends GameFeature {
      * Renders a quad on the GUI. Adapted from ItemRenderer.class
      */
     private void renderGuiQuad(BufferBuilder buffer, int x, int y, int width, int height, int red, int green, int blue, int alpha) {
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        RenderSystem.setShader(GameRenderer::getPositionColorProgram);
         buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
         buffer.vertex(x + 0, y + 0, 0.0).color(red, green, blue, alpha).next();
         buffer.vertex(x + 0, y + height, 0.0).color(red, green, blue, alpha).next();
         buffer.vertex(x + width, y + height, 0.0).color(red, green, blue, alpha).next();
         buffer.vertex(x + width, y + 0, 0.0).color(red, green, blue, alpha).next();
         buffer.end();
-        BufferRenderer.draw(buffer);
+        BufferRenderer.draw(buffer.end());
     }
 
     record MMOItemsCooldownEntry(int startTick, int endTick) { }
