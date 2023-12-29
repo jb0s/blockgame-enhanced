@@ -11,7 +11,6 @@ import dev.jb0s.blockgameenhanced.event.gamefeature.party.PartyUpdatedEvent;
 import dev.jb0s.blockgameenhanced.gamefeature.GameFeature;
 import dev.jb0s.blockgameenhanced.gamefeature.party.PartyGameFeature;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
@@ -29,13 +28,13 @@ public class ChatChannelsGameFeature extends GameFeature implements ReceiveChatM
     private final static ChatChannelsConfig CONFIG = BlockgameEnhanced.getConfig().getChatChannelsConfig();
 
     static {
-        GENERAL_CHANNEL = new ChatChannel("general", "/towny:g", true, new LiteralText("General").formatted(Formatting.WHITE));
+        GENERAL_CHANNEL = new ChatChannel("general", "towny:g", true, Text.literal("General").formatted(Formatting.WHITE));
         CHANNELS.put("general", GENERAL_CHANNEL);
-        CHANNELS.put("party", new ChatChannel("party", "@", false, false, new LiteralText("Party").formatted(Formatting.LIGHT_PURPLE)));
-        CHANNELS.put("town", new ChatChannel("town", "/towny:tc", true, new LiteralText("Town").formatted(Formatting.AQUA)));
-        CHANNELS.put("nation", new ChatChannel("nation", "/towny:nc", true, new LiteralText("Nation").formatted(Formatting.YELLOW)));
-        CHANNELS.put("alliance", new ChatChannel("alliance", "/towny:ac", true, new LiteralText("Alliance").formatted(Formatting.GREEN)));
-        CHANNELS.put("local", new ChatChannel("local", "/towny:lc", true, new LiteralText("Local").formatted(Formatting.WHITE)));
+        CHANNELS.put("party", new ChatChannel("party", "@", false, false, Text.literal("Party").formatted(Formatting.LIGHT_PURPLE)));
+        CHANNELS.put("town", new ChatChannel("town", "towny:tc", true, Text.literal("Town").formatted(Formatting.AQUA)));
+        CHANNELS.put("nation", new ChatChannel("nation", "towny:nc", true, Text.literal("Nation").formatted(Formatting.YELLOW)));
+        CHANNELS.put("alliance", new ChatChannel("alliance", "towny:ac", true, Text.literal("Alliance").formatted(Formatting.GREEN)));
+        CHANNELS.put("local", new ChatChannel("local", "towny:lc", true, Text.literal("Local").formatted(Formatting.WHITE)));
     }
 
     private ChatChannel selectedChannel;
@@ -99,7 +98,7 @@ public class ChatChannelsGameFeature extends GameFeature implements ReceiveChatM
             partyChannel.enabled = isInParty;
 
             if (selectedChannel.equals(partyChannel) && !isInParty) {
-                getMinecraftClient().player.sendChatMessage(GENERAL_CHANNEL.command);
+                getMinecraftClient().getNetworkHandler().sendChatCommand(GENERAL_CHANNEL.command);
                 setSelectedChannel(GENERAL_CHANNEL);
             }
         }
@@ -114,7 +113,7 @@ public class ChatChannelsGameFeature extends GameFeature implements ReceiveChatM
         if (selectedChannel.isTemporary) {
             // a temporary channel means we don't know it = user switched with a command
             // no idea where we are in the list, just go back to general
-            getMinecraftClient().player.sendChatMessage(GENERAL_CHANNEL.command);
+            getMinecraftClient().getNetworkHandler().sendChatCommand(GENERAL_CHANNEL.command);
             setSelectedChannel(GENERAL_CHANNEL);
             return;
         }
@@ -139,13 +138,13 @@ public class ChatChannelsGameFeature extends GameFeature implements ReceiveChatM
             if (selectedIndex > -1 && channels.get(index).enabled) {
                 ChatChannel channel = channels.get(index);
                 if (channel.canSwitch) {
-                    getMinecraftClient().player.sendChatMessage(channel.command);
+                    getMinecraftClient().getNetworkHandler().sendChatCommand(channel.command);
                 } else {
                     setSelectedChannel(channels.get(index));
 
                     if (CONFIG.showPartyMessageInChat) {
-                        Text channelName = new LiteralText(selectedChannel.name).setStyle(selectedChannel.formattedName.getStyle());
-                        Text chatMessage = new LiteralText(CHANNEL_MESSAGE_PREFIX).append(channelName);
+                        Text channelName = Text.literal(selectedChannel.name).setStyle(selectedChannel.formattedName.getStyle());
+                        Text chatMessage = Text.literal(CHANNEL_MESSAGE_PREFIX).append(channelName);
                         getMinecraftClient().player.sendMessage(chatMessage, false);
                     }
                 }
