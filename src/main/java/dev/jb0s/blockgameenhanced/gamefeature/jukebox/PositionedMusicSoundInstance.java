@@ -4,10 +4,11 @@ import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.random.Random;
 
 public class PositionedMusicSoundInstance extends PositionedSoundInstance {
     public PositionedMusicSoundInstance(SoundEvent sound, SoundCategory category, float volume, float pitch, BlockPos blockPos) {
-        super(sound, category, volume, pitch, blockPos);
+        super(sound, category, volume, pitch, Random.create(), blockPos);
         this.repeat = true;
     }
 

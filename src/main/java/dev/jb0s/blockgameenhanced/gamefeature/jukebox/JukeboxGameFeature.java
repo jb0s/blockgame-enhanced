@@ -161,7 +161,7 @@ public class JukeboxGameFeature extends GameFeature {
             muted = false;
 
             if(isPlaying()) {
-                soundInstance = new MusicSoundInstance(new SoundEvent(currentMusic.getSoundId(getMusicSoundIndex())), SoundCategory.MUSIC, 1f, 1f, getMinecraftClient().player);
+                soundInstance = new MusicSoundInstance(SoundEvent.of(currentMusic.getSoundId(getMusicSoundIndex())), SoundCategory.MUSIC, 1f, 1f, getMinecraftClient().player);
                 soundManager.play(soundInstance);
             }
         }
@@ -232,7 +232,7 @@ public class JukeboxGameFeature extends GameFeature {
             desiredMusic = mus;
 
             BlockgameEnhanced.LOGGER.info("Now playing: " + music + " (" + getMusicSoundIndex() + ")");
-            soundInstance = new MusicSoundInstance(new SoundEvent(mus.getSoundId(getMusicSoundIndex())), SoundCategory.MUSIC, 1f, 1f, playerEntity);
+            soundInstance = new MusicSoundInstance(SoundEvent.of(mus.getSoundId(getMusicSoundIndex())), SoundCategory.MUSIC, 1f, 1f, playerEntity);
             soundManager.play(soundInstance, delay);
             playing = true;
             return;
