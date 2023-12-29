@@ -26,7 +26,7 @@ import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.SkullItem;
+import net.minecraft.item.PlayerHeadItem;
 import net.minecraft.network.packet.s2c.play.InventoryS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenScreenS2CPacket;
 import net.minecraft.screen.ScreenHandlerType;
@@ -34,12 +34,11 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3d;
+import org.joml.Matrix4f;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -49,7 +48,7 @@ import java.util.regex.Pattern;
 
 public class PartyGameFeature extends GameFeature {
     private static final String PARTY_LIST_SCREEN_NAME = "Party";
-    private static final SoundEvent PARTY_MEMBER_DEATH_SOUND = new SoundEvent(new Identifier("blockgame", "mus.gui.combat.death"));
+    private static final SoundEvent PARTY_MEMBER_DEATH_SOUND = SoundEvent.of(new Identifier("blockgame", "mus.gui.combat.death"));
     private static final String JOINED_PARTY_MESSAGE_REGEX = "(.*) joined your party!";
     private static final String LEFT_PARTY_MESSAGE_REGEX = "(.*) has left the party.";
     private static final String LEFT_GAME_MESSAGE_REGEX = "(.*) left the game";
@@ -112,7 +111,7 @@ public class PartyGameFeature extends GameFeature {
         }
 
         int syncId = packet.getSyncId();
-        String name = packet.getName().asString();
+        String name = packet.getName().getString();
         boolean isPartyMembersScreen = name.startsWith(PARTY_LIST_SCREEN_NAME);
 
         // Disregard this packet if it's unrelated to the party manager
@@ -146,7 +145,7 @@ public class PartyGameFeature extends GameFeature {
             }
 
             // If the item in this slot is a skull, see if we can find a player that owns it.
-            if(stack.getItem() instanceof SkullItem) {
+            if(stack.getItem() instanceof PlayerHeadItem) {
                 String name = stack.getName().getString();
                 PlayerListEntry playerEntry = getMinecraftClient().getNetworkHandler().getPlayerListEntry(name);
 
@@ -217,10 +216,10 @@ public class PartyGameFeature extends GameFeature {
         partyMembers.add(new PartyMember(player));
 
         // Toast notification saying that player joined
-        boolean playerIsMe = player.getProfile().getName().equals(getMinecraftClient().getSession().getProfile().getName());
+        boolean playerIsMe = player.getProfile().getName().equals(getMinecraftClient().getSession().getUsername());
         if(!playerIsMe) {
-            Text toastTitle = new TranslatableText("hud.blockgame.toast.party.joined.title");
-            Text toastDescription = new TranslatableText("hud.blockgame.toast.party.joined.description", player.getProfile().getName());
+            Text toastTitle = Text.translatable("hud.blockgame.toast.party.joined.title");
+            Text toastDescription = Text.translatable("hud.blockgame.toast.party.joined.description", player.getProfile().getName());
             getMinecraftClient().getToastManager().add(new SystemToast(SystemToast.Type.PERIODIC_NOTIFICATION, toastTitle, toastDescription));
         }
 
@@ -242,8 +241,8 @@ public class PartyGameFeature extends GameFeature {
             partyPings = null;
 
             // Toast notification saying that party disbanded
-            Text toastTitle = new TranslatableText("hud.blockgame.toast.party.disbanded.title");
-            Text toastDescription = new TranslatableText("hud.blockgame.toast.party.disbanded.description");
+            Text toastTitle = Text.translatable("hud.blockgame.toast.party.disbanded.title");
+            Text toastDescription = Text.translatable("hud.blockgame.toast.party.disbanded.description");
             getMinecraftClient().getToastManager().add(new SystemToast(SystemToast.Type.PERIODIC_NOTIFICATION, toastTitle, toastDescription));
 
             // Invoke party updated event
@@ -254,8 +253,8 @@ public class PartyGameFeature extends GameFeature {
             partyPings.remove(member);
 
             // Toast notification saying that player left
-            Text toastTitle = new TranslatableText("hud.blockgame.toast.party.left.title");
-            Text toastDescription = new TranslatableText("hud.blockgame.toast.party.left.description", member.getPlayerName());
+            Text toastTitle = Text.translatable("hud.blockgame.toast.party.left.title");
+            Text toastDescription = Text.translatable("hud.blockgame.toast.party.left.description", member.getPlayerName());
             getMinecraftClient().getToastManager().add(new SystemToast(SystemToast.Type.PERIODIC_NOTIFICATION, toastTitle, toastDescription));
 
             // Invoke party updated event
@@ -270,13 +269,13 @@ public class PartyGameFeature extends GameFeature {
 
         if(partyMembers.size() == 1) {
             // we were the last player → party disbanded
-            Text toastTitle = new TranslatableText("hud.blockgame.toast.party.disbanded.title");
-            Text toastDescription = new TranslatableText("hud.blockgame.toast.party.disbanded.description");
+            Text toastTitle = Text.translatable("hud.blockgame.toast.party.disbanded.title");
+            Text toastDescription = Text.translatable("hud.blockgame.toast.party.disbanded.description");
             getMinecraftClient().getToastManager().add(new SystemToast(SystemToast.Type.PERIODIC_NOTIFICATION, toastTitle, toastDescription));
         }
         else {
-            Text toastTitle = new TranslatableText("hud.blockgame.toast.party.selfLeft.title");
-            Text toastDescription = new TranslatableText("hud.blockgame.toast.party.selfLeft.description", partyName);
+            Text toastTitle = Text.translatable("hud.blockgame.toast.party.selfLeft.title");
+            Text toastDescription = Text.translatable("hud.blockgame.toast.party.selfLeft.description", partyName);
             getMinecraftClient().getToastManager().add(new SystemToast(SystemToast.Type.PERIODIC_NOTIFICATION, toastTitle, toastDescription));
         }
 
@@ -445,10 +444,10 @@ public class PartyGameFeature extends GameFeature {
 
             // If we're pinging where a ping already exists, unping instead
             if(existingPing != null && existingPing.isHovered()) {
-                cpe.sendChatMessage("@~ Unping");
+                MinecraftClient.getInstance().getNetworkHandler().sendChatMessage("@~ Unping");
             }
             else {
-                cpe.sendChatMessage(String.format("@~ Ping ~ " + hit.getPos().toString() + " ~ " + cpe.world.getRegistryKey().getValue().getPath()));
+                MinecraftClient.getInstance().getNetworkHandler().sendChatMessage(String.format("@~ Ping ~ " + hit.getPos().toString() + " ~ " + cpe.getWorld().getRegistryKey().getValue().getPath()));
             }
         }
     }

@@ -5,7 +5,8 @@ import lombok.Setter;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.Window;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vector4f;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 public class PartyPing {
     @Getter
@@ -21,7 +22,7 @@ public class PartyPing {
 
     @Getter
     @Setter
-    private Vector4f screenSpacePos;
+    private Vector3f screenSpacePos;
 
     public PartyPing(PartyMember partyMember, Vec3d location, String world) {
         this.partyMember = partyMember;
@@ -45,7 +46,7 @@ public class PartyPing {
         Window window = minecraft.getWindow();
         float cx = window.getWidth() / 2.f;
         float cy = window.getHeight() / 2.f;
-        float dist = Math.abs(getScreenSpacePos().getX() - cx) + Math.abs(getScreenSpacePos().getY() - cy);
+        float dist = Math.abs(getScreenSpacePos().x() - cx) + Math.abs(getScreenSpacePos().y() - cy);
         return dist < 27;
     }
 }
