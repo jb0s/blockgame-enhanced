@@ -28,16 +28,16 @@ public class WarpScreen extends Screen {
     private final MutableText BUTTON_BAZAAR = Text.translatable("menu.blockgame.warp.button.bazaar");
 
     private final LinkedHashMap<MutableText, String> WARP_OPTIONS = new LinkedHashMap<>() {{
-        put(BUTTON_TOWN, "/t spawn");
-        put(BUTTON_YGGDRASIL, "/warp Yggdrasil");
-        put(BUTTON_ORIGIN, "/warp Origin");
-        put(BUTTON_MYRKHEIM, "/warp Myrkheim");
-        put(BUTTON_KROGNAR, "/warp Krognars_Bastion");
-        put(BUTTON_SUNKEN, "/warp Sunken_Cells");
-        put(BUTTON_ROTTENMAW, "/warp Rotten_Maw");
-        put(BUTTON_NEITH, "/warp Neith");
-        put(BUTTON_ARENA, "/warp Arena");
-        put(BUTTON_BAZAAR, "/warp Bazaar");
+        put(BUTTON_TOWN, "t spawn");
+        put(BUTTON_YGGDRASIL, "warp Yggdrasil");
+        put(BUTTON_ORIGIN, "warp Origin");
+        put(BUTTON_MYRKHEIM, "warp Myrkheim");
+        put(BUTTON_KROGNAR, "warp Krognars_Bastion");
+        put(BUTTON_SUNKEN, "warp Sunken_Cells");
+        put(BUTTON_ROTTENMAW, "warp Rotten_Maw");
+        put(BUTTON_NEITH, "warp Neith");
+        put(BUTTON_ARENA, "warp Arena");
+        put(BUTTON_BAZAAR, "warp Bazaar");
     }};
 
     public WarpScreen() {
@@ -77,7 +77,7 @@ public class WarpScreen extends Screen {
 
                 ClientPlayNetworkHandler nwh = client.getNetworkHandler();
                 if(nwh != null) {
-                    nwh.sendChatMessage(set.getValue());
+                    nwh.sendChatCommand(set.getValue());
                 }
             }).dimensions(xPos - globalXOffset, yPos, buttonWidth, buttonHeight).build());
 
@@ -94,13 +94,11 @@ public class WarpScreen extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        this.renderBackground(context, mouseX, mouseY, delta);
+        super.render(context, mouseX, mouseY, delta);
 
         int y = height / 10;
         drawTextCentered(context, title, y, 0xFAFAFA);
         drawTextCentered(context, SUBHEADER, y + 11, 0x5E5E5E);
-
-        super.render(context, mouseX, mouseY, delta);
     }
 
     private void drawTextCentered(DrawContext context, Text text, int y, int color) {
