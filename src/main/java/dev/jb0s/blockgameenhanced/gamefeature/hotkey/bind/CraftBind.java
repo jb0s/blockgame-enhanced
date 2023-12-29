@@ -5,11 +5,11 @@ import net.minecraft.util.ActionResult;
 
 public class CraftBind {
     public static ActionResult handlePressed(MinecraftClient client) {
-        if(client.player == null) {
+        if(client.getNetworkHandler() == null) {
             return ActionResult.FAIL;
         }
 
-        client.player.sendChatMessage("/craft");
+        client.getNetworkHandler().sendChatCommand("craft");
         return ActionResult.SUCCESS;
     }
 }

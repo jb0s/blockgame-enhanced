@@ -5,11 +5,11 @@ import net.minecraft.util.ActionResult;
 
 public class ProfileBind {
     public static ActionResult handlePressed(MinecraftClient client) {
-        if(client.player == null) {
+        if(client.getNetworkHandler() == null) {
             return ActionResult.FAIL;
         }
 
-        client.player.sendChatMessage("/profile");
+        client.getNetworkHandler().sendChatCommand("profile");
         return ActionResult.SUCCESS;
     }
 }

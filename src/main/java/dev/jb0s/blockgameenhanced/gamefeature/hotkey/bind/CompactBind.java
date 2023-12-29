@@ -5,11 +5,11 @@ import net.minecraft.util.ActionResult;
 
 public class CompactBind {
     public static ActionResult handlePressed(MinecraftClient client) {
-        if(client.player == null) {
+        if(client.getNetworkHandler() == null) {
             return ActionResult.FAIL;
         }
 
-        client.player.sendChatMessage("/compact");
+        client.getNetworkHandler().sendChatMessage("compact");
         return ActionResult.SUCCESS;
     }
 }

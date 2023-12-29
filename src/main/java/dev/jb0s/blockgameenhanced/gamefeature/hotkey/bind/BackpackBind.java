@@ -5,11 +5,11 @@ import net.minecraft.util.ActionResult;
 
 public class BackpackBind {
     public static ActionResult handlePressed(MinecraftClient client) {
-        if(client.player == null) {
+        if(client.getNetworkHandler() == null) {
             return ActionResult.FAIL;
         }
 
-        client.player.sendChatMessage("/backpack");
+        client.getNetworkHandler().sendChatCommand("backpack");
         return ActionResult.SUCCESS;
     }
 }

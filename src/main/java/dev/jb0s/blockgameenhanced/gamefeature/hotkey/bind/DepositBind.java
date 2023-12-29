@@ -5,11 +5,11 @@ import net.minecraft.util.ActionResult;
 
 public class DepositBind {
     public static ActionResult handlePressed(MinecraftClient client) {
-        if(client.player == null) {
+        if(client.getNetworkHandler() == null) {
             return ActionResult.FAIL;
         }
 
-        client.player.sendChatMessage("/deposit");
+        client.getNetworkHandler().sendChatCommand("deposit");
         return ActionResult.SUCCESS;
     }
 }

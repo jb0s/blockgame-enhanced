@@ -5,11 +5,11 @@ import net.minecraft.util.ActionResult;
 
 public class StatsBind {
     public static ActionResult handlePressed(MinecraftClient client) {
-        if(client.player == null) {
+        if(client.getNetworkHandler() == null) {
             return ActionResult.FAIL;
         }
 
-        client.player.sendChatMessage("/stats");
+        client.getNetworkHandler().sendChatCommand("stats");
         return ActionResult.SUCCESS;
     }
 }
