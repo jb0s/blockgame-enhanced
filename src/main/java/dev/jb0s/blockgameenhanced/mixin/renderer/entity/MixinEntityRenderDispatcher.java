@@ -17,8 +17,11 @@ public class MixinEntityRenderDispatcher {
 
     @Inject(method = "getRenderer", at = @At("RETURN"), cancellable = true)
     public <T extends Entity> void onGetRenderer(T pEntity, CallbackInfoReturnable<EntityRenderer<? super T>> cir) {
-        if (!(pEntity instanceof FakePlayer))
+
+        // Only return fakeplayer renderers for fakeplayers
+        if (!(pEntity instanceof FakePlayer)) {
             return;
+        }
 
         String s = ((AbstractClientPlayerEntity) pEntity).getModel();
         PlayerEntityRenderer playerrenderer = null;
@@ -33,8 +36,7 @@ public class MixinEntityRenderDispatcher {
 
     @Inject(method = "getSquaredDistanceToCamera(Lnet/minecraft/entity/Entity;)D", at = @At("HEAD"), cancellable = true)
     public void getSquaredDistanceToCamera(Entity entity, CallbackInfoReturnable<Double> cir) {
-        if (entity instanceof FakePlayer)
-        {
+        if (entity instanceof FakePlayer) {
             cir.setReturnValue(20.0);
             cir.cancel();
         }

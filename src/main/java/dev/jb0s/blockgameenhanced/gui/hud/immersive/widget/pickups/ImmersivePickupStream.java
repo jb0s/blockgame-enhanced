@@ -18,7 +18,7 @@ public class ImmersivePickupStream extends ImmersiveWidget {
     }
 
     @Override
-    public void render(MatrixStack matrices, int x, int y, float tickDelta) {
+    public synchronized void render(MatrixStack matrices, int x, int y, float tickDelta) {
         if(!pickupHashMap.isEmpty()) {
             ImmersivePickup[] list = getPickupsSafe();
 
@@ -32,7 +32,7 @@ public class ImmersivePickupStream extends ImmersiveWidget {
     }
 
     @Override
-    public int getWidth() {
+    public synchronized int getWidth() {
         int winningWidth = 0;
         for (Map.Entry<Text, ImmersivePickup> entry : pickupHashMap.entrySet()) {
             if(entry.getValue().getWidth() > winningWidth) {
@@ -44,12 +44,12 @@ public class ImmersivePickupStream extends ImmersiveWidget {
     }
 
     @Override
-    public int getHeight() {
+    public synchronized int getHeight() {
         return 25 * pickupHashMap.size();
     }
 
     @Override
-    public void tick() {
+    public synchronized void tick() {
         if(pickupHashMap.isEmpty()) {
             return;
         }
@@ -64,7 +64,7 @@ public class ImmersivePickupStream extends ImmersiveWidget {
         }
     }
 
-    public void addPickup(ItemStack itemStack, int amount) {
+    public synchronized void addPickup(ItemStack itemStack, int amount) {
         if(pickupHashMap.containsKey(itemStack.getName())) {
 
             // BUG: If we don't do this check the count will be doubled.
@@ -86,7 +86,7 @@ public class ImmersivePickupStream extends ImmersiveWidget {
      * Gets a clone of the pickup hashmap to avoid multithread madness.
      * todo: Replace with a better solution that doesn't impact memory. (not like this game isn't garbage memory wise anyways)
      */
-    private ImmersivePickup[] getPickupsSafe() {
+    private synchronized ImmersivePickup[] getPickupsSafe() {
         return pickupHashMap.values().toArray(new ImmersivePickup[0]);
     }
 }

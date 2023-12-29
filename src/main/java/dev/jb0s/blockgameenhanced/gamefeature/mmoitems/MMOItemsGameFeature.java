@@ -9,8 +9,8 @@ import dev.jb0s.blockgameenhanced.event.chat.ReceiveChatMessageEvent;
 import dev.jb0s.blockgameenhanced.event.gamefeature.mmoitems.ItemUsageEvent;
 import dev.jb0s.blockgameenhanced.event.renderer.item.ItemRendererDrawEvent;
 import dev.jb0s.blockgameenhanced.gamefeature.GameFeature;
+import dev.jb0s.blockgameenhanced.helper.DebugHelper;
 import dev.jb0s.blockgameenhanced.helper.MMOItemHelper;
-import dev.jb0s.blockgameenhanced.helper.NetworkHelper;
 import lombok.Getter;
 import lombok.Setter;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
@@ -26,7 +26,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.c2s.play.PlayerInteractItemC2SPacket;
-import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
@@ -39,17 +38,6 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public class MMOItemsGameFeature extends GameFeature {
-    /**
-     * Allowable margin of error (both directions) to match an event from the timeline.
-     */
-    private static final int LATENCY_MARGIN_OF_ERROR = 15;
-
-    @Getter
-    private int heartbeatLatency;
-
-    @Getter
-    private boolean isClientCaughtUp;
-
     @Getter
     @Setter
     private MMOItemsCooldownEntry globalCooldown;
@@ -139,7 +127,7 @@ public class MMOItemsGameFeature extends GameFeature {
     }
 
     @Override
-    public void tick() {
+    public synchronized void tick() {
         ++tick;
 
         if(getMinecraftClient().player == null) {
@@ -169,27 +157,6 @@ public class MMOItemsGameFeature extends GameFeature {
 
             // Remove expired packets (the ones we've just sent)
             scheduledPackets.removeIf(x -> tick > x.endTick);
-        }
-
-        heartbeatLatency = NetworkHelper.getNetworkLatency(getMinecraftClient().player);
-
-        // Eventually we want to stop using the pre-login ping, so once the client is caught up we can stop using that.
-        // Additionally, if 3500 ticks have passed, and we're still not caught up, the pre-login ping might have been a fluke. Discard it.
-        if((tick > 3500 && (BlockgameEnhancedClient.getPreloginLatency() - heartbeatLatency > LATENCY_MARGIN_OF_ERROR)) && !isClientCaughtUp) {
-            isClientCaughtUp = true;
-            //catchUpReason = "Pre-login appears to be a fluke";
-        }
-        else if(BlockgameEnhancedClient.getPreloginLatency() - heartbeatLatency < LATENCY_MARGIN_OF_ERROR) {
-            isClientCaughtUp = true;
-            //catchUpReason = "Client is reasonable";
-        }
-
-        // Update latency value
-        BlockgameEnhancedClient.setLatency(getLatency());
-
-        // removeme
-        if(BlockgameEnhanced.DEBUG) {
-            getMinecraftClient().player.sendMessage(Text.of("§bNum cooldowns: §e" + cooldownEntryMap.size() + "§7 | §bNum sched paks: §e" + scheduledPackets.size()), true);
         }
     }
 
@@ -225,7 +192,7 @@ public class MMOItemsGameFeature extends GameFeature {
      * @param hand The hand that contains the item the Player Entity is trying to use.
      * @return Always returns PASS, whether the routine was successful or not.
      */
-    public TypedActionResult<ItemStack> repeatItemUseForCooldownMessage(PlayerEntity playerEntity, World world, Hand hand) {
+    public synchronized TypedActionResult<ItemStack> repeatItemUseForCooldownMessage(PlayerEntity playerEntity, World world, Hand hand) {
         MinecraftClient client = MinecraftClient.getInstance();
         ClientPlayerInteractionManager interactionManager = client.interactionManager;
         ItemStack stack = playerEntity.getStackInHand(hand);
@@ -255,7 +222,7 @@ public class MMOItemsGameFeature extends GameFeature {
      * @param message The received message in String format.
      * @return Always returns PASS, whether the routine was successful or not.
      */
-    public ActionResult visualizeCooldown(MinecraftClient client, String message) {
+    public synchronized ActionResult visualizeCooldown(MinecraftClient client, String message) {
         boolean moduleEnabled = BlockgameEnhanced.getConfig().getIngameHudConfig().showCooldownsInHotbar;
         if(!moduleEnabled) return ActionResult.PASS;
 
@@ -280,6 +247,9 @@ public class MMOItemsGameFeature extends GameFeature {
         String sec = spl[1].replace("s", "").trim();
         float fSec = Float.parseFloat(sec);
         int ticks = (int)(fSec * 20);
+
+        // Add latency to cooldown length
+        ticks += (BlockgameEnhancedClient.getLatency() / 1000) * 20;
 
         // Get MMOAbility and set a cooldown for it
         String abil = MMOItemHelper.getMMOAbility(stack);
@@ -363,21 +333,18 @@ public class MMOItemsGameFeature extends GameFeature {
     /**
      * Resets all the values.
      */
-    private void reset() {
+    private synchronized void reset() {
         tick = 0;
-        isClientCaughtUp = false;
-        heartbeatLatency = 0;
         cooldownEntryMap.clear();
         scheduledPackets.clear();
         capturedItemUsages.clear();
     }
 
-    public ItemUsageEvent getItemUsage() {
-        int latency = getLatency();
-        return getItemUsage(latency);
+    public synchronized ItemUsageEvent getItemUsage() {
+        return getItemUsage(BlockgameEnhancedClient.getLatency());
     }
 
-    public ItemUsageEvent getItemUsage(int latency) {
+    public synchronized ItemUsageEvent getItemUsage(int latency) {
         long targetLatency = System.currentTimeMillis() - latency;
 
         ItemUsageEvent winning = null;
@@ -396,21 +363,10 @@ public class MMOItemsGameFeature extends GameFeature {
     }
 
     /**
-     * Calculates a reliable latency value.
-     * @return Pre-login or Heartbeat latency depending on which is more accurate at the time.
-     */
-    public int getLatency() {
-        int hb = heartbeatLatency;
-        int pl = BlockgameEnhancedClient.getPreloginLatency();
-        int dif = BlockgameEnhancedClient.getPreloginLatency() - heartbeatLatency;
-        return (dif > LATENCY_MARGIN_OF_ERROR && !isClientCaughtUp) ? pl : hb;
-    }
-
-    /**
      * Gets a clone of the cooldown hashmap to avoid multithread madness.
      * todo: Replace with a better solution that doesn't impact memory. (not like this game isn't garbage memory wise anyways)
      */
-    private MMOItemsCooldownEntry[] getCooldownsSafe() {
+    private synchronized MMOItemsCooldownEntry[] getCooldownsSafe() {
         return cooldownEntryMap.values().toArray(new MMOItemsCooldownEntry[0]);
     }
 
@@ -418,7 +374,7 @@ public class MMOItemsGameFeature extends GameFeature {
      * Gets a clone of the scheduled packet list to avoid multithread madness.
      * todo: Replace with a better solution that doesn't impact memory. (not like this game isn't garbage memory wise anyways)
      */
-    private ScheduledItemUsePacket[] getCooldownPacketsSafe() {
+    private synchronized ScheduledItemUsePacket[] getCooldownPacketsSafe() {
         return scheduledPackets.toArray(new ScheduledItemUsePacket[0]);
     }
 

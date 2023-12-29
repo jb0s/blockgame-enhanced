@@ -2,6 +2,16 @@ accessWidener v1 named
 
 # net.minecraft.client.MinecraftClient
 mutable field net/minecraft/client/MinecraftClient inGameHud Lnet/minecraft/client/gui/hud/InGameHud;
+accessible field net/minecraft/client/MinecraftClient server Lnet/minecraft/server/integrated/IntegratedServer;
+accessible field net/minecraft/client/MinecraftClient networkProxy Ljava/net/Proxy;
+accessible field net/minecraft/client/MinecraftClient renderTaskQueue Ljava/util/Queue;
+accessible field net/minecraft/client/MinecraftClient integratedServerRunning Z
+accessible field net/minecraft/client/MinecraftClient profiler Lnet/minecraft/util/profiler/Profiler;
+accessible field net/minecraft/client/MinecraftClient integratedServerConnection Lnet/minecraft/network/ClientConnection;
+accessible field net/minecraft/client/MinecraftClient worldGenProgressTracker Ljava/util/concurrent/atomic/AtomicReference;
+
+# net.minecraft.server.MinecraftServer
+accessible method net/minecraft/server/MinecraftServer updateMobSpawnOptions ()V
 
 # net.minecraft.client.gui.hud.InGameHud
 extendable method net/minecraft/client/gui/hud/InGameHud renderHotbar (FLnet/minecraft/client/util/math/MatrixStack;)V
@@ -29,3 +39,6 @@ accessible method net/minecraft/client/gui/screen/Screen remove (Lnet/minecraft/
 accessible field net/minecraft/client/gui/screen/Screen children Ljava/util/List;
 accessible field net/minecraft/client/gui/screen/Screen drawables Ljava/util/List;
 accessible field net/minecraft/client/gui/screen/Screen selectables Ljava/util/List;
+
+# net.minecraft.client.gui.screen.SplashOverlay
+accessible field net/minecraft/client/gui/screen/SplashOverlay reloadCompleteTime J

@@ -9,9 +9,7 @@ import dev.jb0s.blockgameenhanced.event.bossbattle.BossBattleCommencedEvent;
 import dev.jb0s.blockgameenhanced.event.bossbattle.BossBattleEndedEvent;
 import dev.jb0s.blockgameenhanced.event.dayphase.DayPhaseChangedEvent;
 import dev.jb0s.blockgameenhanced.event.entity.player.PlayerRespawnedEvent;
-import dev.jb0s.blockgameenhanced.event.gamefeature.challenges.ChallengeStartedEvent;
 import dev.jb0s.blockgameenhanced.gamefeature.GameFeature;
-import dev.jb0s.blockgameenhanced.gamefeature.challenges.Challenge;
 import dev.jb0s.blockgameenhanced.gamefeature.dayphase.DayPhase;
 import dev.jb0s.blockgameenhanced.gamefeature.jukebox.json.JsonMusic;
 import dev.jb0s.blockgameenhanced.gamefeature.jukebox.json.JsonMusicList;
@@ -45,7 +43,6 @@ public class JukeboxGameFeature extends GameFeature {
     private Zone currentZone;
     private ZoneBoss currentBoss;
     private ZoneBossBattleState currentBossBattleState;
-    private Challenge currentChallenge;
     private DayPhase currentDayPhase = DayPhase.NONE;
 
     @Getter
@@ -76,10 +73,6 @@ public class JukeboxGameFeature extends GameFeature {
 
         // Play zone music when player enters zone.
         PlayerEnteredZoneEvent.EVENT.register((client, playerEntity, zone) -> {
-            if(currentChallenge != null) {
-                return;
-            }
-
             currentZone = zone;
             if(currentZone == null || currentZone.getBattle() == null) {
                 currentBoss = null;
@@ -99,28 +92,18 @@ public class JukeboxGameFeature extends GameFeature {
             currentZone = null;
             currentBoss = null;
             currentBossBattleState = ZoneBossBattleState.NO_BATTLE;
-
-            if(currentChallenge == null) {
-                stopMusic(true);
-            }
+            stopMusic(true);
         });
 
         // Play boss music when a battle has begun.
         BossBattleCommencedEvent.EVENT.register(((boss) -> {
             currentBoss = boss;
             currentBossBattleState = ZoneBossBattleState.IN_PROGRESS;
-
-            if(currentChallenge == null) {
-                playMusic(boss.getMusic(), false, 0);
-            }
+            playMusic(boss.getMusic(), false, 0);
         }));
 
         // Refresh the music when the player defeats a boss so that the victory music plays.
         BossBattleEndedEvent.EVENT.register(((boss, state) -> {
-            if(currentChallenge != null) {
-                return;
-            }
-
             currentBoss = null;
             currentBossBattleState = state;
 
@@ -144,12 +127,6 @@ public class JukeboxGameFeature extends GameFeature {
             if(music != null) {
                 playMusic(music.getId(), true, 0);
             }
-        }));
-
-        // Play challenge music when player is doing a challenge
-        ChallengeStartedEvent.EVENT.register((challenge -> {
-            currentChallenge = challenge;
-            playMusic("mus_challenge_speedrun", false, 0);
         }));
     }
 
@@ -337,10 +314,7 @@ public class JukeboxGameFeature extends GameFeature {
      * Gets the sound index for a music track.
      */
     private int getMusicSoundIndex() {
-        if(currentChallenge != null) {
-            return 0;
-        }
-        else if(currentBossBattleState != ZoneBossBattleState.NO_BATTLE) {
+        if(currentBossBattleState != ZoneBossBattleState.NO_BATTLE) {
             return (currentBoss == null | currentBossBattleState == ZoneBossBattleState.BATTLE_ENDED) ? 1 : 0;
         }
 

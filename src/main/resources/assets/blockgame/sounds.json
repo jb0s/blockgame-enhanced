@@ -41,11 +41,6 @@
 			"blockgame:music/zone/yggdrasil/hb_outsidewind"
 		]
     },
-	"snd.zone.yggdrasil.animus_portal": {
-		"sounds": [
-			"blockgame:music/zone/yggdrasil/hb_animus_portal"
-		]
-	},
 	
     "mus.zone.sunken_cells.dungeon": {
 		"subtitle": "Heartbound OST - Cold",
@@ -90,42 +85,11 @@
 			"blockgame:music/zone/krognars/hb_fire_throne"
 		]
 	},
-
-	"mus.zone.arena.battle_horseman": {
-		"subtitle": "Heartbound OST - Miserable Manic Shadows",
-		"sounds": [
-			"blockgame:music/zone/arena/hb_mms"
-		]
-	},
-
-	"mus.egg.terry": {
-		"subtitle": "Heartbound OST - Hello Terry",
-		"sounds": [
-			"blockgame:music/egg/hb_terry"
-		]
-	},
-
-	"mus.challenge.speedrun": {
-		"sounds": []
-	},
 	
 	"mus.gui.combat.death": {
 		"subtitle": "Player dies",
 		"sounds": [
 			"blockgame:sound/hb_combat_death"
 		]
-    },
-
-	"mus.party.ping.block": {
-		"subtitle": "Party member marks location",
-		"sounds": [
-			"blockgame:sound/ping_location"
-		]
-	},
-	"mus.party.ping.item": {
-		"subtitle": "Party member marks item",
-		"sounds": [
-			"blockgame:sound/ping_item"
-		]
-	}
+    }
 }
