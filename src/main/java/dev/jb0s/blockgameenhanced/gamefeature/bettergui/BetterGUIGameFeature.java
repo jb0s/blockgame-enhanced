@@ -34,7 +34,7 @@ public class BetterGUIGameFeature extends GameFeature {
 
         // If the menu is called "Deposit", store the sync id, so we can start putting currency in this menu
         // todo: This is easily forged by just creating a chest called "Deposit". We should do integrity checks
-        if(packet.getName().asString().equals("Deposit")) {
+        if(packet.getName().getString().equals("Deposit")) {
             waitingForSyncId = packet.getSyncId();
             return ActionResult.PASS;
         }
