@@ -87,8 +87,8 @@ public class MixinClientPlayNetworkHandler {
 
     @Inject(method = "sendChatMessage", at = @At("HEAD"))
     public void sendChatMessage(String message, CallbackInfo ci) {
-        ClientPlayerEntity thisPlayer = (ClientPlayerEntity) (Object) this;
-        SendChatMessageEvent.EVENT.invoker().sendChatMessage(thisPlayer, message);
+        ClientPlayNetworkHandler thisNw = (ClientPlayNetworkHandler) (Object) this;
+        SendChatMessageEvent.EVENT.invoker().sendChatMessage(thisNw, message);
     }
 
     @Inject(method = "onCommandSuggestions", at = @At("HEAD"))
