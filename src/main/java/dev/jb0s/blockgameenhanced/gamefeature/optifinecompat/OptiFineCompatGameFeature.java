@@ -42,14 +42,14 @@ import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
-import net.minecraft.util.registry.DynamicRegistryManager;
+//import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.SaveProperties;
 import net.minecraft.world.level.storage.LevelStorage;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.SocketAddress;
-import java.util.function.Function;
+//import java.util.function.Function;
 
 /**
  * This entire game feature is likely made specifically for Thor LMAO
@@ -124,7 +124,7 @@ public class OptiFineCompatGameFeature extends GameFeature {
             setCompatibilityServerReady(false);
         }
         else if(BlockgameEnhanced.isOptifinePresent()) {
-            startDummyServer("Empty", SaveLoader.DataPackSettingsSupplier::loadFromWorld, SaveLoader.SavePropertiesSupplier::loadFromWorld);
+            //startDummyServer("Empty", SaveLoader.DataPackSettingsSupplier::loadFromWorld, SaveLoader.SavePropertiesSupplier::loadFromWorld);
         }
     }
 
@@ -159,7 +159,7 @@ public class OptiFineCompatGameFeature extends GameFeature {
      * Spin up a dummy server on client init
      */
     private void handleClientInit(MinecraftClient client, RunArgs runArgs) {
-        startDummyServer("Empty", SaveLoader.DataPackSettingsSupplier::loadFromWorld, SaveLoader.SavePropertiesSupplier::loadFromWorld);
+        //startDummyServer("Empty", SaveLoader.DataPackSettingsSupplier::loadFromWorld, SaveLoader.SavePropertiesSupplier::loadFromWorld);
     }
 
     /**
@@ -205,7 +205,7 @@ public class OptiFineCompatGameFeature extends GameFeature {
      * @param dataPackSettingsSupplierGetter Data pack settings supplier
      * @param savePropertiesSupplierGetter Save properties supplier
      */
-    private void startDummyServer(String worldName, Function<LevelStorage.Session, SaveLoader.DataPackSettingsSupplier> dataPackSettingsSupplierGetter, Function<LevelStorage.Session, SaveLoader.SavePropertiesSupplier> savePropertiesSupplierGetter) {
+    /*private void startDummyServer(String worldName, Function<LevelStorage.Session, SaveLoader.DataPackSettingsSupplier> dataPackSettingsSupplierGetter, Function<LevelStorage.Session, SaveLoader.SavePropertiesSupplier> savePropertiesSupplierGetter) {
         MinecraftClient minecraft = MinecraftClient.getInstance();
         SaveLoader saveLoader;
         LevelStorage.Session session;
@@ -280,13 +280,14 @@ public class OptiFineCompatGameFeature extends GameFeature {
         clientConnection.send(new HandshakeC2SPacket(socketAddress.toString(), 0, NetworkState.LOGIN));
         clientConnection.send(new LoginHelloC2SPacket(minecraft.getSession().getProfile()));
         minecraft.integratedServerConnection = clientConnection;
-    }
+    }*/
 
     /**
      * This GameFeature is only enabled if the mod was loaded alongside OptiFine
      */
     @Override
     public boolean isEnabled() {
-        return BlockgameEnhanced.isOptifinePresent();
+        //return BlockgameEnhanced.isOptifinePresent();
+        return false; // Incompatible with 1.20.2
     }
 }
