@@ -1,6 +1,7 @@
 package dev.jb0s.blockgameenhanced.helper;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.Window;
 import net.minecraft.client.util.math.MatrixStack;
@@ -37,20 +38,21 @@ public class MathHelper {
     public static Vector3f worldToScreenSpace(Vec3d pos, Matrix4f modelViewMatrix, Matrix4f projMatrix) {
         MinecraftClient minecraft = MinecraftClient.getInstance();
         GameRenderer gameRenderer = minecraft.gameRenderer;
+        Camera cam = gameRenderer.getCamera();
 
-        Vector4f x = new Vector4f(gameRenderer.getCamera().getPos().negate().add(pos).toVector3f(), 1f);
+        Vector4f x = new Vector4f(cam.getPos().negate().add(pos).toVector3f(), 1f);
         x.mul(modelViewMatrix);
         x.mul(projMatrix);
 
-        if(x.w() != 0f) {
-            x.div(x.w());
+        if(x.w != 0f) {
+            x.div(x.w);
         }
 
         Window w = minecraft.getWindow();
 
         return new Vector3f(
-                w.getScaledWidth() * (0.5f + x.x() * 0.5f),
-                w.getScaledHeight() * (0.5f - x.y * 0.5f),
+                w.getWidth() * (0.5f + x.x * 0.5f),
+                w.getHeight() * (0.5f - x.y * 0.5f),
                 x.w
         );
     }
