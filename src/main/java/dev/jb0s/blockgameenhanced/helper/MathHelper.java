@@ -44,16 +44,16 @@ public class MathHelper {
         x.mul(modelViewMatrix);
         x.mul(projMatrix);
 
-        if(x.w != 0f) {
-            x.div(x.w);
+        float w = x.w();
+        if(w != 0f) {
+            x.div(w);
         }
 
-        Window w = minecraft.getWindow();
-
+        Window win = minecraft.getWindow();
         return new Vector3f(
-                w.getWidth() * (0.5f + x.x * 0.5f),
-                w.getHeight() * (0.5f - x.y * 0.5f),
-                x.w
+                win.getWidth() * (0.5f + x.x() * 0.5f),
+                win.getHeight() * (0.5f - x.y() * 0.5f),
+                w
         );
     }
     public static void rotateZ(MatrixStack matrices, float theta) {

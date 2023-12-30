@@ -6,6 +6,7 @@ import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
 import dev.jb0s.blockgameenhanced.event.gamefeature.party.PartyPingEvent;
 import dev.jb0s.blockgameenhanced.event.gamefeature.party.PartyUpdatedEvent;
 import dev.jb0s.blockgameenhanced.gamefeature.party.PartyGameFeature;
+import dev.jb0s.blockgameenhanced.helper.DebugHelper;
 import dev.jb0s.blockgameenhanced.helper.MathHelper;
 import dev.jb0s.blockgameenhanced.helper.TimeHelper;
 import dev.jb0s.blockgameenhanced.gamefeature.party.PartyMember;
@@ -172,7 +173,8 @@ public class PartyHud {
         MinecraftClient minecraft = MinecraftClient.getInstance();
         ClientPlayerEntity cpe = minecraft.player;
 
-        if (cpe == null || ping.getScreenSpacePos() == null) {
+        // Don't render ping if no player or if ping location is out of view (off-screen)
+        if (cpe == null || ping.getScreenSpacePos() == null || ping.getScreenSpacePos().z() <= 0) {
             return;
         }
 
