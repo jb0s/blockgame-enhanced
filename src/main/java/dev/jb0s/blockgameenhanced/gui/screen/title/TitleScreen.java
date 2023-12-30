@@ -93,11 +93,11 @@ public class TitleScreen extends Screen {
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         renderBackground(context, mouseX, mouseY, delta);
         renderPlayer(mouseX, mouseY);
-        renderLogo(context, width, 1, 30);
 
         super.render(context, mouseX, mouseY, delta);
 
         // Render this after super, because super renders the buttons
+        renderLogo(context, width, 1, 30);
         renderServerStatus(context);
     }
 
@@ -155,8 +155,7 @@ public class TitleScreen extends Screen {
      * @param y2 The Y coordinate to render the logo at.
      */
     public void renderLogo(DrawContext context, int screenWidth, float alpha, int y2) {
-        RenderSystem.enableBlend();;
-        RenderSystem.setShaderTexture(0, BLOCKGAME_LOGO_TEXTURE);
+        RenderSystem.enableBlend();
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, alpha);
 
         int textureWidth = (int)(232 / 1.3f);
@@ -289,8 +288,8 @@ public class TitleScreen extends Screen {
             try
             {
                 Class<?> modsScreenClass = Class.forName("me.axieum.mcmod.authme.impl.gui.MicrosoftAuthScreen");
-                Constructor<?> constructor = modsScreenClass.getConstructor(Screen.class, Screen.class);
-                Screen screen = (Screen)constructor.newInstance(this, new TitleScreen());
+                Constructor<?> constructor = modsScreenClass.getConstructor(Screen.class, Screen.class, boolean.class);
+                Screen screen = (Screen)constructor.newInstance(this, new TitleScreen(), false);
 
                 client.setScreen(screen);
             }
