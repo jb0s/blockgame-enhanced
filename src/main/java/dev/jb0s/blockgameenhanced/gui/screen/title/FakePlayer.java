@@ -8,6 +8,8 @@ import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.ClientConnection;
+import net.minecraft.network.NetworkSide;
 import net.minecraft.stat.StatHandler;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
@@ -18,7 +20,10 @@ public class FakePlayer extends ClientPlayerEntity {
     private Identifier elytra;
 
     public FakePlayer() {
-        super(MinecraftClient.getInstance(), new FakeWorld(), new FakeClientPlayNetHandler(), new StatHandler(), new ClientRecipeBook(), false, false);
+        super(MinecraftClient.getInstance(),
+                new FakeWorld(new ClientConnection(NetworkSide.CLIENTBOUND)),
+                new FakeClientPlayNetHandler(new ClientConnection(NetworkSide.CLIENTBOUND)),
+                new StatHandler(), new ClientRecipeBook(), false, false);
 
         MinecraftClient mc = MinecraftClient.getInstance();
         /* todo GameProfile profile = mc.getSession().getProfile();

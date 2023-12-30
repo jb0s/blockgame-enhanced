@@ -77,6 +77,9 @@ public class MMOItemsGameFeature extends GameFeature {
             String chargeCountString = countLabel == null ? String.valueOf(nbt.getInt("MMOITEMS_MAX_CONSUME")) : countLabel;
             VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
 
+            // We don't need to revert this because we push to the stack before the event is fired and pop it after the event is finished
+            context.getMatrices().translate(0.0f, 0.0f, 200.0f);
+
             // Shitty outline (Notch did it first!)
             context.drawText(textRenderer, chargeCountString, (x + 19 - 2 - textRenderer.getWidth(chargeCountString)) + 1, (y + 6 + 3), 0x000000, false);
             context.drawText(textRenderer, chargeCountString, (x + 19 - 2 - textRenderer.getWidth(chargeCountString)) - 1, (y + 6 + 3), 0x000000, false);

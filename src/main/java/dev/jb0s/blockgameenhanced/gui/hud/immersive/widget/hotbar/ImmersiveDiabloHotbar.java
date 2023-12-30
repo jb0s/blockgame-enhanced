@@ -94,9 +94,10 @@ public class ImmersiveDiabloHotbar extends ImmersiveWidget {
 
         // Render selected slot arrow
         getInGameHud().client.getProfiler().push("slotArrow");
-        //getInGameHud().setZOffset(getInGameHud().getZOffset() + 999);
+        context.getMatrices().push();
+        context.getMatrices().translate(0, 0, 999);
         drawTexture(context, (frameX + 73) + playerEntity.getInventory().selectedSlot * 20, frameY + 18, 20, 240, 22, 22);
-        //getInGameHud().setZOffset(getInGameHud().getZOffset() - 999);
+        context.getMatrices().pop();
         getInGameHud().client.getProfiler().pop();
 
         RenderSystem.disableBlend();
