@@ -59,7 +59,7 @@ public class WarpScreen extends Screen {
         int totalOptions = WARP_OPTIONS.size();
         int totalColumn = totalOptions / (columnSizeY + 1);
         int globalXOffset = (buttonSpacingX * totalColumn) / 2;
-        int listStartingY = (height / 2) - ((buttonSpacingY * 5) / 2);
+        int listStartingY = (int) ((height / 2) - ((buttonSpacingY * 5.5f) / 2));
 
         // Add warp options
         int i = 0;
