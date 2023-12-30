@@ -78,7 +78,7 @@ public class MMOItemsGameFeature extends GameFeature {
             VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
 
             // We don't need to revert this because we push to the stack before the event is fired and pop it after the event is finished
-            context.getMatrices().translate(0.0f, 0.0f, 200.0f);
+            context.getMatrices().translate(0.0f, 0.0f, 210.0f);
 
             // Shitty outline (Notch did it first!)
             context.drawText(textRenderer, chargeCountString, (x + 19 - 2 - textRenderer.getWidth(chargeCountString)) + 1, (y + 6 + 3), 0x000000, false);
@@ -109,14 +109,11 @@ public class MMOItemsGameFeature extends GameFeature {
                 float globalCooldownProgress = getCooldownProgress(getGlobalCooldown(), MinecraftClient.getInstance().getTickDelta());
                 float cd = cooldownProgressForThisStack == 0.0f ? globalCooldownProgress : cooldownProgressForThisStack;
 
+                // We don't need to revert this because we push to the stack before the event is fired and pop it after the event is finished
+                context.getMatrices().translate(0.0f, 0.0f, 200.0f);
+
                 if (cd > 0.0f) {
-                    RenderSystem.disableDepthTest();
-                    RenderSystem.enableBlend();
-                    RenderSystem.defaultBlendFunc();
-                    Tessellator tessellator2 = Tessellator.getInstance();
-                    BufferBuilder bufferBuilder2 = tessellator2.getBuffer();
-                    renderGuiQuad(bufferBuilder2, x, y + MathHelper.floor(16.0f * (1.0f - cd)), 16, MathHelper.ceil(16.0f * cd), 255, 255, 255, 127);
-                    RenderSystem.enableDepthTest();
+                    context.fill(x, y + MathHelper.floor(16.0f * (1.0f - cd)), x + 16, y + 16, Integer.MAX_VALUE);
                 }
             }
         }
