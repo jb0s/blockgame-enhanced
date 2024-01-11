@@ -227,6 +227,10 @@ public class JukeboxGameFeature extends GameFeature {
             if(playerEntity == null) {
                 return;
             }
+            if(mus.getSoundId(getMusicSoundIndex()) == null) {
+                BlockgameEnhanced.LOGGER.warn("Couldn't play: " + music + " (" + getMusicSoundIndex() + ")");
+                return;
+            }
 
             currentMusic = mus;
             desiredMusic = mus;
