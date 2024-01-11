@@ -7,12 +7,12 @@ import dev.jb0s.blockgameenhanced.event.gamefeature.chatchannels.ChatChannelTogg
 import dev.jb0s.blockgameenhanced.event.gamefeature.chatchannels.ChatChannelUpdatedEvent;
 import dev.jb0s.blockgameenhanced.gamefeature.chatchannels.ChatChannel;
 import dev.jb0s.blockgameenhanced.gamefeature.chatchannels.ChatChannelsGameFeature;
-import dev.jb0s.blockgameenhanced.gui.widgets.FlexibleButtonWidget;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ChatScreen;
+import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -37,7 +37,7 @@ public class MixinChatScreen {
     @Shadow
     protected TextFieldWidget chatField;
     @Unique
-    protected FlexibleButtonWidget toggleButton;
+    protected ButtonWidget toggleButton;
     @Unique
     private ChatChannel selectedChannel;
 
@@ -47,13 +47,9 @@ public class MixinChatScreen {
         chatField.setX(CONFIG.compactButton ? 16 : 56);
         chatField.setWidth(target.width - chatField.getX());
 
-        toggleButton = new FlexibleButtonWidget(2, chatField.getY() - 2, CONFIG.compactButton ? 12 : 52, 12, Text.literal(""), (button) -> {
-            ChatChannelToggledEvent.EVENT.invoker().chatChannelToggled(ChatChannelToggledEvent.Direction.NEXT);
-        });
-        toggleButton.setRightClickAction((button) -> {
-            ChatChannelToggledEvent.EVENT.invoker().chatChannelToggled(ChatChannelToggledEvent.Direction.PREV);
-        });
-        target.addDrawableChild(toggleButton);
+        toggleButton = ButtonWidget.builder(Text.literal(""), (button) -> {})
+            .dimensions(2, chatField.getY() - 2, CONFIG.compactButton ? 12 : 52, 12)
+            .build();
     }
 
     @Unique
@@ -165,5 +161,23 @@ public class MixinChatScreen {
 
         cir.setReturnValue(true);
         cir.cancel();
+    }
+
+    @Inject(
+            method = "mouseClicked",
+            at = @At("HEAD"),
+            cancellable = true
+    )
+    public void mouseClicked(double mouseX, double mouseY, int button, CallbackInfoReturnable<Boolean> cir) {
+        if (!CONFIG.enable || toggleButton == null || button > 1) {
+            return;
+        }
+
+        if (toggleButton.isMouseOver(mouseX, mouseY)) {
+            ChatChannelToggledEvent.Direction direction = button == 0 ? ChatChannelToggledEvent.Direction.NEXT : ChatChannelToggledEvent.Direction.PREV;
+            ChatChannelToggledEvent.EVENT.invoker().chatChannelToggled(direction);
+            cir.setReturnValue(true);
+            cir.cancel();
+        }
     }
 }
