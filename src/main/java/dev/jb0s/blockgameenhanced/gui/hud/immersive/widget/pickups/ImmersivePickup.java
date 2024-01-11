@@ -54,7 +54,7 @@ public class ImmersivePickup extends ImmersiveWidget {
 
         int ix = x + PADDING + getInGameHud().getTextRenderer().getWidth(getText()) + SPACING;
         int iy = y + ((getHeight() / 2) - (ITEM_SIZE / 2));
-        // todo itemRenderer.renderGuiItemIcon(itemStack, ix, iy);
+        context.drawItem(itemStack, ix, iy);
 
         RenderSystem.disableBlend();
     }

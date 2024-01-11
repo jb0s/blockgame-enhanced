@@ -28,9 +28,6 @@
     "items.MixinItem",
     "items.MixinItemStack",
     "network.MixinClientPlayNetworkHandler",
-    "network.MixinPlayerListEntry",
-    "renderer.entity.MixinEntityRenderDispatcher",
-    "renderer.entity.MixinEntityRenderers",
-    "renderer.entity.MixinLivingEntityRenderer"
+    "network.MixinPlayerListEntry"
   ]
 }

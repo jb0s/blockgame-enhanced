@@ -4,7 +4,7 @@ import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
 import dev.jb0s.blockgameenhanced.BlockgameEnhancedClient;
 import dev.jb0s.blockgameenhanced.event.client.ClientScreenChanged;
 import dev.jb0s.blockgameenhanced.gamefeature.GameFeature;
-import dev.jb0s.blockgameenhanced.gui.screen.title.TitleScreen;
+import dev.jb0s.blockgameenhanced.gui.screen.TitleScreen;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;

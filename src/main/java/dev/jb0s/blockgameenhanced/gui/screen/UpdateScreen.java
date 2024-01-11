@@ -1,7 +1,6 @@
 package dev.jb0s.blockgameenhanced.gui.screen;
 
 import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
-import dev.jb0s.blockgameenhanced.gui.screen.title.TitleScreen;
 import dev.jb0s.blockgameenhanced.config.modules.ModConfig;
 import dev.jb0s.blockgameenhanced.update.GitHubRelease;
 import lombok.Getter;
@@ -41,16 +40,11 @@ public class UpdateScreen extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        renderBackground(context, mouseX, mouseY, delta);
-
-        // todo Render message
-        // why the fuck did Mojang get rid of this
-        //drawCenteredText(matrices, textRenderer, title, width / 2, 50, 0xFFFFFF);
-        //drawCenteredText(matrices, textRenderer, MESSAGE_TEXT_1, width / 2, 70, 0xFFFFFF);
-        //drawCenteredText(matrices, textRenderer, MESSAGE_TEXT_2, width / 2, 70 + textRenderer.fontHeight + 3, 0xFFFFFF);
-        //drawCenteredText(matrices, textRenderer, Text.of("NOTE: You will be redirected to Modrinth from now on. Hold shift to use GitHub."), width / 2, 70 + ((textRenderer.fontHeight + 3) * 2) + 7, 0x757575);
-
         super.render(context, mouseX, mouseY, delta);
+        context.drawCenteredTextWithShadow(textRenderer, title, width / 2, 50, 0xFFFFFF);
+        context.drawCenteredTextWithShadow(textRenderer, MESSAGE_TEXT_1, width / 2, 70, 0xFFFFFF);
+        context.drawCenteredTextWithShadow(textRenderer, MESSAGE_TEXT_2, width / 2, 70 + textRenderer.fontHeight + 3, 0xFFFFFF);
+        context.drawCenteredTextWithShadow(textRenderer, Text.of("NOTE: You will be redirected to Modrinth from now on. Hold shift to use GitHub."), width / 2, 70 + ((textRenderer.fontHeight + 3) * 2) + 7, 0x757575);
     }
 
     protected void addButtons(int y) {

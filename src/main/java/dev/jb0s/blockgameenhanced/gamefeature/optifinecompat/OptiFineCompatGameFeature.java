@@ -1,8 +1,5 @@
 package dev.jb0s.blockgameenhanced.gamefeature.optifinecompat;
 
-import com.mojang.authlib.GameProfileRepository;
-import com.mojang.authlib.minecraft.MinecraftSessionService;
-import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
 import dev.jb0s.blockgameenhanced.BlockgameEnhancedClient;
 import dev.jb0s.blockgameenhanced.event.client.ClientDisconnectionEvents;
@@ -11,7 +8,7 @@ import dev.jb0s.blockgameenhanced.event.client.ClientScreenChanged;
 import dev.jb0s.blockgameenhanced.event.server.ServerPrepareStartRegionEvent;
 import dev.jb0s.blockgameenhanced.event.splash.SplashRenderEvent;
 import dev.jb0s.blockgameenhanced.gamefeature.GameFeature;
-import dev.jb0s.blockgameenhanced.gui.screen.title.TitleScreen;
+import dev.jb0s.blockgameenhanced.gui.screen.TitleScreen;
 import lombok.Getter;
 import lombok.Setter;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
@@ -19,37 +16,15 @@ import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.RunArgs;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.WorldGenerationProgressTracker;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.SplashOverlay;
-import net.minecraft.client.network.ClientLoginNetworkHandler;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.client.toast.SystemToast;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.network.ClientConnection;
-import net.minecraft.network.NetworkState;
-import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
-import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
-import net.minecraft.resource.*;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.QueueingWorldGenerationProgressListener;
-import net.minecraft.server.SaveLoader;
 import net.minecraft.server.WorldGenerationProgressListener;
-import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.UserCache;
 import net.minecraft.util.Util;
-import net.minecraft.util.WorldSavePath;
-import net.minecraft.util.crash.CrashException;
-import net.minecraft.util.crash.CrashReport;
-import net.minecraft.util.crash.CrashReportSection;
 //import net.minecraft.util.registry.DynamicRegistryManager;
-import net.minecraft.world.SaveProperties;
-import net.minecraft.world.level.storage.LevelStorage;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.SocketAddress;
 //import java.util.function.Function;
 
 /**
