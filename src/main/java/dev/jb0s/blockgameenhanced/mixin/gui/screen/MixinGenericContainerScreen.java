@@ -3,17 +3,14 @@ package dev.jb0s.blockgameenhanced.mixin.gui.screen;
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
 import dev.jb0s.blockgameenhanced.gamefeature.mmovendor.MMOVendor;
-import dev.jb0s.blockgameenhanced.gui.widgets.FlexibleButtonWidget;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.GenericContainerScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.GenericContainerScreenHandler;
@@ -61,14 +58,17 @@ public class MixinGenericContainerScreen extends HandledScreen<GenericContainerS
 
         int x = originX + 34;
         int y = originY - (backgroundHeight / 2) + 4;
-        addDrawableChild(new FlexibleButtonWidget(x, y, btnWidth, btnHeight, LOOT_ALL_BUTTON, (button) -> {
-            MinecraftClient mc = MinecraftClient.getInstance();
-            ClientPlayerEntity p = mc.player;
+        addDrawableChild(ButtonWidget.builder(LOOT_ALL_BUTTON, (button) -> {
+                MinecraftClient mc = MinecraftClient.getInstance();
+                ClientPlayerEntity p = mc.player;
 
-            for(int i = 0; i < 9 * rows; i++) {
-                mc.interactionManager.clickSlot(handler.syncId, i, 0, SlotActionType.QUICK_MOVE, p);
-            }
-        }));
+                for(int i = 0; i < 9 * rows; i++) {
+                    mc.interactionManager.clickSlot(handler.syncId, i, 0, SlotActionType.QUICK_MOVE, p);
+                }
+            })
+            .dimensions(x, y, btnWidth, btnHeight)
+            .build()
+        );
     }
 
     /**
