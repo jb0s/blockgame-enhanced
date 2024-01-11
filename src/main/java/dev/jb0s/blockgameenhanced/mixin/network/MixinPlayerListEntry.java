@@ -2,12 +2,16 @@ package dev.jb0s.blockgameenhanced.mixin.network;
 
 import com.mojang.authlib.GameProfile;
 import net.minecraft.client.network.PlayerListEntry;
+import net.minecraft.client.util.SkinTextures;
 import net.minecraft.util.Identifier;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.util.function.Supplier;
 
 @Mixin(PlayerListEntry.class)
 public abstract class MixinPlayerListEntry {
@@ -19,16 +23,29 @@ public abstract class MixinPlayerListEntry {
 
     @Shadow public abstract GameProfile getProfile();
 
-    /* todo @Inject(method = "getCapeTexture", at = @At("RETURN"), cancellable = true)
-    public void getCapeTexture(CallbackInfoReturnable<Identifier> cir) {
+    @Shadow public abstract SkinTextures getSkinTextures();
+
+    @Shadow @Final private Supplier<SkinTextures> texturesSupplier;
+
+    @Inject(method = "getSkinTextures", at = @At("RETURN"), cancellable = true)
+    public void getSkinTextures(CallbackInfoReturnable<SkinTextures> cir) {
+        Identifier capeTexture = null;
+
+        // Set cape texture
         String username = getProfile().getName();
         switch (username) {
-            case "jakm" -> cir.setReturnValue(DEVELOPER_CAPE);
-            case "notIrma" -> cir.setReturnValue(DEVELOPER_CAPE);
-            case "PirateSoftware" -> cir.setReturnValue(PIRATESOFTWARE_CAPE);
-            case "Notker" -> cir.setReturnValue(NOTKER_CAPE);
-            case "PhiPhantastx" -> cir.setReturnValue(SOPHIE_CAPE);
-            case "klh_io" -> cir.setReturnValue(KLH_IO_CAPE);
+            case "jakm" -> capeTexture = DEVELOPER_CAPE;
+            case "notIrma" -> capeTexture = DEVELOPER_CAPE;
+            case "PirateSoftware" -> capeTexture = PIRATESOFTWARE_CAPE;
+            case "Notker" -> capeTexture = NOTKER_CAPE;
+            case "PhiPhantastx" -> capeTexture = SOPHIE_CAPE;
+            case "klh_io" -> capeTexture = KLH_IO_CAPE;
         }
-    }*/
+
+        // Modify outcome if we found a custom cape
+        if(capeTexture != null) {
+            SkinTextures textures = texturesSupplier.get();
+            cir.setReturnValue(new SkinTextures(textures.texture(), textures.textureUrl(), capeTexture, capeTexture, textures.model(), textures.secure()));
+        }
+    }
 }
