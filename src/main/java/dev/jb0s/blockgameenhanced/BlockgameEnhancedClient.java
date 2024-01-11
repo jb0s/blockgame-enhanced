@@ -11,7 +11,6 @@ import dev.jb0s.blockgameenhanced.gamefeature.jukebox.JukeboxGameFeature;
 import dev.jb0s.blockgameenhanced.gamefeature.latency.LatencyGameFeature;
 import dev.jb0s.blockgameenhanced.gamefeature.mmoitems.MMOItemsGameFeature;
 import dev.jb0s.blockgameenhanced.gamefeature.mmostats.MMOStatsGameFeature;
-import dev.jb0s.blockgameenhanced.gamefeature.optifinecompat.OptiFineCompatGameFeature;
 import dev.jb0s.blockgameenhanced.gamefeature.party.PartyGameFeature;
 import dev.jb0s.blockgameenhanced.gamefeature.recipetracker.RecipeTrackerGameFeature;
 import dev.jb0s.blockgameenhanced.gamefeature.titlescreen.TitleScreenGameFeature;
@@ -112,7 +111,6 @@ public class BlockgameEnhancedClient implements ClientModInitializer {
         loadGameFeature(new JukeboxGameFeature());
         loadGameFeature(new LatencyGameFeature());
         loadGameFeature(new RecipeTrackerGameFeature());
-        loadGameFeature(new OptiFineCompatGameFeature());
         loadGameFeature(new ChatChannelsGameFeature());
 
         // Tick all game features after client ticks
