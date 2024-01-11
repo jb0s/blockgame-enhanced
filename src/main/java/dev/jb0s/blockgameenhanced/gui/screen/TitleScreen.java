@@ -27,16 +27,24 @@ import org.lwjgl.glfw.GLFW;
 import java.lang.reflect.Constructor;
 
 public class TitleScreen extends Screen {
-
-    private static final Identifier BLOCKGAME_LOGO_TEXTURE = new Identifier("blockgame", "textures/gui/title/blockgame.png");
     private static Identifier BACKGROUND_TEXTURE;
-    private final MutableText BUTTON_PLAY = Text.translatable("menu.blockgame.title.play");
-    private final MutableText BUTTON_WEBSITE = Text.translatable("menu.blockgame.title.website");
-    private final MutableText BUTTON_WIKI = Text.translatable("menu.blockgame.title.wiki");
-    private final MutableText WATERMARK = Text.translatable("menu.blockgame.title.watermark", FabricLoader.getInstance().getModContainer("blockgameenhanced").get().getMetadata().getVersion().getFriendlyString());
-    private final MutableText SERVER_STATUS_ONLINE_EMPTY = Text.translatable("menu.blockgame.status.online.empty");
-    private final MutableText SERVER_STATUS_ONLINE_NOTEMPTY = Text.translatable("menu.blockgame.status.online");
-    private final MutableText SERVER_STATUS_OFFLINE = Text.translatable("menu.blockgame.status.offline");
+    private static final Identifier BLOCKGAME_LOGO_TEXTURE = new Identifier("blockgame", "textures/gui/title/blockgame.png");
+
+    private static final MutableText BUTTON_PLAY = Text.translatable("menu.blockgame.title.play");
+    private static final MutableText BUTTON_WEBSITE = Text.translatable("menu.blockgame.title.website");
+    private static final MutableText BUTTON_WIKI = Text.translatable("menu.blockgame.title.wiki");
+    private static final MutableText WATERMARK = Text.translatable("menu.blockgame.title.watermark", FabricLoader.getInstance().getModContainer("blockgameenhanced").get().getMetadata().getVersion().getFriendlyString());
+    private static final MutableText SERVER_STATUS_ONLINE_EMPTY = Text.translatable("menu.blockgame.status.online.empty");
+    private static final MutableText SERVER_STATUS_ONLINE_NOTEMPTY = Text.translatable("menu.blockgame.status.online");
+    private static final MutableText SERVER_STATUS_OFFLINE = Text.translatable("menu.blockgame.status.offline");
+
+    private static final Identifier INCOMPATIBLE_TEXTURE = new Identifier("server_list/incompatible");
+    private static final Identifier UNREACHABLE_TEXTURE = new Identifier("server_list/unreachable");
+    private static final Identifier PING_1_TEXTURE = new Identifier("server_list/ping_1");
+    private static final Identifier PING_2_TEXTURE = new Identifier("server_list/ping_2");
+    private static final Identifier PING_3_TEXTURE = new Identifier("server_list/ping_3");
+    private static final Identifier PING_4_TEXTURE = new Identifier("server_list/ping_4");
+    private static final Identifier PING_5_TEXTURE = new Identifier("server_list/ping_5");
 
     private MultiplayerServerListPinger pinger;
     private ServerInfo serverInfo;
@@ -197,14 +205,32 @@ public class TitleScreen extends Screen {
 
         // I have no idea how Mojang does anything, their UI code sucks balls
         // This draws the server ping icon on the Play button by the way
-        /*int l = (height / 2) - 7;
-        int x = i - 75 + 132;
+        int l = (height / 2) - 6;
+        int x = (width / 2) - 75 + 147;
         int y = l + 5;
-        int pi = serverInfo.online ? serverInfo.ping < 0L ? 5 : (serverInfo.ping < 50L ? 0 : (serverInfo.ping < 100L ? 1 : (serverInfo.ping < 175L ? 2 : (serverInfo.ping < 300L ? 3 : 4)))) : 5;
-        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-        RenderSystem.setShaderTexture(0, DrawableHelper.GUI_ICONS_TEXTURE);
-        context.drawTexture(matrices, x, y, 0, 176 + pi * 8, 10, 8, 256, 256);*/
+        Identifier tex = INCOMPATIBLE_TEXTURE;
+
+        // This some real YandereDev shit
+        if(serverInfo.ping < 0L) {
+            tex = UNREACHABLE_TEXTURE;
+        }
+        else if(serverInfo.ping < 50L) {
+            tex = PING_5_TEXTURE;
+        }
+        else if(serverInfo.ping < 100L) {
+            tex = PING_4_TEXTURE;
+        }
+        else if(serverInfo.ping < 175L) {
+            tex = PING_3_TEXTURE;
+        }
+        else if(serverInfo.ping < 300L) {
+            tex = PING_2_TEXTURE;
+        }
+        else {
+            tex = PING_1_TEXTURE;
+        }
+
+        context.drawGuiTexture(tex, x, y, 10, 8);
     }
 
     /**
