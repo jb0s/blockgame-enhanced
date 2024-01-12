@@ -19,6 +19,7 @@ public class MixinDrawContext {
         ActionResult result = ItemRendererDrawEvent.EVENT.invoker().drawItem(thisContext, renderer, stack, x, y, countLabel);
 
         if(result != ActionResult.PASS) {
+            thisContext.getMatrices().pop();
             ci.cancel();
         }
     }
