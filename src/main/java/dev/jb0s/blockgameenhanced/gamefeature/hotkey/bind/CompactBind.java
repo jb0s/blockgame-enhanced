@@ -9,7 +9,7 @@ public class CompactBind {
             return ActionResult.FAIL;
         }
 
-        client.getNetworkHandler().sendChatMessage("compact");
+        client.getNetworkHandler().sendChatCommand("compact");
         return ActionResult.SUCCESS;
     }
 }
