@@ -53,26 +53,17 @@ public class ThorScreen extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        RenderSystem.enableBlend();
-
-        // Draw dark backdrop. Don't ask. This is the only way that worked on OptiFine & others.
-        int w = width * 5;
-        int h = height * 5;
-        RenderSystem.setShaderColor(0.f, 0.f, 0.f, 1.f);
-        RenderSystem.setShaderTexture(0, THOR);
-        context.drawTexture(THOR, width / 2 - (w / 2), height / 2 - (h / 2), 0, 0, w, h, w, h);
+        context.fillGradient(0, 0, this.width, this.height, -1072689136, -804253680);
 
         // Draw Thor
         int thorWidth = 579 / 5;
         int thorHeight = 635 / 5;
 
-        float alpha = MathHelper.clamp(timer, 0, 20 * 3.5f) / (20 * 3.5f);
-        RenderSystem.setShaderColor(alpha, alpha, alpha, alpha);
-        RenderSystem.setShaderTexture(0, THOR);
+        float alpha = MathHelper.clamp(timer, 0, 20 * 3.5f) / (20 * 3.5f) * 0.1f;
+        RenderSystem.enableBlend();
+        RenderSystem.setShaderColor(1f, 1f, 1f, alpha);
         context.drawTexture(THOR, (width / 2) - (thorWidth / 2), (height / 2) - (thorHeight / 2), 0, 0, thorWidth, thorHeight, thorWidth, thorHeight);
-
         RenderSystem.disableBlend();
-        super.render(context, mouseX, mouseY, delta);
     }
 
     @Override
