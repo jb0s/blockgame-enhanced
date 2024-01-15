@@ -47,8 +47,8 @@ public class ImmersiveExpPopup extends ImmersiveWidget {
 
         // Draw bar
         int w = (int)((percentage / 100.f) * getWidth());
-        context.drawTexture(EXPBARS_TEXTURE, x, y + (getHeight() - 5), 0, 0, getWidth(), 5);
-        context.drawTexture(EXPBARS_TEXTURE, x, y + (getHeight() - 5), 0, 5 * getMmoProfession().getIndex(), w, 5);
+        drawTexture(context, x, y + (getHeight() - 5), 0, 0, getWidth(), 5);
+        drawTexture(context, x, y + (getHeight() - 5), 0, 5 * getMmoProfession().getIndex(), w, 5);
 
         // Draw text
         TextRenderer textRenderer = getInGameHud().client.textRenderer;
@@ -85,7 +85,6 @@ public class ImmersiveExpPopup extends ImmersiveWidget {
 
     /**
      * Helper function to call InGameHud.drawTexture with our custom texture dimensions.
-     * @param texture identifier of the texture to draw
      * @param context the context of the drawing of the pixels
      * @param x the X coordinate of the rectangle
      * @param y the Y coordinate of the rectangle
@@ -94,7 +93,7 @@ public class ImmersiveExpPopup extends ImmersiveWidget {
      * @param width the width
      * @param height the height
      */
-    private void drawTexture(Identifier texture, DrawContext context, int x, int y, int u, int v, int width, int height) {
-        context.drawTexture(texture, x, y, u, v, width, height, 151, 151);
+    private void drawTexture(DrawContext context, int x, int y, int u, int v, int width, int height) {
+        context.drawTexture(EXPBARS_TEXTURE, x, y, u, v, width, height, 151, 151);
     }
 }
