@@ -148,9 +148,9 @@ public class MixinChatScreen {
         ChatScreen target = (ChatScreen) (Object) this;
         // important to ignore anything starting with a slash, otherwise the command will be sent to the channel
         if (selectedChannel != null && !selectedChannel.canSwitch && !isCommand) {
-            target.sendMessage(String.format("%s%s", selectedChannel.command, string), false);
+            target.sendMessage(String.format("%s%s", selectedChannel.command, string), true);
         } else {
-            target.sendMessage(string, false);
+            target.sendMessage(string, true);
         }
 
         if (CONFIG.closeChatAfterMessage) {
