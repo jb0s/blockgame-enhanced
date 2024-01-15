@@ -345,7 +345,6 @@ public class ImmersiveDiabloHotbar extends ImmersiveWidget {
         if(latency > 100) severity = 1;
         if(latency > 175) severity = 2;
         if(latency > 215) {
-            severity = 3;
             latency = 215; // clamp it here so bar doesn't get empty
         }
 
