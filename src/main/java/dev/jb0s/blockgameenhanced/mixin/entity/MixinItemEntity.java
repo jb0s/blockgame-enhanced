@@ -1,5 +1,6 @@
 package dev.jb0s.blockgameenhanced.mixin.entity;
 
+import net.minecraft.block.ChestBlock;
 import net.minecraft.text.Text;
 import net.minecraft.item.ItemStack;
 import net.minecraft.entity.ItemEntity;
@@ -24,8 +25,9 @@ public class MixinItemEntity {
     private void init(CallbackInfo ci) {
         ItemEntity thisItemEntity = (ItemEntity) (Object) this;
         boolean enableItemLabels = BlockgameEnhanced.getConfig().getAccessibilityConfig().enableItemLabels;
+        boolean isOnChest = thisItemEntity.getWorld().getBlockState(thisItemEntity.getBlockPos().down()).getBlock() instanceof ChestBlock;
 
-        if(enableItemLabels && (thisItemEntity.getCustomName() == null || thisItemEntity.getCustomName().getString().startsWith(MOD_ASSIGNED_LABEL_SIGNATURE))) {
+        if(enableItemLabels && !isOnChest && (thisItemEntity.getCustomName() == null || thisItemEntity.getCustomName().getString().startsWith(MOD_ASSIGNED_LABEL_SIGNATURE))) {
             giveItemEntityLabel(thisItemEntity);
         }
     }
