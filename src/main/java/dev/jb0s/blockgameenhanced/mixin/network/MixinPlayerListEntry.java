@@ -20,6 +20,7 @@ public abstract class MixinPlayerListEntry {
     private static final Identifier NOTKER_CAPE = new Identifier("blockgame", "textures/cape/notkercape.png");
     private static final Identifier SOPHIE_CAPE = new Identifier("blockgame", "textures/cape/phicape.png");
     private static final Identifier KLH_IO_CAPE = new Identifier("blockgame", "textures/cape/klh_iocape.png");
+    private static final Identifier HAM_CAPE = new Identifier("blockgame", "textures/cape/hamcape.png");
 
     @Shadow public abstract GameProfile getProfile();
 
@@ -34,12 +35,12 @@ public abstract class MixinPlayerListEntry {
         // Set cape texture
         String username = getProfile().getName();
         switch (username) {
-            case "jakm" -> capeTexture = DEVELOPER_CAPE;
-            case "notIrma" -> capeTexture = DEVELOPER_CAPE;
+            case "jakm", "notIrma" -> capeTexture = DEVELOPER_CAPE;
             case "PirateSoftware" -> capeTexture = PIRATESOFTWARE_CAPE;
             case "Notker" -> capeTexture = NOTKER_CAPE;
             case "PhiPhantastx" -> capeTexture = SOPHIE_CAPE;
             case "klh_io" -> capeTexture = KLH_IO_CAPE;
+            case "Little__Ham" -> capeTexture = HAM_CAPE;
         }
 
         // Modify outcome if we found a custom cape
