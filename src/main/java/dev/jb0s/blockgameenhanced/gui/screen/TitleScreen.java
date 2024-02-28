@@ -181,7 +181,7 @@ public class TitleScreen extends Screen {
 
             if(!playerCountEmpty) {
                 // Draw summarizing text ("There are X players online" or "There are currently no players online.")
-                MutableText key = serverInfo.playerListSummary != null ? Text.translatable(((TranslatableTextContent) SERVER_STATUS_ONLINE_NOTEMPTY.getContent()).getKey(), serverInfo.playerListSummary.size()) : SERVER_STATUS_ONLINE_EMPTY;
+                MutableText key = serverInfo.players != null ? Text.translatable(((TranslatableTextContent) SERVER_STATUS_ONLINE_NOTEMPTY.getContent()).getKey(), serverInfo.players.online()) : SERVER_STATUS_ONLINE_EMPTY;
                 context.drawText(client.textRenderer, key, 7, 7, Integer.MAX_VALUE, true);
 
                 // Draw player list
