@@ -107,6 +107,10 @@
 	"text.autoconfig.blockgameenhanced.option.chatChannelsConfig.closeChatAfterMessage.@Tooltip": "Close the chat box after sending a message",
 	"text.autoconfig.blockgameenhanced.option.chatChannelsConfig.compactButton": "Compact channel button",
 	"text.autoconfig.blockgameenhanced.option.chatChannelsConfig.compactButton.@Tooltip": "Make the chat button a square with a single letter",
+	"text.autoconfig.blockgameenhanced.option.serverConfig": "Server Config",
+	"text.autoconfig.blockgameenhanced.option.serverConfig.enableResourcePackPrompt": "Enable server resource pack prompt",
+	"text.autoconfig.blockgameenhanced.option.serverConfig.enableResourcePackPrompt.@Tooltip[0]": "Whether to be prompted to install the required resource pack when connecting to the server.",
+	"text.autoconfig.blockgameenhanced.option.serverConfig.enableResourcePackPrompt.@Tooltip[1]": "NOTE: Disabling this means you accept the custom resource pack",
 
 	"comment.9": "~~ Update Popup ~~",
 	"menu.blockgame.update.header": "Update available",
