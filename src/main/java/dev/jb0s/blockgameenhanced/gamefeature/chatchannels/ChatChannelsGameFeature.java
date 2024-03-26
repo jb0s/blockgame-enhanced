@@ -28,13 +28,13 @@ public class ChatChannelsGameFeature extends GameFeature implements ReceiveChatM
     private final static ChatChannelsConfig CONFIG = BlockgameEnhanced.getConfig().getChatChannelsConfig();
 
     static {
-        GENERAL_CHANNEL = new ChatChannel("general", "towny:g", true, Text.literal("General").formatted(Formatting.WHITE));
+        GENERAL_CHANNEL = new ChatChannel("general", "townychat:g", true, Text.literal("General").formatted(Formatting.WHITE));
         CHANNELS.put("general", GENERAL_CHANNEL);
         CHANNELS.put("party", new ChatChannel("party", "@", false, false, Text.literal("Party").formatted(Formatting.LIGHT_PURPLE)));
-        CHANNELS.put("town", new ChatChannel("town", "towny:tc", true, Text.literal("Town").formatted(Formatting.AQUA)));
-        CHANNELS.put("nation", new ChatChannel("nation", "towny:nc", true, Text.literal("Nation").formatted(Formatting.YELLOW)));
-        CHANNELS.put("alliance", new ChatChannel("alliance", "towny:ac", true, Text.literal("Alliance").formatted(Formatting.GREEN)));
-        CHANNELS.put("local", new ChatChannel("local", "towny:lc", true, Text.literal("Local").formatted(Formatting.WHITE)));
+        CHANNELS.put("town", new ChatChannel("town", "townychat:tc", true, Text.literal("Town").formatted(Formatting.AQUA)));
+        CHANNELS.put("nation", new ChatChannel("nation", "townychat:nc", true, Text.literal("Nation").formatted(Formatting.YELLOW)));
+        CHANNELS.put("alliance", new ChatChannel("alliance", "townychat:ac", true, Text.literal("Alliance").formatted(Formatting.GREEN)));
+        CHANNELS.put("local", new ChatChannel("local", "townychat:lc", true, Text.literal("Local").formatted(Formatting.WHITE)));
     }
 
     private ChatChannel selectedChannel;
