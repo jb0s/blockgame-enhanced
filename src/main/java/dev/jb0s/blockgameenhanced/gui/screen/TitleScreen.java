@@ -3,6 +3,7 @@ package dev.jb0s.blockgameenhanced.gui.screen;
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
 import dev.jb0s.blockgameenhanced.BlockgameEnhancedClient;
+import dev.jb0s.blockgameenhanced.config.modules.ServerConfig;
 import dev.jb0s.blockgameenhanced.eggs.ThorScreen;
 import dev.jb0s.blockgameenhanced.config.ConfigManager;
 import lombok.SneakyThrows;
@@ -76,6 +77,7 @@ public class TitleScreen extends Screen {
         // Initialize server pinger & server info
         pinger = new MultiplayerServerListPinger();
         serverInfo = new ServerInfo("Blockgame", "mc.blockgame.info", ServerInfo.ServerType.OTHER);
+        ServerConfig.updateServerInfo(serverInfo);
 
         // Start pinging server
         Thread pingThread = new Thread(() -> {
@@ -254,9 +256,12 @@ public class TitleScreen extends Screen {
                 .dimensions(i + 1, l + 24, 89, 20)
                 .build());
 
+        ServerInfo sInfo = new ServerInfo("BlockGame", "mc.blockgame.info", ServerInfo.ServerType.OTHER);
+        ServerConfig.updateServerInfo(sInfo);
+
         // Add Play Button
         addDrawableChild(ButtonWidget.builder(BUTTON_PLAY,
-                (button) -> ConnectScreen.connect(this, this.client, ServerAddress.parse("mc.blockgame.info"), new ServerInfo("BlockGame", "mc.blockgame.info", ServerInfo.ServerType.OTHER), true))
+                (button) -> ConnectScreen.connect(this, this.client, ServerAddress.parse("mc.blockgame.info"), sInfo, true))
                 .dimensions(i - 90, l, 180, 20)
                 .build());
 
