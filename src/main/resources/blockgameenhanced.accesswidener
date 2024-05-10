@@ -43,3 +43,5 @@ accessible field net/minecraft/client/gui/screen/Screen selectables Ljava/util/L
 
 # net.minecraft.client.gui.screen.SplashOverlay
 accessible field net/minecraft/client/gui/screen/SplashOverlay reloadCompleteTime J
+
+accessible field net/minecraft/client/sound/MusicTracker timeUntilNextSong I

@@ -1,5 +1,6 @@
 package dev.jb0s.blockgameenhanced;
 
+import dev.jb0s.blockgameenhanced.config.ConfigManager;
 import dev.jb0s.blockgameenhanced.gamefeature.GameFeature;
 import dev.jb0s.blockgameenhanced.gamefeature.bettergui.BetterGUIGameFeature;
 import dev.jb0s.blockgameenhanced.gamefeature.dayphase.DayPhaseGameFeature;
@@ -16,7 +17,6 @@ import dev.jb0s.blockgameenhanced.gamefeature.titlescreen.TitleScreenGameFeature
 import dev.jb0s.blockgameenhanced.gamefeature.updateprompter.UpdatePrompterGameFeature;
 import dev.jb0s.blockgameenhanced.gamefeature.zone.ZoneGameFeature;
 import dev.jb0s.blockgameenhanced.gamefeature.zoneboss.ZoneBossGameFeature;
-import dev.jb0s.blockgameenhanced.config.ConfigManager;
 import dev.jb0s.blockgameenhanced.update.GitHubRelease;
 import dev.jb0s.blockgameenhanced.update.UpdateManager;
 import lombok.Getter;
