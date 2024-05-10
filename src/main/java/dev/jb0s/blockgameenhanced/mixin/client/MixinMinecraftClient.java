@@ -3,17 +3,14 @@ package dev.jb0s.blockgameenhanced.mixin.client;
 import dev.jb0s.blockgameenhanced.event.client.ClientDisconnectionEvents;
 import dev.jb0s.blockgameenhanced.event.client.ClientLifetimeEvents;
 import dev.jb0s.blockgameenhanced.event.client.ClientScreenChanged;
+import dev.jb0s.blockgameenhanced.event.sound.MusicTypeAccessedEvent;
 import dev.jb0s.blockgameenhanced.event.world.WorldUpdatedEvent;
 import lombok.SneakyThrows;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.RunArgs;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.sound.MusicSound;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.util.Identifier;
-import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -22,17 +19,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(MinecraftClient.class)
 public abstract class MixinMinecraftClient {
-    private static final MusicSound MUSIC_SILENCE = new MusicSound(RegistryEntry.of(SoundEvent.of(new Identifier("blockgame", "silence"))), 999999, 999999, false);
-
-    /**
-     * todo move this to JukeboxGameFeature
-     * @param cir
-     */
     @Inject(method = "getMusicType", at = @At("RETURN"), cancellable = true)
     public void getMusicType(CallbackInfoReturnable<MusicSound> cir) {
-        World world = MinecraftClient.getInstance().world;
-        if(world != null) {
-            cir.setReturnValue(MUSIC_SILENCE);
+        MusicSound musicSound = MusicTypeAccessedEvent.EVENT.invoker().musicTypeAccessed();
+        if (musicSound != null) {
+            cir.setReturnValue(musicSound);
         }
     }
 

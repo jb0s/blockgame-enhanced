@@ -3,12 +3,14 @@ package dev.jb0s.blockgameenhanced.gamefeature.jukebox;
 import com.google.gson.Gson;
 import dev.jb0s.blockgameenhanced.BlockgameEnhanced;
 import dev.jb0s.blockgameenhanced.BlockgameEnhancedClient;
+import dev.jb0s.blockgameenhanced.config.modules.JukeboxConfig;
 import dev.jb0s.blockgameenhanced.event.adventurezone.EnteredWildernessEvent;
 import dev.jb0s.blockgameenhanced.event.adventurezone.PlayerEnteredZoneEvent;
 import dev.jb0s.blockgameenhanced.event.bossbattle.BossBattleCommencedEvent;
 import dev.jb0s.blockgameenhanced.event.bossbattle.BossBattleEndedEvent;
 import dev.jb0s.blockgameenhanced.event.dayphase.DayPhaseChangedEvent;
 import dev.jb0s.blockgameenhanced.event.entity.player.PlayerRespawnedEvent;
+import dev.jb0s.blockgameenhanced.event.sound.MusicTypeAccessedEvent;
 import dev.jb0s.blockgameenhanced.gamefeature.GameFeature;
 import dev.jb0s.blockgameenhanced.gamefeature.dayphase.DayPhase;
 import dev.jb0s.blockgameenhanced.gamefeature.jukebox.json.JsonMusic;
@@ -25,10 +27,15 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.sound.SoundManager;
 import net.minecraft.client.toast.SystemToast;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.sound.MusicSound;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.Random;
+import net.minecraft.world.World;
 
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -36,6 +43,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class JukeboxGameFeature extends GameFeature {
+    private static final MusicSound MUSIC_SILENCE = new MusicSound(RegistryEntry.of(SoundEvent.of(new Identifier("blockgame", "silence"))), 999999, 999999, false);
     private static final String DATA_RESOURCE_PATH = "assets/blockgame/data/config/music.json";
 
     private SoundManager soundManager;
@@ -72,6 +80,17 @@ public class JukeboxGameFeature extends GameFeature {
     public void init(MinecraftClient minecraftClient, BlockgameEnhancedClient blockgameClient) {
         super.init(minecraftClient, blockgameClient);
         loadData();
+
+        MusicTypeAccessedEvent.EVENT.register(() -> {
+            World world = MinecraftClient.getInstance().world;
+            JukeboxConfig config = BlockgameEnhanced.getConfig().getJukeboxConfig();
+
+            if (world == null || !config.enableJukebox || (config.vanillaInWilderness && currentZone == null)) {
+                return null;
+            }
+
+            return MUSIC_SILENCE;
+        });
 
         // Play zone music when player enters zone.
         PlayerEnteredZoneEvent.EVENT.register((client, playerEntity, zone) -> {
@@ -191,6 +210,10 @@ public class JukeboxGameFeature extends GameFeature {
                 }
             }
         }
+
+        if (!isPlaying() && !isMuted()) {
+            MinecraftClient.getInstance().getMusicTracker().tick();
+        }
     }
 
     private void loadData() {
@@ -237,6 +260,8 @@ public class JukeboxGameFeature extends GameFeature {
             currentMusic = mus;
             desiredMusic = mus;
 
+            this.getMinecraftClient().getMusicTracker().stop();
+
             BlockgameEnhanced.LOGGER.info("Now playing: " + music + " (" + getMusicSoundIndex() + ")");
             soundInstance = new MusicSoundInstance(SoundEvent.of(mus.getSoundId(getMusicSoundIndex())), SoundCategory.MUSIC, 1f, 1f, playerEntity);
             soundManager.play(soundInstance, delay);
@@ -267,6 +292,9 @@ public class JukeboxGameFeature extends GameFeature {
             currentMusic = null;
             playing = false;
             fading = false;
+
+            // This allows the wilderness music to start sooner if the player has this enabled.
+            this.getMinecraftClient().getMusicTracker().timeUntilNextSong = 2500;
         }
         else {
             fading = true;
@@ -335,6 +363,11 @@ public class JukeboxGameFeature extends GameFeature {
         }
 
         return currentDayPhase.getId();
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return BlockgameEnhanced.getConfig().getJukeboxConfig().enableJukebox;
     }
 
     @Override

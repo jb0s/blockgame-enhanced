@@ -17,6 +17,10 @@ public class ModConfig extends PartitioningSerializer.GlobalData {
 
     @Getter
     @ConfigEntry.Gui.CollapsibleObject(startExpanded = true)
+    JukeboxConfig jukeboxConfig = new JukeboxConfig();
+
+    @Getter
+    @ConfigEntry.Gui.CollapsibleObject(startExpanded = true)
     PrivacyConfig privacyConfig = new PrivacyConfig();
 
     @Getter

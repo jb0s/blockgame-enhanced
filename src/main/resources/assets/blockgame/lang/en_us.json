@@ -112,6 +112,11 @@
 	"text.autoconfig.blockgameenhanced.option.serverConfig.enableResourcePackPrompt": "Enable server resource pack prompt",
 	"text.autoconfig.blockgameenhanced.option.serverConfig.enableResourcePackPrompt.@Tooltip[0]": "Whether to be prompted to install the required resource pack when connecting to the server.",
 	"text.autoconfig.blockgameenhanced.option.serverConfig.enableResourcePackPrompt.@Tooltip[1]": "NOTE: Disabling this means you accept the custom resource pack",
+	"text.autoconfig.blockgameenhanced.option.jukeboxConfig": "Music / Sounds",
+	"text.autoconfig.blockgameenhanced.option.jukeboxConfig.enableJukebox": "Enable custom Blockgame music",
+	"text.autoconfig.blockgameenhanced.option.jukeboxConfig.enableJukebox.@Tooltip": "Enable custom music tracks to play in-game when in certain areas.",
+	"text.autoconfig.blockgameenhanced.option.jukeboxConfig.vanillaInWilderness": "Play vanilla music in wilderness",
+	"text.autoconfig.blockgameenhanced.option.jukeboxConfig.vanillaInWilderness.@Tooltip": "Whether or not to play vanilla music in the wilderness.",
 
 	"comment.9": "~~ Update Popup ~~",
 	"menu.blockgame.update.header": "Update available",
