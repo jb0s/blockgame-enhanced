@@ -32,6 +32,7 @@ public class TitleScreen extends Screen {
     private static final Identifier BLOCKGAME_LOGO_TEXTURE = new Identifier("blockgame", "textures/gui/title/blockgame.png");
 
     private static final MutableText BUTTON_PLAY = Text.translatable("menu.blockgame.title.play");
+    private static final MutableText BUTTON_REFRESH = Text.translatable("menu.blockgame.title.refresh");
     private static final MutableText BUTTON_WEBSITE = Text.translatable("menu.blockgame.title.website");
     private static final MutableText BUTTON_WIKI = Text.translatable("menu.blockgame.title.wiki");
     private static final MutableText WATERMARK = Text.translatable("menu.blockgame.title.watermark", FabricLoader.getInstance().getModContainer("blockgameenhanced").get().getMetadata().getVersion().getFriendlyString());
@@ -263,6 +264,12 @@ public class TitleScreen extends Screen {
         addDrawableChild(ButtonWidget.builder(BUTTON_PLAY,
                 (button) -> ConnectScreen.connect(this, this.client, ServerAddress.parse("mc.blockgame.info"), sInfo, true))
                 .dimensions(i - 90, l, 180, 20)
+                .build());
+
+        // Add Refresh Button
+        addDrawableChild(ButtonWidget.builder(BUTTON_REFRESH,
+                (button) -> this.client.setScreen(new TitleScreen()))
+                .dimensions(i + 90, l, 20, 20)
                 .build());
 
         // If ModMenu mod is present, add the "Mods" button to the screen
