@@ -197,4 +197,16 @@ public class ZoneGameFeature extends GameFeature {
             }
         }
     }
+
+    @Override
+    public List<String> getDebugInfo() {
+        ArrayList<String> lines = new ArrayList<>();
+        World world = MinecraftClient.getInstance().world;
+        lines.add("World: " + world.getRegistryKey().getValue().getPath());
+        lines.add("Current Zone: " + (currentZone != null ? currentZone.getId() : "null"));
+        lines.add("Zone Music Type: " + (currentZone != null ? currentZone.getMusicType() : "null"));
+        lines.add("Zone Music: " + (currentZone != null ? currentZone.getMusic() : "null"));
+        lines.add("Data loaded: " + (zones.getZones().length > 0));
+        return lines;
+    }
 }

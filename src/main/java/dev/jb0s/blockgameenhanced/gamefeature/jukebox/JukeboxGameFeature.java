@@ -32,6 +32,8 @@ import net.minecraft.util.math.MathHelper;
 
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 public class JukeboxGameFeature extends GameFeature {
     private static final String DATA_RESOURCE_PATH = "assets/blockgame/data/config/music.json";
@@ -281,7 +283,17 @@ public class JukeboxGameFeature extends GameFeature {
         }
 
         refreshing = true;
-        playMusic(currentMusic.getId(), false, 0);
+        if(fading) {
+            if(desiredMusic != null) {
+                playMusic(desiredMusic.getId(), false, 0);
+            }
+            else {
+                stopMusic(true);
+            }
+        }
+        else {
+            playMusic(currentMusic.getId(), false, 0);
+        }
     }
 
     /**
@@ -323,5 +335,18 @@ public class JukeboxGameFeature extends GameFeature {
         }
 
         return currentDayPhase.getId();
+    }
+
+    @Override
+    public List<String> getDebugInfo() {
+        ArrayList<String> lines = new ArrayList<>();
+        lines.add("Is Playing: " + isPlaying());
+        lines.add("Is Fading: " + isFading());
+        lines.add("Is Muted: " + isMuted());
+        lines.add("Is Refreshing: " + isRefreshing());
+        lines.add("Current Music: " + (currentMusic != null ? currentMusic.getId() : "null"));
+        lines.add("Desired Music: " + (desiredMusic != null ? desiredMusic.getId() : "null"));
+        lines.add("Now Playing: " + ((soundInstance != null && soundInstance.getSound() != null) ? soundInstance.getSound().getIdentifier() : "null"));
+        return lines;
     }
 }

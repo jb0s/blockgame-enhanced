@@ -4,11 +4,11 @@ import lombok.Getter;
 import net.minecraft.client.MinecraftClient;
 import dev.jb0s.blockgameenhanced.BlockgameEnhancedClient;
 
-public abstract class GameFeature {
-    @Getter
-    private MinecraftClient minecraftClient;
+import java.util.List;
 
-    @Getter
+@Getter
+public abstract class GameFeature {
+    private MinecraftClient minecraftClient;
     private BlockgameEnhancedClient blockgameClient;
 
     public void init(MinecraftClient minecraftClient, BlockgameEnhancedClient blockgameClient) {
@@ -21,5 +21,9 @@ public abstract class GameFeature {
 
     public boolean isEnabled() {
         return true;
+    }
+
+    public List<String> getDebugInfo() {
+        return null;
     }
 }
