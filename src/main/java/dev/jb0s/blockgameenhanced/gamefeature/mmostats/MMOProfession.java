@@ -11,7 +11,9 @@ public enum MMOProfession {
     HERBALISM("§2Herbalism", 5),
     RUNECARVING("§5Runecarving", 6),
     EINHERJAR("§cEinherjar", 7),
-    COOKING("§cCooking", 7);
+    COOKING("§cCooking", 7),
+    HUNTING("§cHunting", 7),
+    ALCHEMY("§5Alchemy", 6);
 
     @Getter
     @Setter
