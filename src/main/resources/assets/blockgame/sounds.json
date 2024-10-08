@@ -85,7 +85,14 @@
 			"blockgame:music/zone/krognars/hb_fire_throne"
 		]
 	},
-	
+
+	"mus.zone.arena.battle_horseman": {
+		"subtitle": "Heartbound OST - Miserable Manic Shadows",
+		"sounds": [
+			"blockgame:music/zone/arena/hb_mms"
+		]
+	},
+
 	"mus.gui.combat.death": {
 		"subtitle": "Player dies",
 		"sounds": [
