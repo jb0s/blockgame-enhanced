@@ -22,6 +22,7 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -79,17 +80,20 @@ public class MixinGenericContainerScreen extends HandledScreen<GenericContainerS
 
         y += 22 * rows + 2;
         addDrawableChild(ButtonWidget.builder(Text.literal("Store All"), (button) -> {
-                MinecraftClient mc = MinecraftClient.getInstance();
-                ClientPlayerEntity p = mc.player;
-                    for(int i = 9 * rows; i < 9 * (rows + 3); i++) {
+                    MinecraftClient mc = MinecraftClient.getInstance();
+                    ClientPlayerEntity p = mc.player;
+
+                    for (int i = 9 * rows; i < 9 * (rows + 3); i++) {
                         Slot currentSlot = handler.slots.get(i);
                         boolean isBackpack = false;
-                        if (!currentSlot.getStack().getName().getSiblings().isEmpty())
-                            isBackpack = currentSlot.getStack().getName().getSiblings().get(0).getString().equals("Backpack");
+                        List<Text> nameSiblings = currentSlot.getStack().getName().getSiblings();
+                        if (!nameSiblings.isEmpty())
+                            for (Text sibling : nameSiblings)
+                                if (sibling.contains(Text.literal("Backpack")))
+                                    isBackpack = true;
 
-                        if (!isBackpack) {
+                        if (!isBackpack)
                             mc.interactionManager.clickSlot(handler.syncId, i, 0, SlotActionType.QUICK_MOVE, p);
-                        }
                     }
                 })
                 .dimensions(x, y, btnWidth, btnHeight)
