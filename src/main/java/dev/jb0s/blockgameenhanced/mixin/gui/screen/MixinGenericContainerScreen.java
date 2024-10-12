@@ -69,6 +69,24 @@ public class MixinGenericContainerScreen extends HandledScreen<GenericContainerS
             .dimensions(x, y, btnWidth, btnHeight)
             .build()
         );
+
+        // Just in case. Myrkheim chests are instanced, but disappear every reset
+        // so there's a chance of losing items. Plus we most likely want to just
+        // loot anyways
+        if (titleStr.endsWith("Plunder"))
+            return;
+
+        y += 22 * rows + 2;
+        addDrawableChild(ButtonWidget.builder(Text.literal("Store All"), (button) -> {
+                MinecraftClient mc = MinecraftClient.getInstance();
+                ClientPlayerEntity p = mc.player;
+
+                for(int i = 9 * rows; i < 9 * (rows + 3); i++)
+                    mc.interactionManager.clickSlot(handler.syncId, i, 0, SlotActionType.QUICK_MOVE, p);
+                })
+                .dimensions(x, y, btnWidth, btnHeight)
+                .build()
+        );
     }
 
     /**
