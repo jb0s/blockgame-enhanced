@@ -53,16 +53,16 @@ public class MixinGenericContainerScreen extends HandledScreen<GenericContainerS
 
         int originX = width / 2;
         int originY = height / 2;
-        int btnWidth = 47;
-        int btnHeight = 12;
+        int btnWidth = 50;
+        int btnHeight = 13;
 
         int x = originX + 34;
-        int y = originY - (backgroundHeight / 2) + 4;
+        int y = originY - (backgroundHeight / 2) + 3;
         addDrawableChild(ButtonWidget.builder(LOOT_ALL_BUTTON, (button) -> {
                 MinecraftClient mc = MinecraftClient.getInstance();
                 ClientPlayerEntity p = mc.player;
 
-                for(int i = 0; i < 9 * rows; i++) {
+                for(int i = 0; i < 9 * rows; ++i) {
                     mc.interactionManager.clickSlot(handler.syncId, i, 0, SlotActionType.QUICK_MOVE, p);
                 }
             })
