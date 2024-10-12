@@ -14,6 +14,7 @@ import net.minecraft.client.render.GameRenderer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.GenericContainerScreenHandler;
+import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -80,9 +81,16 @@ public class MixinGenericContainerScreen extends HandledScreen<GenericContainerS
         addDrawableChild(ButtonWidget.builder(Text.literal("Store All"), (button) -> {
                 MinecraftClient mc = MinecraftClient.getInstance();
                 ClientPlayerEntity p = mc.player;
+                    for(int i = 9 * rows; i < 9 * (rows + 3); i++) {
+                        Slot currentSlot = handler.slots.get(i);
+                        boolean isBackpack = false;
+                        if (!currentSlot.getStack().getName().getSiblings().isEmpty())
+                            isBackpack = currentSlot.getStack().getName().getSiblings().get(0).getString().equals("Backpack");
 
-                for(int i = 9 * rows; i < 9 * (rows + 3); i++)
-                    mc.interactionManager.clickSlot(handler.syncId, i, 0, SlotActionType.QUICK_MOVE, p);
+                        if (!isBackpack) {
+                            mc.interactionManager.clickSlot(handler.syncId, i, 0, SlotActionType.QUICK_MOVE, p);
+                        }
+                    }
                 })
                 .dimensions(x, y, btnWidth, btnHeight)
                 .build()
