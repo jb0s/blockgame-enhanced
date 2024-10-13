@@ -78,7 +78,7 @@ public class MixinGenericContainerScreen extends HandledScreen<GenericContainerS
         if (titleStr.endsWith("Plunder"))
             return;
 
-        y += 22 * rows + 2;
+        y += 18 * rows + 14;
         addDrawableChild(ButtonWidget.builder(Text.literal("Store All"), (button) -> {
                     MinecraftClient mc = MinecraftClient.getInstance();
                     ClientPlayerEntity p = mc.player;
