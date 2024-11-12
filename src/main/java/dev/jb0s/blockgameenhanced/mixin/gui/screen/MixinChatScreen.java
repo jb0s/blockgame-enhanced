@@ -53,7 +53,7 @@ public class MixinChatScreen {
         chatField.setWidth(target.width - chatField.getX());
 
         toggleButton = ButtonWidget.builder(Text.literal(""), (button) -> {})
-                .dimensions(2, chatField.getY() - 2, CONFIG.compactButton ? 12 : 52, 12)
+                .dimensions(0, chatField.getY() - 2, CONFIG.compactButton ? 14 : 54, 12)
                 .build();
     }
 

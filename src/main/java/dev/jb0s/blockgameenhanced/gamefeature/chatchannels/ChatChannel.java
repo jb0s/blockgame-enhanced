@@ -22,7 +22,7 @@ public class ChatChannel {
 
     ChatChannel(String name, String command, boolean canSwitch, boolean enabled, Text formattedName) {
         this(name, command, canSwitch, formattedName);
-        this.enabled = false;
+        this.enabled = enabled;
     }
 
     ChatChannel(String name, Text formattedName) {
