@@ -17,6 +17,10 @@ public class ModConfig extends PartitioningSerializer.GlobalData {
 
     @Getter
     @ConfigEntry.Gui.CollapsibleObject(startExpanded = true)
+    ChatChannelsConfig chatChannelsConfig = new ChatChannelsConfig();
+
+    @Getter
+    @ConfigEntry.Gui.CollapsibleObject(startExpanded = true)
     PrivacyConfig privacyConfig = new PrivacyConfig();
 
     @Getter
