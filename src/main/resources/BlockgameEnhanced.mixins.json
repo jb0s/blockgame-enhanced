@@ -20,6 +20,7 @@
     "gui.screen.MixinGameMenuScreen",
     "gui.screen.MixinGenericContainerScreen",
     "gui.screen.MixinScreen",
+    "interaction.MixinClientPlayerInteractionManager",
     "items.MixinItem",
     "items.MixinItemStack",
     "network.MixinClientPlayNetworkHandler",
