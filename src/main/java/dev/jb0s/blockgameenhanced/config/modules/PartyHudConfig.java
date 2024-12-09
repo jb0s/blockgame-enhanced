@@ -11,6 +11,10 @@ public class PartyHudConfig implements ConfigData {
     public boolean showHud;
 
     @ConfigEntry.Gui.Tooltip
+    @ConfigEntry.BoundedDiscrete(max = 100)
+    public int hudOpacity;
+
+    @ConfigEntry.Gui.Tooltip
     public boolean showSelf;
 
     @ConfigEntry.Gui.Excluded // this setting is not implemented yet
@@ -28,6 +32,7 @@ public class PartyHudConfig implements ConfigData {
 
     public PartyHudConfig() {
         showHud = true;
+        hudOpacity = 100;
         showSelf = true;
         position = PartyHudPosition.TOP_LEFT;
         deathNotify = true;

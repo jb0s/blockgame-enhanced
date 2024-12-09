@@ -58,6 +58,8 @@
 	"text.autoconfig.blockgameenhanced.option.privacyConfig": "Privacy",
 	"text.autoconfig.blockgameenhanced.option.partyHudConfig.showHud": "Show party member view",
 	"text.autoconfig.blockgameenhanced.option.partyHudConfig.showHud.@Tooltip": "If disabled, the list of party members will no longer appear on-screen.",
+	"text.autoconfig.blockgameenhanced.option.partyHudConfig.hudOpacity": "Opacity of the party member view",
+	"text.autoconfig.blockgameenhanced.option.partyHudConfig.hudOpacity.@Tooltip": "Lower values will make the member view less visible",
 	"text.autoconfig.blockgameenhanced.option.partyHudConfig.showSelf": "Display yourself in party list",
 	"text.autoconfig.blockgameenhanced.option.partyHudConfig.showSelf.@Tooltip": "Will show your player in the party member list when enabled.",
 	"text.autoconfig.blockgameenhanced.option.partyHudConfig.position": "Position",

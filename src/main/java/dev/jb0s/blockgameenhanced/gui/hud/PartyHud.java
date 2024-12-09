@@ -16,6 +16,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.*;
@@ -102,6 +103,8 @@ public class PartyHud {
         if(client.world == null)
             return;
 
+        float opacity = BlockgameEnhanced.getConfig().getPartyHudConfig().hudOpacity / 100.0f;
+
         int x = MEMBER_CARD_MARGIN;
         int yIncrement = MEMBER_CARD_MARGIN + ((MEMBER_CARD_HEIGHT + MEMBER_CARD_SPACING) * index);
 
@@ -112,21 +115,21 @@ public class PartyHud {
         // Draw Background
         boolean isBedrockPlayer = member.getPlayerName().startsWith(".");
         RenderSystem.setShaderTexture(0, isBedrockPlayer ? BACKGROUND_TEXTURE_BEDROCK : BACKGROUND_TEXTURE);
-        RenderSystem.setShaderColor(0.4f, 0.4f, 0.4f, 1f);
+        RenderSystem.setShaderColor(0.4f, 0.4f, 0.4f, opacity);
         context.drawTexture(isBedrockPlayer ? BACKGROUND_TEXTURE_BEDROCK : BACKGROUND_TEXTURE, x, yIncrement, 0, 0, 0, MEMBER_CARD_WIDTH, MEMBER_CARD_HEIGHT, MEMBER_CARD_BACKGROUND_SIZE, MEMBER_CARD_BACKGROUND_SIZE);
 
         // Draw Vignette
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
         RenderSystem.setShaderTexture(0, VIGNETTE_TEXTURE);
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, .4f);
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, opacity * 0.4f);
         context.drawTexture(VIGNETTE_TEXTURE, x, yIncrement, 0, 0, 0, MEMBER_CARD_WIDTH, MEMBER_CARD_HEIGHT, MEMBER_CARD_WIDTH, MEMBER_CARD_HEIGHT);
         RenderSystem.disableBlend();
 
         // Player Head
         RenderSystem.enableBlend();
         RenderSystem.setShaderTexture(0, member.getPlayer().getSkinTextures().texture());
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1f);
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, opacity);
         context.drawTexture(member.getPlayer().getSkinTextures().texture(), contentX, contentY, headSize, headSize, 8.0f, 8.0f, 8, 8, 64, 64);
         context.drawTexture(member.getPlayer().getSkinTextures().texture(), contentX, contentY, headSize, headSize, 40.0f, 8.0f, 8, 8, 64, 64);
         RenderSystem.disableBlend();
@@ -139,12 +142,14 @@ public class PartyHud {
         int textureHeight = 46;
 
         // Draw Health
+        RenderSystem.enableBlend();
         float calculatedPercentage = (float)member.getHealth() / (float)member.getMaxHealth();
         RenderSystem.setShaderTexture(0, HEALTHBARS_TEXTURE);
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1f);
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, opacity);
         context.drawTexture(HEALTHBARS_TEXTURE, contentX + headSize + 5, contentY + client.textRenderer.fontHeight, 9, 9, 0, 0, 18, 18, textureWidth, textureHeight);
         context.drawTexture(HEALTHBARS_TEXTURE, contentX + headSize + 16, contentY + client.textRenderer.fontHeight + 1, textureWidth / 2, 7, 0, 32, textureWidth, 14, textureWidth, textureHeight);
         context.drawTexture(HEALTHBARS_TEXTURE, contentX + headSize + 16, contentY + client.textRenderer.fontHeight + 1, (int) ((textureWidth / 2) * calculatedPercentage), 7, 0, 18, (int) (textureWidth * calculatedPercentage), 14, textureWidth, textureHeight);
+        RenderSystem.disableBlend();
 
         // Dead / Out Of Range Blackout
         boolean isOutOfRange = TimeHelper.getSystemTimeUnix() - member.getLastUpdateSecond() > OUT_OF_RANGE_THRESHOLD;
@@ -172,6 +177,8 @@ public class PartyHud {
     private static void renderPartyPing(DrawContext context, PartyPing ping) {
         MinecraftClient minecraft = MinecraftClient.getInstance();
         ClientPlayerEntity cpe = minecraft.player;
+
+        float opacity = BlockgameEnhanced.getConfig().getPartyHudConfig().hudOpacity / 100.0f;
 
         // Don't render ping if no player or if ping location is out of view (off-screen)
         if (cpe == null || ping.getScreenSpacePos() == null || ping.getScreenSpacePos().z() <= 0) {
@@ -205,7 +212,7 @@ public class PartyHud {
         context.getMatrices().translate(labelOffset.x + ((labelOffset.y / 2) + 3), labelOffset.y, 0);
         RenderSystem.enableBlend();
         RenderSystem.setShaderTexture(0, ping.getPartyMember().getPlayer().getSkinTextures().texture());
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1f);
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, opacity);
         context.drawTexture(ping.getPartyMember().getPlayer().getSkinTextures().texture(), -2, -2, (int)labelSize.y + 2, (int)labelSize.y + 2, 8.0f, 8.0f, 8, 8, 64, 64);
         context.drawTexture(ping.getPartyMember().getPlayer().getSkinTextures().texture(), -2, -2, (int)labelSize.y + 2, (int)labelSize.y + 2, 40.0f, 8.0f, 8, 8, 64, 64);
         RenderSystem.disableBlend();
